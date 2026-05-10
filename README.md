@@ -12,12 +12,8 @@ Complete website for Brothers Company with 3 divisions and marketplace.
 ## 👤 Default Accounts
 
 **Admin:**
-- Email: admin@brothers.com
-- Password: admin123
-
-**Users:**
-- john@example.com / password
-- jane@example.com / password
+- Email: admin
+- Password: #?12jj16op
 
 ## 📑 Pages
 
