@@ -837,72 +837,11 @@ if ($currentUserId && $currentRole) {
             </a>
         </div>
         <div class="login-footer">
-            Brothers Company - MechanicApp System v1.0
+            Brothers Company - Brothers Desktop v1.0
         </div>
     </div>
 </div>
 <?php else: ?>
-
-<!-- LOGIN SCREEN -->
-<div class="login-screen" id="login-screen">
-    <div class="login-box">
-        <div class="login-header">
-            <div class="login-header-content">
-                <svg class="login-header-icon" viewBox="0 0 32 32">
-                    <rect x="2" y="6" width="28" height="22" rx="2" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="1"/>
-                    <rect x="4" y="8" width="24" height="16" fill="#c8e0f5"/>
-                    <rect x="12" y="24" width="8" height="3" rx="1" fill="#245edc"/>
-                </svg>
-                <span class="login-title">Brothers Company</span>
-            </div>
-        </div>
-        <div class="login-body">
-            <div class="login-user-icon">
-                <svg viewBox="0 0 64 64">
-                    <circle cx="32" cy="20" r="12" fill="#f5c890" stroke="#c8a060" stroke-width="2"/>
-                    <ellipse cx="32" cy="50" rx="18" ry="12" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="2"/>
-                    <circle cx="28" cy="18" r="2" fill="#333"/>
-                    <circle cx="36" cy="18" r="2" fill="#333"/>
-                    <path d="M27 24 Q32 28 37 24" stroke="#333" stroke-width="2" fill="none"/>
-                </svg>
-            </div>
-            <div class="login-error" id="login-error">Username atau password salah!</div>
-            <form class="login-form" id="login-form" onsubmit="return handleLogin(event)">
-                <div class="login-field">
-                    <label>Username</label>
-                    <input type="text" id="login-username" placeholder="Masukkan username" required>
-                </div>
-                <div class="login-field">
-                    <label>Password</label>
-                    <input type="password" id="login-password" placeholder="Masukkan password" required>
-                </div>
-                <div class="login-field">
-                    <label>Login Sebagai</label>
-                    <select id="login-role">
-                        <option value="employee">Employee</option>
-                        <option value="user">User</option>
-                        <option value="admin">Admin</option>
-                    </select>
-                </div>
-                <div class="login-buttons">
-                    <button type="submit" class="btn-login">Login</button>
-                    <button type="button" class="btn-cancel" onclick="handleCancel()">Cancel</button>
-                </div>
-            </form>
-            <div class="demo-users">
-                <div class="demo-users-title">Akun Demo:</div>
-                <div class="demo-users-list">
-                    <strong>Admin:</strong> admin / admin123<br>
-                    <strong>Employee:</strong> employee1 / emp123<br>
-                    <strong>User:</strong> user1 / user123
-                </div>
-            </div>
-        </div>
-        <div class="login-footer">
-            Brothers Company - MechanicApp System v1.0
-        </div>
-    </div>
-</div>
 
 <div class="desktop" id="desktop">
     <!-- Toast Notification -->
@@ -973,7 +912,7 @@ if ($currentUserId && $currentRole) {
     </div>
 
     <!-- Windows -->
-    <div class="window" id="win-mechanic" style="top:30px;left:60px;width:680px;height:480px;">
+    <div class="window" id="win-mechanic" style="top:30px;left:60px;width:680px;height:480px;display:none;">
         <div class="window-titlebar" onmousedown="startDrag(event, 'win-mechanic')">
             <svg class="window-icon" viewBox="0 0 16 16">
                 <rect x="1" y="3" width="14" height="11" rx="1" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="1"/>
@@ -1813,17 +1752,7 @@ if ($currentUserId && $currentRole) {
         resizeTarget = null;
     });
 
-    // ===== AUTHENTICATION SYSTEM =====
-    // Demo user database - dalam implementasi nyata, ini harus di database dengan password hash
-    const usersDB = {
-        'admin': { password: 'admin123', role: 'admin', name: 'Administrator' },
-        'employee1': { password: 'emp123', role: 'employee', name: 'John Mechanic' },
-        'employee2': { password: 'emp123', role: 'employee', name: 'Jane Technician' },
-        'user1': { password: 'user123', role: 'user', name: 'Regular User' },
-        'user2': { password: 'user123', role: 'user', name: 'Guest User' }
-    };
-
-    // Role-Based Access Control (RBAC) permissions
+    // ===== RBAC - Role-Based Access Control =====
     const rolePermissions = {
         'admin': {
             windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'settings'],
@@ -1832,80 +1761,23 @@ if ($currentUserId && $currentRole) {
         'employee': {
             windows: ['cargo', 'farmer', 'mechanic', 'restaurant'],
             actions: ['create', 'edit', 'view', 'checkin', 'checkout']
-        },
-        'user': {
-            windows: ['mechanic'],
-            actions: ['view']
         }
     };
 
-    // Current logged in user
     let currentUser = null;
-
-    function handleLogin(event) {
-        event.preventDefault();
-        const username = document.getElementById('login-username').value;
-        const password = document.getElementById('login-password').value;
-        const selectedRole = document.getElementById('login-role').value;
-        const errorEl = document.getElementById('login-error');
-
-        // Check user credentials
-        const user = usersDB[username];
-        if (!user || user.password !== password) {
-            errorEl.textContent = 'Username atau password salah!';
-            errorEl.classList.add('show');
-            return false;
-        }
-
-        // Check if selected role matches user's role
-        if (user.role !== selectedRole) {
-            errorEl.textContent = `Role yang dipilih tidak sesuai! Anda adalah ${user.role}.`;
-            errorEl.classList.add('show');
-            return false;
-        }
-
-        // Login successful
-        currentUser = {
-            username: username,
-            name: user.name,
-            role: user.role
-        };
-
-        // Hide login screen, show desktop
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('desktop').style.display = 'flex';
-        document.getElementById('user-info').style.display = 'flex';
-        document.getElementById('user-name').textContent = user.name;
-
-        // Set role badge
-        const roleBadge = document.getElementById('user-role-badge');
-        roleBadge.textContent = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-        roleBadge.className = 'user-role role-' + user.role;
-
-        // Apply RBAC - hide unauthorized windows
-        applyRBAC();
-
-        // Show welcome toast
-        showToast('Login Berhasil', `Selamat datang, ${user.name}! Role: ${user.role}`);
-
-        return false;
-    }
-
-    function handleCancel() {
-        document.getElementById('login-username').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('login-error').classList.remove('show');
-    }
 
     function applyRBAC() {
         if (!currentUser) return;
 
         const permissions = rolePermissions[currentUser.role];
+        if (!permissions) return;
+
         const allowedWindows = permissions.windows;
 
         // Hide desktop icons that user cannot access
         document.querySelectorAll('.desktop-icon').forEach(icon => {
-            const windowType = icon.getAttribute('ondblclick')?.match(/openWindow\('(\w+)'\)/)?.[1];
+            const onclick = icon.getAttribute('ondblclick') || '';
+            const windowType = onclick.match(/openWindow\('(\w+)'\)/)?.[1];
             if (windowType && !allowedWindows.includes(windowType)) {
                 icon.style.display = 'none';
             }
@@ -1925,44 +1797,11 @@ if ($currentUserId && $currentRole) {
             const settingsIcon = document.querySelector('.desktop-icon[ondblclick="openWindow(\'settings\')"]');
             if (settingsIcon) settingsIcon.style.display = 'none';
         }
-
-        // Hide reports for regular users (optional - can be made visible to all)
-        if (currentUser.role === 'user') {
-            const reportsIcon = document.querySelector('.desktop-icon[ondblclick="openWindow(\'reports\')"]');
-            if (reportsIcon) reportsIcon.style.display = 'none';
-        }
-    }
-
-    function canAccess(windowType) {
-        if (!currentUser) return false;
-        return rolePermissions[currentUser.role].windows.includes(windowType);
     }
 
     function logout() {
-        // Jika employee dari site, redirect ke logout site
-        if (autoLoginData) {
-            window.location.href = '../auth/logout.php';
-            return;
-        }
-
-        currentUser = null;
-        document.getElementById('login-screen').classList.remove('hidden');
-        document.getElementById('user-info').style.display = 'none';
-        document.getElementById('login-username').value = '';
-        document.getElementById('login-password').value = '';
-        document.getElementById('login-error').classList.remove('show');
-
-        // Show all desktop icons again
-        document.querySelectorAll('.desktop-icon').forEach(icon => {
-            icon.style.display = 'flex';
-        });
-
-        // Show all start menu items again
-        document.querySelectorAll('.start-menu-item').forEach(item => {
-            item.style.display = 'flex';
-        });
-
-        showToast('Logout', 'Anda telah keluar dari sistem.');
+        // Redirect ke logout site
+        window.location.href = '../auth/logout.php';
     }
 
     // ===== INIT =====
@@ -1970,22 +1809,18 @@ if ($currentUserId && $currentRole) {
     const autoLoginData = <?php echo $autoLogin ? json_encode($autoUser) : 'null'; ?>;
 
     if (autoLoginData) {
-        // Auto-login employee dari session brotherscompany site
+        // Auto-login employee/admin dari session brotherscompany site
         currentUser = autoLoginData;
-        document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('desktop').style.display = 'flex';
         document.getElementById('user-info').style.display = 'flex';
         document.getElementById('user-name').textContent = autoLoginData.name;
 
         const roleBadge = document.getElementById('user-role-badge');
-        roleBadge.textContent = 'Employee';
-        roleBadge.className = 'user-role role-employee';
+        roleBadge.textContent = autoLoginData.role === 'admin' ? 'Admin' : 'Employee';
+        roleBadge.className = 'user-role role-' + autoLoginData.role;
 
         applyRBAC();
-        showToast('Login Otomatis', `Selamat datang, ${autoLoginData.name}! Role: Employee`);
-    } else {
-        // Tampilkan login screen untuk login manual
-        document.getElementById('desktop').style.display = 'none';
+        showToast('Login Otomatis', `Selamat datang, ${autoLoginData.name}! Role: ${autoLoginData.role}`);
     }
     updateTaskbar();
 </script>

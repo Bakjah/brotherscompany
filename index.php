@@ -153,11 +153,11 @@ include 'includes/config.php';
     </ul>
     <div class="auth-buttons">
       <?php if(isLoggedIn()): ?>
-        <span style="color: #4b5563; font-size: 0.9rem;">👤 <b><?php echo $_SESSION['username']; ?></b></span>
+        <span style="color: #4b5563; font-size: 0.9rem;"><b><?php echo $_SESSION['username']; ?></b></span>
         <?php if(isAdmin()): ?>
           <a href="admin/" class="navbar-btn" style="background: var(--color-workshop); color: #78350f; padding: 0.4rem 0.8rem;">Admin</a>
         <?php endif; ?>
-        <?php if(isEmployee()): ?>
+        <?php if(isAdmin() || isEmployee()): ?>
           <a href="Brotherssoftware/" class="navbar-btn" style="background: #8b5cf6; color: white; padding: 0.4rem 0.8rem;">Staff</a>
         <?php endif; ?>
         <a href="auth/logout.php" class="navbar-btn" style="background: #e2e8f0; color: #475569;">Keluar</a>
@@ -184,7 +184,7 @@ include 'includes/config.php';
       </div>
       <div>
         <h2 style="color: var(--primary-blue); font-size: 2.25rem;">Tentang Brothers Company</h2>
-        <p>Brothers Company adalah sebuah holding company yang menaungi berbagai lini bisnis strategis di Indonesia, mulai dari otomotif hingga ketahanan pangan.</p>
+        <p>Brothers Company adalah sebuah holding company yang menaungi berbagai lini bisnis strategis di Los Santos, mulai dari otomotif hingga ketahanan pangan.</p>
         <div style="display: flex; gap: 2rem; margin-top: 2rem;">
           <div><h3 style="margin:0; color: var(--primary-blue);">4+</h3><small>Tahun Pengalaman</small></div>
           <div><h3 style="margin:0; color: var(--primary-blue);">3</h3><small>Divisi Utama</small></div>
@@ -209,8 +209,8 @@ include 'includes/config.php';
         <a href="farm/" class="btn-div btn-farm">Jelajahi Farm Kami →</a>
       </div>
       <div class="card card-food">
-        <h3>Mosuban Kitchen</h3>
-        <p>Menghadirkan kelezatan masakan Asia autentik dengan cita rasa premium.</p>
+        <h3>Restaurant</h3>
+        <p>Menghadirkan kelezatan masakan enak autentik dengan cita rasa premium.</p>
         <a href="asianfood/" class="btn-div btn-food">Lihat Menu Restoran →</a>
       </div>
     </div>
