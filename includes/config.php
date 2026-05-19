@@ -66,8 +66,12 @@ function isLoggedIn() {
     return isset($_SESSION['user_id']); 
 }
 
-function isAdmin() { 
-    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin'; 
+function isAdmin() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+}
+
+function isEmployee() {
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'employee';
 }
 
 function requireLogin() { 
@@ -77,11 +81,18 @@ function requireLogin() {
     } 
 }
 
-function requireAdmin() { 
-    if (!isAdmin()) { 
-        header('Location: /brothers-company/'); 
-        exit(); 
-    } 
+function requireAdmin() {
+    if (!isAdmin()) {
+        header('Location: /brothers-company/');
+        exit();
+    }
+}
+
+function requireEmployee() {
+    if (!isEmployee()) {
+        header('Location: /brothers-company/');
+        exit();
+    }
 }
 
 function sanitize($input) { 

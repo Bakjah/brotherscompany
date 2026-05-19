@@ -157,6 +157,9 @@ include 'includes/config.php';
         <?php if(isAdmin()): ?>
           <a href="admin/" class="navbar-btn" style="background: var(--color-workshop); color: #78350f; padding: 0.4rem 0.8rem;">Admin</a>
         <?php endif; ?>
+        <?php if(isEmployee()): ?>
+          <a href="Brotherssoftware/" class="navbar-btn" style="background: #8b5cf6; color: white; padding: 0.4rem 0.8rem;">Staff</a>
+        <?php endif; ?>
         <a href="auth/logout.php" class="navbar-btn" style="background: #e2e8f0; color: #475569;">Keluar</a>
       <?php else: ?>
         <a href="login.php" class="navbar-btn" style="background:transparent; color:var(--primary-blue); border:1.5px solid var(--primary-blue);">Login</a>
