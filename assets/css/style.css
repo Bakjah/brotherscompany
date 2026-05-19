@@ -51,3 +51,89 @@ body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; color: #333; }
   .hero h1 { font-size: 2rem; }
   .grid-3, .grid-2, .grid-4 { grid-template-columns: 1fr; }
 }
+
+/* Global Reset & Transition */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Inter', sans-serif;
+    transition: background 0.5s ease;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Navbar Navigation */
+.navbar {
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.4s ease;
+}
+
+.navbar-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-menu {
+    display: flex;
+    list-style: none;
+    gap: 25px;
+}
+
+.navbar-menu li { position: relative; }
+
+.navbar-menu a {
+    text-decoration: none;
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: opacity 0.3s;
+}
+
+/* Efek Garis Bawah (Underline) */
+.navbar-menu a.active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 100%;
+    height: 3px;
+    background-color: currentColor; /* Garis ikut warna teks navbar */
+    border-radius: 2px;
+}
+
+/* Fade In Animation */
+.fade-in {
+    animation: fadeInPage 0.6s ease-in-out;
+}
+
+@keyframes fadeInPage {
+    from { opacity: 0; transform: translateY(5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Sections & Grid */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+.section { padding: 5rem 0; }
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; }
+.grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 3rem; align-items: center; }
+
+/* Card Styling */
+.card {
+    background: white; padding: 2rem; border-radius: 1rem;
+    border: 1px solid #e5e7eb; box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.hero { padding: 6rem 0; text-align: center; color: white; }
+.footer { padding: 3rem 0; text-align: center; background: #0f172a; color: #94a3b8; }
+
+
+
+
+

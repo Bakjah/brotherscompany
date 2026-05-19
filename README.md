@@ -2,11 +2,22 @@
 
 Complete website for Brothers Company with 3 divisions and marketplace.
 
+## 🚀 Quick Setup (5 Minutes)
+
+1. **Extract** ZIP to `C:\xampp\htdocs\brothers-company\`
+2. **Import Database** via phpMyAdmin → database/brothers_company_db.sql
+3. **Start** XAMPP (Apache + MySQL)
+4. **Open** http://localhost/brothers-company/
+
 ## 👤 Default Accounts
 
 **Admin:**
-- Email: admin
-- Password: #?12jj16op
+- Email: admin@brothers.com
+- Password: admin123
+
+**Users:**
+- john@example.com / password
+- jane@example.com / password
 
 ## 📑 Pages
 
@@ -45,6 +56,30 @@ Post items with:
 - HTML5, CSS3, Vanilla JS
 - PHP (Native)
 - MySQL
+
+## 📂 Structure
+
+```
+brothers-company/
+├── index.php
+├── login.php & register.php
+├── marketplace/ (upload foto)
+├── workshop/
+├── farm/
+├── asianfood/
+├── admin/
+├── assets/
+│   ├── css/style.css
+│   └── uploads/
+└── database/SQL
+```
+
+## ⚠️ Important
+
+- Password stored as plain text for simplicity
+- Admin only can delete/create announcements
+- Anyone logged in can post to marketplace
+- Photos saved in assets/uploads/
 
 ## 🎯 Marketplace Form Fields
 

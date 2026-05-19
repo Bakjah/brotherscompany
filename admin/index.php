@@ -71,9 +71,9 @@ $featured_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as tot
     <div class="card" style="margin-top: 1rem; background: #fef3c7; border-left: 4px solid #fbbf24;">
       <h3 style="color: #92400e;">💰 VIP Featured Pricing Guide</h3>
       <p style="color: #92400e; margin: 0.5rem 0;">
-        <strong>7 Hari:</strong> Rp 50.000 (Standard)<br>
-        <strong>14 Hari:</strong> Rp 90.000 (Popular)<br>
-        <strong>30 Hari:</strong> Rp 150.000 (Premium)<br>
+		<strong>1 Hari:</strong> $2.000 (Standard)<br>
+        <strong>7 Hari:</strong> $10.000 (Standard)<br>
+        <strong>14 Hari:</strong> $20.000 (Popular)<br>
         <em>*Harga dapat disesuaikan sesuai negosiasi dengan member VIP</em>
       </p>
     </div>

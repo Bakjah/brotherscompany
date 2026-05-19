@@ -1,7 +1,7 @@
 <?php
 define('DB_HOST', 'localhost');
-define('DB_USER', 'brothers_company');
-define('DB_PASS', 'brotherscompanyweb');
+define('DB_USER', 'root');
+define('DB_PASS', '');
 define('DB_NAME', 'brothers_company');
 
 ini_set('display_errors', 1);
