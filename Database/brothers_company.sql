@@ -24,6 +24,197 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `members` (MemberApp)
+--
+
+CREATE TABLE `members` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) NOT NULL,
+  `telepon` varchar(20) NOT NULL UNIQUE,
+  `compo_used` int(11) DEFAULT 0,
+  `last_compo_update` datetime DEFAULT NULL,
+  `tanggal_daftar` date DEFAULT (CURRENT_DATE),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `members`
+--
+
+INSERT INTO `members` (`nama`, `telepon`, `compo_used`) VALUES
+('Budi Santoso', '081234567890', 0),
+('Andi Wijaya', '085678901234', 0),
+('Citra Dewi', '087812345678', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `price_config` (Calculator Config)
+--
+
+CREATE TABLE `price_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `jenis_layanan` varchar(50) NOT NULL,
+  `nama_layanan` varchar(100) NOT NULL,
+  `multiplier` decimal(5,2) NOT NULL DEFAULT 3.0,
+  `deskripsi` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `price_config`
+--
+
+INSERT INTO `price_config` (`jenis_layanan`, `nama_layanan`, `multiplier`, `deskripsi`) VALUES
+('repair', 'Mechanical Repair', 3.0, 'Perbaikan mekanik standard'),
+('modif', 'Custom Modification', 3.0, 'Modifikasi custom'),
+('brother', 'Brotherhood Disc', 2.3, 'Layanan brotherhood disc'),
+('ws_stored', 'WS Stored', 2.0, 'WS Stored service');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `sparepart_config` (Sparepart Price)
+--
+
+CREATE TABLE `sparepart_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) NOT NULL DEFAULT 'Sparepart Standard',
+  `harga_per_unit` decimal(10,2) NOT NULL DEFAULT 2.0,
+  `deskripsi` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `sparepart_config`
+--
+
+INSERT INTO `sparepart_config` (`nama`, `harga_per_unit`) VALUES
+('Sparepart Standard', 2.0);
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `transaksi` (Calculator - Transaksi)
+--
+
+CREATE TABLE `transaksi` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `member_id` int(11) DEFAULT NULL,
+  `jenis_layanan` varchar(50) NOT NULL,
+  `compo_count` int(11) NOT NULL DEFAULT 0,
+  `multiplier_used` decimal(5,2) NOT NULL DEFAULT 0,
+  `total_harga` decimal(15,2) NOT NULL DEFAULT 0,
+  `harga_sparepart` decimal(15,2) NOT NULL DEFAULT 0,
+  `harga_jasa` decimal(15,2) NOT NULL DEFAULT 0,
+  `compliment` varchar(100) DEFAULT NULL,
+  `tanggal` datetime DEFAULT current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `member_id` (`member_id`),
+  CONSTRAINT `transaksi_ibfk_1` FOREIGN KEY (`member_id`) REFERENCES `members` (`id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `laporan_mechanic` (LaporanApp)
+--
+
+CREATE TABLE `laporan_mechanic` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_mechanic` varchar(100) NOT NULL,
+  `compo_used` int(11) NOT NULL DEFAULT 0,
+  `money_stored` decimal(15,2) NOT NULL DEFAULT 0,
+  `keterangan` text DEFAULT NULL,
+  `tanggal` date DEFAULT (CURRENT_DATE),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `mecharing` (Mecharing - Record Mechanic)
+--
+
+CREATE TABLE `mecharing` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_mechanic` varchar(100) NOT NULL,
+  `tanggal` date DEFAULT (CURRENT_DATE),
+  `jam_masuk` time DEFAULT NULL,
+  `jam_keluar` time DEFAULT NULL,
+  `total_compo` int(11) DEFAULT 0,
+  `total_transaksi` int(11) DEFAULT 0,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `keterangan` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `mecharing`
+--
+
+INSERT INTO `mecharing` (`nama_mechanic`, `jam_masuk`, `jam_keluar`, `total_compo`, `total_transaksi`, `status`) VALUES
+('Joko Susanto', '08:00:00', '17:00:00', 15, 8, 'active'),
+('Ahmad Rizki', '09:00:00', '18:00:00', 12, 6, 'active'),
+('Dewi Lestari', '08:30:00', '16:30:00', 20, 10, 'active');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `mecharing_detail` (Detail Recording Mechanic)
+--
+
+CREATE TABLE `mecharing_detail` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `mecharing_id` int(11) NOT NULL,
+  `jenis_layanan` varchar(50) NOT NULL,
+  `compo_count` int(11) NOT NULL DEFAULT 0,
+  `harga` decimal(15,2) NOT NULL DEFAULT 0,
+  `waktu` datetime DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `mecharing_id` (`mecharing_id`),
+  CONSTRAINT `mecharing_detail_ibfk_1` FOREIGN KEY (`mecharing_id`) REFERENCES `mecharing` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `compliment_rules` (Calculator Config)
+--
+
+CREATE TABLE `compliment_rules` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `threshold` int(11) NOT NULL,
+  `gift` varchar(100) NOT NULL,
+  `is_active` tinyint(1) DEFAULT 1,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `compliment_rules`
+--
+
+INSERT INTO `compliment_rules` (`threshold`, `gift`, `is_active`) VALUES
+(5000, 'Makanan dari Restoran', 1),
+(1000, 'Snack + Air Minum', 1),
+(150, 'Snack', 1),
+(0, 'Air Minum', 1);
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `announcements`
 --
 
@@ -135,6 +326,48 @@ ALTER TABLE `users`
 --
 -- AUTO_INCREMENT untuk tabel yang dibuang
 --
+
+--
+-- AUTO_INCREMENT untuk tabel `members`
+--
+ALTER TABLE `members`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT untuk tabel `price_config`
+--
+ALTER TABLE `price_config`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT untuk tabel `sparepart_config`
+--
+ALTER TABLE `sparepart_config`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT untuk tabel `laporan_mechanic`
+--
+ALTER TABLE `laporan_mechanic`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `mecharing`
+--
+ALTER TABLE `mecharing`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT untuk tabel `mecharing_detail`
+--
+ALTER TABLE `mecharing_detail`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT untuk tabel `compliment_rules`
+--
+ALTER TABLE `compliment_rules`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT untuk tabel `announcements`
