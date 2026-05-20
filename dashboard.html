@@ -4,56 +4,59 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quick Access Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css">
     <style>
-        body {
-            background: #0f172a;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* CSS Ultra-Lightweight & RAGEMP Optimized */
+        body { 
+            background: #0f172a; 
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
+            overflow: hidden; 
         }
-
-        .shortcut-card {
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            /* Ukuran tetap supaya rapi saat flex-wrap */
+        
+        /* Hanya mentransisikan properti yang dibutuhkan saja (jauh lebih ringan dari 'transition: all') */
+        .shortcut-card { 
+            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), 
+                        background-color 0.25s ease, 
+                        border-color 0.25s ease, 
+                        box-shadow 0.25s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1); 
             width: 160px; 
+            will-change: transform; /* Memberitahu GPU game untuk bersiap melakukan animasi (hardware acceleration) */
         }
-
+        
         @media (hover: hover) {
-            .shortcut-card:hover {
-                transform: translateY(-8px);
-                background: rgba(255, 255, 255, 0.1);
-                border-color: #38bdf8;
-                box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            .shortcut-card:hover { 
+                transform: translateY(-6px); 
+                background: rgba(255, 255, 255, 0.1); 
+                border-color: #38bdf8; 
+                box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5); 
             }
         }
-
-        .shortcut-card:active {
-            transform: scale(0.95);
+        
+        .shortcut-card:active { 
+            transform: scale(0.96); 
         }
-
-        /* Responsif untuk HP agar kartu lebih lebar sedikit */
-        @media screen and (max-width: 480px) {
-            .shortcut-card {
-                width: calc(50% - 1rem); /* 2 kolom di HP dengan gap */
-            }
+        
+        @media screen and (max-width: 480px) { 
+            .shortcut-card { width: calc(50% - 1rem); } 
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-6">
 
     <div class="max-w-5xl w-full">
-        <!-- Header -->
         <div class="text-center mb-12">
             <h1 class="text-3xl font-bold text-white mb-2">Borthers Company Quick Shortcuts</h1>
         </div>
 
-        <!-- Shortcut Container -->
-        <!-- flex-wrap: otomatis ke bawah | justify-center: item selalu di tengah -->
         <div class="flex flex-wrap justify-center gap-6">
             
-            <!-- Discord -->
             <a href="https://discord.gg/GpTWCq4DTS" target="_blank" class="shortcut-card bg-slate-800/50 p-6 rounded-3xl flex flex-col items-center gap-4 text-white group">
                 <div class="w-16 h-16 bg-indigo-500/20 rounded-2xl flex items-center justify-center text-indigo-400 group-hover:bg-indigo-500 group-hover:text-white transition-all">
                     <i class="fab fa-discord text-3xl"></i>
@@ -61,7 +64,6 @@
                 <span class="font-semibold tracking-wide">Discord</span>
             </a>
 
-            <!-- YouTube -->
             <a href="https://bakjah.github.io/mecharing/" target="_blank" class="shortcut-card bg-slate-800/50 p-6 rounded-3xl flex flex-col items-center gap-4 text-white group">
                 <div class="w-16 h-16 bg-red-600/20 rounded-2xl flex items-center justify-center text-red-600 group-hover:bg-red-600 group-hover:text-white transition-all">
                     <i class="fas fa-phone text-3xl"></i>
@@ -69,7 +71,6 @@
                 <span class="font-semibold tracking-wide">Mechanic</span>
             </a>
 
-            <!-- GitHub -->
             <a href="https://brotherscompany.site/" target="_blank" class="shortcut-card bg-slate-800/50 p-6 rounded-3xl flex flex-col items-center gap-4 text-white group">
                 <div class="w-16 h-16 bg-slate-100/20 rounded-2xl flex items-center justify-center text-white group-hover:bg-white group-hover:text-slate-900 transition-all">
                     <i class="fas fa-globe text-3xl"></i>
@@ -79,11 +80,21 @@
 
         </div>
 
-        <!-- Footer -->
         <p class="text-center text-slate-600 mt-16 text-sm italic">
             Join our discord for support and updates! | © 2024 Brothers Company. All rights reserved. <br>call our mechanic for help! | © 2024 Brothers Company. All rights reserved. <br>visit our website for more info! | © 2024 Brothers Company. All rights reserved.
         </p>
     </div>
 
+    <script>
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        document.addEventListener('keyup', (e) => {
+            if (e.keyCode === 27) { // Tombol ESC
+                if (typeof mp !== 'undefined') {
+                    mp.trigger('closeQuickDashboard'); 
+                }
+            }
+        });
+    </script>
 </body>
 </html>

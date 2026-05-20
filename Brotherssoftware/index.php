@@ -935,150 +935,79 @@ if ($currentUserId && $currentRole) {
         </div>
         <div class="window-content">
             <div class="app-panel">
-                <!-- Dashboard Section -->
+                <!-- MechanicApp Header -->
                 <div class="app-section">
-                    <div class="app-section-title">📊 DASHBOARD UTAMA</div>
-                    <div class="btn-grid">
-                        <button class="app-btn" onclick="showToast('New Job', 'Membuat pekerjaan baru...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="2" y="8" width="28" height="22" rx="2" fill="#2d8a2d" stroke="#1a5c1a" stroke-width="1"/>
-                                <rect x="2" y="4" width="28" height="8" rx="2" fill="#3aba3a"/>
-                                <rect x="8" y="14" width="16" height="2" fill="#fff"/>
-                                <rect x="8" y="18" width="12" height="2" fill="#fff"/>
-                                <rect x="8" y="22" width="14" height="2" fill="#fff"/>
-                                <rect x="8" y="26" width="8" height="2" fill="#fff"/>
+                    <div class="app-section-title">⚙️ MECHANIC APP - Brothers Company</div>
+                    <div class="btn-grid" style="justify-content:center;">
+                        <!-- Calculator -->
+                        <button class="app-btn" onclick="showToast('Calculator', 'Membuka Calculator...')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="6" y="4" width="36" height="40" rx="3" fill="#c0c0c0" stroke="#707070" stroke-width="2"/>
+                                <rect x="10" y="8" width="28" height="12" rx="2" fill="#98fb98"/>
+                                <rect x="12" y="10" width="24" height="8" fill="#fff"/>
+                                <rect x="12" y="24" width="6" height="6" rx="1" fill="#ffd700"/>
+                                <rect x="21" y="24" width="6" height="6" rx="1" fill="#ffd700"/>
+                                <rect x="30" y="24" width="6" height="6" rx="1" fill="#ffd700"/>
+                                <rect x="12" y="32" width="6" height="6" rx="1" fill="#ffd700"/>
+                                <rect x="21" y="32" width="6" height="6" rx="1" fill="#ffd700"/>
+                                <rect x="30" y="32" width="6" height="6" rx="1" fill="#4db84d"/>
+                                <rect x="12" y="40" width="15" height="4" rx="1" fill="#707070"/>
+                                <rect x="30" y="40" width="6" height="4" rx="1" fill="#cc2222"/>
                             </svg>
-                            New Job
+                            Calculator
                         </button>
-                        <button class="app-btn" onclick="showToast('Active Jobs', 'Melihat daftar pekerjaan aktif...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="2" width="24" height="28" rx="2" fill="#245edc" stroke="#1038a0" stroke-width="1"/>
-                                <rect x="8" y="6" width="16" height="2" fill="#a8c8e8"/>
-                                <rect x="8" y="10" width="12" height="2" fill="#fff"/>
-                                <rect x="8" y="14" width="14" height="2" fill="#fff"/>
-                                <rect x="8" y="18" width="10" height="2" fill="#fff"/>
-                                <rect x="8" y="22" width="14" height="2" fill="#fff"/>
-                                <rect x="8" y="26" width="8" height="2" fill="#ffd700"/>
+                        <!-- LaporanApp -->
+                        <button class="app-btn" onclick="showToast('LaporanApp', 'Membuka LaporanApp...')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="6" y="4" width="36" height="40" rx="2" fill="#ffd700" stroke="#b07800" stroke-width="2"/>
+                                <rect x="6" y="4" width="36" height="10" rx="2" fill="#e8b828"/>
+                                <text x="24" y="12" text-anchor="middle" font-size="8" fill="#8b4513" font-weight="bold">LAP</text>
+                                <rect x="12" y="18" width="24" height="3" fill="#c8a000"/>
+                                <rect x="12" y="24" width="18" height="3" fill="#c8a000"/>
+                                <rect x="12" y="30" width="20" height="3" fill="#c8a000"/>
+                                <rect x="12" y="36" width="14" height="3" fill="#c8a000"/>
+                                <rect x="12" y="42" width="24" height="4" fill="#cc2222"/>
                             </svg>
-                            Active Jobs
+                            LaporanApp
                         </button>
-                        <button class="app-btn" onclick="showToast('Queue', 'Melihat antrian pekerjaan...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="4" width="24" height="24" rx="2" fill="#e8b828" stroke="#b07800" stroke-width="1"/>
-                                <rect x="4" y="4" width="24" height="6" rx="2" fill="#ffd700"/>
-                                <circle cx="10" cy="18" r="4" fill="#fff" stroke="#707070" stroke-width="1"/>
-                                <circle cx="22" cy="18" r="4" fill="#fff" stroke="#707070" stroke-width="1"/>
-                                <circle cx="16" cy="24" r="4" fill="#fff" stroke="#707070" stroke-width="1"/>
-                                <path d="M10 18 L22 18 M16 24 L22 18" stroke="#245edc" stroke-width="1"/>
+                        <!-- Mecharing -->
+                        <button class="app-btn" onclick="showToast('Mecharing', 'Membuka Mecharing...')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <circle cx="24" cy="24" r="18" fill="#245edc" stroke="#1038a0" stroke-width="2"/>
+                                <circle cx="24" cy="24" r="12" fill="#fff"/>
+                                <circle cx="24" cy="24" r="8" fill="#c8e0f5"/>
+                                <circle cx="24" cy="24" r="3" fill="#245edc"/>
+                                <line x1="24" y1="24" x2="24" y2="14" stroke="#333" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="24" y1="24" x2="32" y2="28" stroke="#cc2222" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="24" cy="4" r="2" fill="#ffd700"/>
+                                <circle cx="24" cy="44" r="2" fill="#ffd700"/>
+                                <circle cx="4" cy="24" r="2" fill="#ffd700"/>
+                                <circle cx="44" cy="24" r="2" fill="#ffd700"/>
                             </svg>
-                            Queue
+                            Mecharing
                         </button>
-                        <button class="app-btn" onclick="showToast('Schedule', 'Membuka jadwal kerja...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="4" width="24" height="24" rx="2" fill="#f5f5f5" stroke="#707070" stroke-width="1"/>
-                                <rect x="4" y="4" width="24" height="6" rx="2" fill="#cc2222"/>
-                                <rect x="8" y="14" width="16" height="2" fill="#ccc"/>
-                                <rect x="8" y="18" width="12" height="2" fill="#ccc"/>
-                                <rect x="8" y="22" width="14" height="2" fill="#ccc"/>
-                                <rect x="8" y="10" width="3" height="3" fill="#ffd700"/>
-                                <rect x="13" y="10" width="3" height="3" fill="#ffd700"/>
-                                <rect x="18" y="10" width="3" height="3" fill="#ffd700"/>
-                                <rect x="8" y="14" width="3" height="3" fill="#ffd700"/>
-                                <rect x="13" y="14" width="3" height="3" fill="#ffd700"/>
-                                <rect x="18" y="14" width="3" height="3" fill="#ffd700"/>
+                        <!-- MemberApp -->
+                        <button class="app-btn" onclick="showToast('MemberApp', 'Membuka MemberApp...')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <circle cx="24" cy="14" r="10" fill="#f5c890" stroke="#c8a060" stroke-width="2"/>
+                                <ellipse cx="24" cy="40" rx="14" ry="8" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="2"/>
+                                <circle cx="24" cy="14" r="6" fill="#f5c890"/>
+                                <path d="M18 12 Q24 18 30 12" stroke="#333" stroke-width="1.5" fill="none"/>
+                                <circle cx="20" cy="12" r="2" fill="#333"/>
+                                <circle cx="28" cy="12" r="2" fill="#333"/>
+                                <path d="M10 30 Q24 24 38 30" stroke="#1e4d7a" stroke-width="2" fill="none"/>
                             </svg>
-                            Schedule
+                            MemberApp
                         </button>
                     </div>
                 </div>
 
-                <!-- Quick Actions -->
+                <!-- Info Section -->
                 <div class="app-section">
-                    <div class="app-section-title">⚡ QUICK ACTIONS</div>
-                    <div class="btn-grid">
-                        <button class="app-btn" onclick="showToast('Check In', 'Check-in mekanik dicatat!')">
-                            <svg viewBox="0 0 32 32">
-                                <circle cx="16" cy="12" r="8" fill="#f5c890" stroke="#c8a060" stroke-width="1"/>
-                                <ellipse cx="16" cy="28" rx="10" ry="4" fill="#3a6ea5"/>
-                                <path d="M12 11 Q16 15 20 11" stroke="#333" stroke-width="1" fill="none"/>
-                                <circle cx="13" cy="10" r="1" fill="#333"/>
-                                <circle cx="19" cy="10" r="1" fill="#333"/>
-                            </svg>
-                            Check In
-                        </button>
-                        <button class="app-btn" onclick="showToast('Check Out', 'Check-out mekanic dicatat!')">
-                            <svg viewBox="0 0 32 32">
-                                <circle cx="16" cy="12" r="8" fill="#f5c890" stroke="#c8a060" stroke-width="1"/>
-                                <ellipse cx="16" cy="28" rx="10" ry="4" fill="#cc2222"/>
-                                <path d="M12 11 Q16 15 20 11" stroke="#333" stroke-width="1" fill="none"/>
-                                <circle cx="13" cy="10" r="1" fill="#333"/>
-                                <circle cx="19" cy="10" r="1" fill="#333"/>
-                            </svg>
-                            Check Out
-                        </button>
-                        <button class="app-btn" onclick="showToast('Parts Request', 'Meminta spare part...')">
-                            <svg viewBox="0 0 32 32">
-                                <circle cx="16" cy="16" r="12" fill="#d4a017" stroke="#8b6914" stroke-width="1"/>
-                                <circle cx="16" cy="16" r="4" fill="#8b6914"/>
-                                <rect x="14" y="2" width="4" height="6" rx="2" fill="#aaa"/>
-                                <rect x="14" y="24" width="4" height="6" rx="2" fill="#aaa"/>
-                                <rect x="2" y="14" width="6" height="4" rx="2" fill="#aaa"/>
-                                <rect x="24" y="14" width="6" height="4" rx="2" fill="#aaa"/>
-                            </svg>
-                            Parts Request
-                        </button>
-                        <button class="app-btn" onclick="showToast('Print Job', 'Mencetak dokumen pekerjaan...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="4" width="24" height="20" rx="2" fill="#c0c0c0" stroke="#707070" stroke-width="1"/>
-                                <rect x="8" y="8" width="16" height="12" fill="#f5f5f5" stroke="#707070" stroke-width="1"/>
-                                <rect x="4" y="24" width="24" height="4" rx="1" fill="#aaa"/>
-                                <rect x="6" y="28" width="8" height="4" rx="1" fill="#888"/>
-                                <rect x="10" y="11" width="12" height="1" fill="#ccc"/>
-                                <rect x="10" y="13" width="10" height="1" fill="#ccc"/>
-                                <rect x="10" y="15" width="8" height="1" fill="#ccc"/>
-                            </svg>
-                            Print Job
-                        </button>
-                        <button class="app-btn" onclick="showToast('Invoice', 'Membuat invoice...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="2" width="24" height="28" rx="2" fill="#ffd700" stroke="#b07800" stroke-width="1"/>
-                                <rect x="4" y="2" width="24" height="6" rx="2" fill="#e8b828"/>
-                                <text x="16" y="7" text-anchor="middle" font-size="4" fill="#8b6914" font-weight="bold">$</text>
-                                <rect x="8" y="10" width="16" height="1" fill="#c8a000"/>
-                                <rect x="8" y="13" width="12" height="1" fill="#c8a000"/>
-                                <rect x="8" y="16" width="14" height="1" fill="#c8a000"/>
-                                <rect x="8" y="20" width="10" height="1" fill="#c8a000"/>
-                                <rect x="8" y="23" width="16" height="2" fill="#cc2222"/>
-                            </svg>
-                            Invoice
-                        </button>
-                        <button class="app-btn" onclick="showToast('History', 'Membuka riwayat...')">
-                            <svg viewBox="0 0 32 32">
-                                <circle cx="16" cy="16" r="12" fill="#f5f5f5" stroke="#707070" stroke-width="1"/>
-                                <circle cx="16" cy="16" r="10" fill="none" stroke="#ccc" stroke-width="1"/>
-                                <line x1="16" y1="16" x2="16" y2="8" stroke="#333" stroke-width="2"/>
-                                <line x1="16" y1="16" x2="22" y2="16" stroke="#707070" stroke-width="2"/>
-                                <circle cx="16" cy="16" r="2" fill="#245edc"/>
-                            </svg>
-                            History
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Status -->
-                <div class="app-section">
-                    <div class="app-section-title">📈 STATUS KERJA</div>
-                    <div class="btn-grid">
-                        <button class="app-btn btn-xp-green" onclick="showToast('Jobs Done', '8 pekerjaan selesai hari ini!')">
-                            ✅ Done Today: <strong>8</strong>
-                        </button>
-                        <button class="app-btn btn-xp-orange" onclick="showToast('In Progress', '5 pekerjaan sedang berjalan')">
-                            🔄 In Progress: <strong>5</strong>
-                        </button>
-                        <button class="app-btn btn-xp-red" onclick="showToast('Pending', '3 pekerjaan tertunda')">
-                            ⏳ Pending: <strong>3</strong>
-                        </button>
-                    </div>
+                    <div class="app-section-title">📋 INFORMASI</div>
+                    <p class="status-bar-text">
+                        MechanicApp menyediakan akses ke Calculator untuk perhitungan, LaporanApp untuk laporan kerja, Mecharing untuk mechanic recording, dan MemberApp untuk manajemen member.
+                    </p>
                 </div>
             </div>
         </div>
