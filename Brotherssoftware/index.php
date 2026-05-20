@@ -916,9 +916,22 @@ if ($currentUserId && $currentRole) {
             <span class="icon-label">RestauranApp</span>
         </div>
 
+        <!-- ManagerApp - Admin Only -->
+        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('manager')">
+            <svg class="icon-img" viewBox="0 0 48 48">
+                <rect x="6" y="4" width="36" height="40" rx="3" fill="#b07800" stroke="#8b6914" stroke-width="2"/>
+                <rect x="10" y="8" width="28" height="8" fill="#ffd700"/>
+                <rect x="10" y="20" width="12" height="12" rx="2" fill="#228b22"/>
+                <rect x="26" y="20" width="12" height="12" rx="2" fill="#cc2222"/>
+                <rect x="10" y="34" width="12" height="6" rx="2" fill="#245edc"/>
+                <rect x="26" y="34" width="12" height="6" rx="2" fill="#8b5cf6"/>
+            </svg>
+            <span class="icon-label">ManagerApp</span>
+        </div>
+
         <!-- Admin Apps - Only visible for Admin -->
-        <!-- Daftar Pekerja -->
-        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('daftarpekerja')" style="display:none;">
+        <!-- Employee -->
+        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('employee')" style="display:none;">
             <svg class="icon-img" viewBox="0 0 48 48">
                 <rect x="4" y="6" width="40" height="36" rx="2" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="2"/>
                 <rect x="8" y="10" width="32" height="6" fill="#1e4d7a"/>
@@ -929,19 +942,7 @@ if ($currentUserId && $currentRole) {
                 <circle cx="38" cy="28" r="4" fill="#f5c890"/>
                 <ellipse cx="38" cy="35" rx="5" ry="3" fill="#245edc"/>
             </svg>
-            <span class="icon-label">Daftar<br>Pekerja</span>
-        </div>
-
-        <!-- Tambah Pekerja -->
-        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('tambahpekerja')" style="display:none;">
-            <svg class="icon-img" viewBox="0 0 48 48">
-                <rect x="4" y="6" width="40" height="36" rx="2" fill="#238636" stroke="#1a5c1a" stroke-width="2"/>
-                <rect x="8" y="10" width="32" height="6" fill="#1a5c1a"/>
-                <circle cx="24" cy="28" r="10" fill="#f5c890" stroke="#c8a060" stroke-width="2"/>
-                <path d="M24 22 L24 34" stroke="#333" stroke-width="3" stroke-linecap="round"/>
-                <path d="M18 28 L30 28" stroke="#333" stroke-width="3" stroke-linecap="round"/>
-            </svg>
-            <span class="icon-label">Tambah<br>Pekerja</span>
+            <span class="icon-label">Employee</span>
         </div>
 
         <!-- Laporan Kerja -->
@@ -2722,61 +2723,46 @@ if ($currentUserId && $currentRole) {
         </div>
         <div class="window-menubar">
             <span class="menu-item">File</span>
-            <span class="menu-item">Edit</span>
             <span class="menu-item">View</span>
             <span class="menu-item">Help</span>
         </div>
         <div class="window-content">
             <div class="app-panel">
                 <div class="app-section">
-                    <div class="app-section-title">📦 PENGELOLAAN CARGO</div>
-                    <div class="btn-grid">
-                        <button class="app-btn" onclick="showToast('New Shipment', 'Membuat pengiriman baru...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="2" y="8" width="28" height="20" rx="2" fill="#8b5cf6"/>
-                                <rect x="4" y="10" width="24" height="16" fill="#c4b5fd"/>
-                                <rect x="8" y="14" width="16" height="8" fill="#7c3aed"/>
-                                <rect x="12" y="28" width="8" height="4" fill="#333"/>
+                    <div class="app-section-title">📦 CARGO APP - Brothers Company</div>
+                    <div class="btn-grid" style="justify-content:center;">
+                        <!-- History Delivery -->
+                        <button class="app-btn" onclick="openWindow('historydelivery')" style="min-width:140px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="6" y="4" width="36" height="40" rx="2" fill="#8b5cf6" stroke="#5b21b6" stroke-width="2"/>
+                                <rect x="6" y="4" width="36" height="10" rx="2" fill="#7c3aed"/>
+                                <rect x="12" y="18" width="24" height="4" fill="#5b21b6"/>
+                                <rect x="12" y="24" width="18" height="4" fill="#5b21b6"/>
+                                <rect x="12" y="30" width="20" height="4" fill="#5b21b6"/>
+                                <rect x="12" y="36" width="14" height="4" fill="#5b21b6"/>
+                                <circle cx="36" cy="36" r="8" fill="#4db84d"/>
+                                <path d="M32 36 L35 39 L40 33" stroke="#fff" stroke-width="2" fill="none"/>
                             </svg>
-                            New Shipment
+                            History Delivery
                         </button>
-                        <button class="app-btn" onclick="showToast('Track Package', 'Melacak paket...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="4" width="24" height="24" rx="2" fill="#c4b5fd" stroke="#8b5cf6"/>
-                                <rect x="8" y="8" width="16" height="4" fill="#8b5cf6"/>
-                                <rect x="8" y="14" width="12" height="2" fill="#8b5cf6"/>
-                                <rect x="8" y="18" width="14" height="2" fill="#8b5cf6"/>
-                                <rect x="8" y="22" width="10" height="2" fill="#8b5cf6"/>
-                            </svg>
-                            Track Package
-                        </button>
-                        <button class="app-btn" onclick="showToast('Delivery List', 'Melihat daftar pengiriman...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="2" width="24" height="28" rx="2" fill="#f5f5f5" stroke="#8b5cf6"/>
-                                <rect x="8" y="6" width="16" height="2" fill="#8b5cf6"/>
-                                <rect x="8" y="10" width="12" height="2" fill="#ccc"/>
-                                <rect x="8" y="14" width="14" height="2" fill="#ccc"/>
-                                <rect x="8" y="18" width="10" height="2" fill="#ccc"/>
-                                <circle cx="24" cy="24" r="4" fill="#8b5cf6"/>
-                                <path d="M22 24 L24 26 L26 22" stroke="#fff" stroke-width="1.5" fill="none"/>
+                        <!-- Delivery List -->
+                        <button class="app-btn" onclick="openWindow('deliverylist')" style="min-width:140px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="4" y="6" width="40" height="36" rx="2" fill="#8b5cf6" stroke="#5b21b6" stroke-width="2"/>
+                                <rect x="8" y="10" width="32" height="8" fill="#7c3aed"/>
+                                <rect x="10" y="22" width="28" height="4" fill="#c4b5fd"/>
+                                <rect x="10" y="28" width="20" height="4" fill="#c4b5fd"/>
+                                <rect x="10" y="34" width="24" height="4" fill="#c4b5fd"/>
                             </svg>
                             Delivery List
                         </button>
                     </div>
                 </div>
                 <div class="app-section">
-                    <div class="app-section-title">📊 STATISTIK CARGO</div>
-                    <div class="btn-grid">
-                        <button class="app-btn btn-xp-green" onclick="showToast('Delivered', '15 paket terkirim!')">
-                            ✅ Delivered: <strong>15</strong>
-                        </button>
-                        <button class="app-btn btn-xp-orange" onclick="showToast('In Transit', '8 paket dalam perjalanan')">
-                            🔄 In Transit: <strong>8</strong>
-                        </button>
-                        <button class="app-btn btn-xp-red" onclick="showToast('Pending', '3 paket tertunda')">
-                            ⏳ Pending: <strong>3</strong>
-                        </button>
-                    </div>
+                    <div class="app-section-title">📋 INFORMASI</div>
+                    <p class="status-bar-text">
+                        CargoApp menyediakan akses ke History Delivery untuk melihat riwayat pengiriman dan Delivery List untuk melihat daftar pengiriman aktif.
+                    </p>
                 </div>
             </div>
         </div>
@@ -2787,20 +2773,199 @@ if ($currentUserId && $currentRole) {
         <div class="resizer" onmousedown="startResize(event, 'win-cargo')"></div>
     </div>
 
-    <!-- DAFTAR PEKERJA WINDOW -->
-    <div class="window" id="win-daftarpekerja" style="top:80px;left:150px;width:700px;height:450px;display:none;">
-        <div class="window-titlebar" onmousedown="startDrag(event, 'win-daftarpekerja')">
+    <!-- HISTORY DELIVERY WINDOW -->
+    <div class="window" id="win-historydelivery" style="top:80px;left:140px;width:700px;height:450px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-historydelivery')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="2" width="12" height="12" rx="1" fill="#8b5cf6"/>
+                <rect x="4" y="4" width="8" height="3" fill="#fff"/>
+                <rect x="4" y="8" width="5" height="2" fill="#fff"/>
+                <rect x="4" y="11" width="6" height="2" fill="#fff"/>
+            </svg>
+            <span class="window-title">History Delivery - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-historydelivery')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-historydelivery')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-historydelivery')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Reports</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .hd-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px; }
+                    .hd-title { color:#8b5cf6;font-size:16px;margin:0; }
+                    .hd-filter { display:flex;gap:10px; }
+                    .hd-filter select,.hd-filter input { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .hd-btn { padding:8px 16px;border-radius:4px;border:none;background:#8b5cf6;color:#fff;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .hd-btn:hover { background:#7c3aed; }
+                    .hd-table { width:100%;border-collapse:collapse;font-size:12px; }
+                    .hd-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d;text-align:left; }
+                    .hd-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
+                    .hd-table tr:hover td { background:#21262d; }
+                    .hd-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
+                    .hd-done { background:#238636;color:#fff; }
+                    .hd-transit { background:#e8b828;color:#000; }
+                    .hd-pending { background:#cc2222;color:#fff; }
+                    .hd-total { margin-top:15px;padding:15px;background:#161b22;border:1px solid #30363d;border-radius:8px;display:flex;justify-content:space-between;align-items:center; }
+                    .hd-total-label { color:#8b949e;font-size:12px; }
+                    .hd-total-value { font-size:18px;font-weight:bold;color:#8b5cf6; }
+                </style>
+                <div class="hd-header">
+                    <h2 class="hd-title">📜 History Delivery</h2>
+                    <div class="hd-filter">
+                        <input type="date" id="hd-tgl" value="<?php echo date('Y-m-d'); ?>">
+                        <button class="hd-btn" onclick="showToast('Filter', 'Menampilkan history...')">🔍 Filter</button>
+                    </div>
+                </div>
+                <table class="hd-table">
+                    <thead><tr><th>No.</th><th>Tanggal</th><th>Pengirim</th><th>Penerima</th><th>Destinasi</th><th>Status</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>21/05/2026</td><td>Ahmad Basuki</td><td>Dewi Sari</td><td>Jakarta</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
+                        <tr><td>2</td><td>21/05/2026</td><td>Budi Santoso</td><td>Siti Rahayu</td><td>Bandung</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
+                        <tr><td>3</td><td>20/05/2026</td><td>Chandra Wijaya</td><td>Rudi Hermawan</td><td>Surabaya</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
+                        <tr><td>4</td><td>20/05/2026</td><td>Dian Pratama</td><td>Eko Susanto</td><td>Yogyakarta</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
+                        <tr><td>5</td><td>19/05/2026</td><td>Fajar Nugroho</td><td>Gita Permata</td><td>Semarang</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
+                    </tbody>
+                </table>
+                <div class="hd-total">
+                    <span class="hd-total-label">Total Delivery:</span>
+                    <span class="hd-total-value">5 Pengiriman</span>
+                </div>
+            </div>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">History Delivery</span>
+            <span class="statusbar-section">Riwayat pengiriman cargo</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-historydelivery')"></div>
+    </div>
+
+    <!-- DELIVERY LIST WINDOW -->
+    <div class="window" id="win-deliverylist" style="top:90px;left:150px;width:750px;height:500px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-deliverylist')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="1" y="1" width="14" height="14" rx="1" fill="#8b5cf6"/>
+                <rect x="3" y="3" width="10" height="3" fill="#fff"/>
+                <rect x="3" y="7" width="7" height="2" fill="#fff"/>
+                <rect x="3" y="10" width="8" height="2" fill="#fff"/>
+            </svg>
+            <span class="window-title">Delivery List - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-deliverylist')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-deliverylist')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-deliverylist')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Reports</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .dl-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px; }
+                    .dl-title { color:#8b5cf6;font-size:16px;margin:0; }
+                    .dl-filter { display:flex;gap:10px;flex-wrap:wrap; }
+                    .dl-filter select,.dl-filter input { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .dl-btn { padding:8px 16px;border-radius:4px;border:none;background:#8b5cf6;color:#fff;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .dl-btn:hover { background:#7c3aed; }
+                    .dl-btn-add { background:#238636; }
+                    .dl-btn-add:hover { background:#2ea043; }
+                    .dl-table { width:100%;border-collapse:collapse;font-size:12px; }
+                    .dl-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d;text-align:left; }
+                    .dl-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
+                    .dl-table tr:hover td { background:#21262d; }
+                    .dl-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
+                    .dl-new { background:#58a6ff;color:#fff; }
+                    .dl-process { background:#e8b828;color:#000; }
+                    .dl-ship { background:#8b5cf6;color:#fff; }
+                    .dl-action { display:flex;gap:5px; }
+                    .dl-action-btn { padding:4px 8px;border-radius:4px;border:none;font-size:10px;font-weight:bold;cursor:pointer; }
+                    .dl-edit { background:#30363d;color:#fff; }
+                    .dl-edit:hover { background:#484f58; }
+                    .dl-delete { background:#cc2222;color:#fff; }
+                    .dl-delete:hover { background:#f85149; }
+                    .dl-stats { display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap; }
+                    .dl-stat { flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center; }
+                    .dl-stat-value { font-size:24px;font-weight:bold;color:#8b5cf6; }
+                    .dl-stat-label { font-size:11px;color:#8b949e;margin-top:4px; }
+                </style>
+                <div class="dl-header">
+                    <h2 class="dl-title">📋 Delivery List</h2>
+                    <div class="dl-filter">
+                        <select id="dl-status-filter">
+                            <option value="">Semua Status</option>
+                            <option value="new">Baru</option>
+                            <option value="process">Diproses</option>
+                            <option value="shipping">Dikirim</option>
+                        </select>
+                        <input type="date" id="dl-tgl" value="<?php echo date('Y-m-d'); ?>">
+                        <button class="dl-btn" onclick="showToast('Filter', 'Menampilkan daftar...')">🔍 Filter</button>
+                        <button class="dl-btn dl-btn-add" onclick="showToast('Tambah', 'Membuat pengiriman baru...')">➕ Tambah</button>
+                    </div>
+                </div>
+                <div class="dl-stats">
+                    <div class="dl-stat">
+                        <div class="dl-stat-value">8</div>
+                        <div class="dl-stat-label">Total Pengiriman</div>
+                    </div>
+                    <div class="dl-stat">
+                        <div class="dl-stat-value">3</div>
+                        <div class="dl-stat-label">Baru</div>
+                    </div>
+                    <div class="dl-stat">
+                        <div class="dl-stat-value">3</div>
+                        <div class="dl-stat-label">Diproses</div>
+                    </div>
+                    <div class="dl-stat">
+                        <div class="dl-stat-value">2</div>
+                        <div class="dl-stat-label">Dikirim</div>
+                    </div>
+                </div>
+                <table class="dl-table">
+                    <thead><tr><th>No.</th><th>Tanggal</th><th>Pengirim</th><th>Penerima</th><th>Destinasi</th><th>Barang</th><th>Status</th><th>Aksi</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td>21/05/2026</td><td>Ahmad Basuki</td><td>Dewi Sari</td><td>Jakarta</td><td>Elektronik 5 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>2</td><td>21/05/2026</td><td>Budi Santoso</td><td>Siti Rahayu</td><td>Bandung</td><td>Pakaian 2 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>3</td><td>21/05/2026</td><td>Chandra Wijaya</td><td>Rudi Hermawan</td><td>Surabaya</td><td>Dokumen 1 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>4</td><td>21/05/2026</td><td>Dian Pratama</td><td>Eko Susanto</td><td>Yogyakarta</td><td>Makanan 10 kg</td><td><span class="dl-status dl-ship">Dikirim</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>5</td><td>21/05/2026</td><td>Fajar Nugroho</td><td>Gita Permata</td><td>Semarang</td><td>Barang 3 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>6</td><td>20/05/2026</td><td>Hendra Kusuma</td><td>Intan Safitri</td><td>Surabaya</td><td>Perabot 15 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>7</td><td>20/05/2026</td><td>Irfan Hakim</td><td>Jasmine Lee</td><td>Bandung</td><td>Elektronik 8 kg</td><td><span class="dl-status dl-ship">Dikirim</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                        <tr><td>8</td><td>20/05/2026</td><td>Kiki Amelia</td><td>Lucky Setiawan</td><td>Jakarta</td><td>Pakaian 4 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Delivery List</span>
+            <span class="statusbar-section">Daftar pengiriman aktif</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-deliverylist')"></div>
+    </div>
+
+    <!-- EMPLOYEE WINDOW -->
+    <div class="window" id="win-employee" style="top:80px;left:150px;width:850px;height:480px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-employee')">
             <svg class="window-icon" viewBox="0 0 16 16">
                 <rect x="2" y="2" width="12" height="12" rx="1" fill="#3a6ea5"/>
                 <circle cx="5" cy="7" r="2" fill="#f5c890"/>
                 <circle cx="11" cy="7" r="2" fill="#f5c890"/>
                 <ellipse cx="8" cy="12" rx="4" ry="2" fill="#245edc"/>
             </svg>
-            <span class="window-title">Daftar Pekerja - Brothers Company</span>
+            <span class="window-title">Employee - Brothers Company</span>
             <div class="window-controls">
-                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-daftarpekerja')">_</button>
-                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-daftarpekerja')">□</button>
-                <button class="window-btn" onclick="closeWindow('win-daftarpekerja')">✕</button>
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-employee')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-employee')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-employee')">✕</button>
             </div>
         </div>
         <div class="window-menubar">
@@ -2812,88 +2977,198 @@ if ($currentUserId && $currentRole) {
         <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
             <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
                 <style>
-                    .dp-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:15px; }
-                    .dp-title { color:#58a6ff;font-size:16px;margin:0; }
-                    .dp-stats { display:flex;gap:15px; }
-                    .dp-stat { background:#161b22;border:1px solid #30363d;padding:10px 20px;border-radius:8px;text-align:center; }
-                    .dp-stat-value { font-size:20px;font-weight:bold;color:#ffd700; }
-                    .dp-stat-label { font-size:10px;color:#8b949e;text-transform:uppercase; }
-                    .dp-table { width:100%;border-collapse:collapse;font-size:12px; }
-                    .dp-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d;text-align:left; }
-                    .dp-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
-                    .dp-table tr:hover td { background:#21262d; }
-                    .dp-btn { padding:6px 12px;border-radius:4px;border:none;font-size:11px;font-weight:bold;cursor:pointer; }
-                    .dp-btn-edit { background:#58a6ff;color:#fff; }
-                    .dp-btn-delete { background:#cc2222;color:#fff; }
-                    .dp-status-active { color:#4db84d; }
-                    .dp-status-inactive { color:#f85149; }
+                    .emp-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px; }
+                    .emp-title { color:#58a6ff;font-size:16px;margin:0; }
+                    .emp-stats { display:flex;gap:10px; }
+                    .emp-stat { background:#161b22;border:1px solid #30363d;padding:8px 15px;border-radius:6px;text-align:center; }
+                    .emp-stat-value { font-size:18px;font-weight:bold;color:#ffd700; }
+                    .emp-stat-label { font-size:9px;color:#8b949e;text-transform:uppercase; }
+                    .emp-container { display:flex;gap:20px; }
+                    .emp-list { flex:2;min-width:0; }
+                    .emp-form-box { flex:1;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:15px;min-width:260px; }
+                    .emp-form-title { color:#238636;font-size:14px;margin:0 0 12px 0; }
+                    .emp-field { margin-bottom:10px; }
+                    .emp-field label { display:block;font-size:10px;font-weight:bold;color:#8b949e;text-transform:uppercase;margin-bottom:4px; }
+                    .emp-field input,.emp-field select { width:100%;padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;box-sizing:border-box; }
+                    .emp-btn-add { width:100%;padding:10px;background:#238636;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .emp-btn-add:hover { background:#2ea043; }
+                    .emp-table { width:100%;border-collapse:collapse;font-size:11px; }
+                    .emp-table th { background:#21262d;color:#8b949e;padding:8px;border:1px solid #30363d; }
+                    .emp-table td { padding:8px;border:1px solid #30363d;color:#c9d1d9; }
+                    .emp-table tr:hover td { background:#21262d; }
+                    .emp-btn-del { padding:4px 8px;background:#cc2222;color:#fff;border:none;border-radius:4px;font-size:10px;cursor:pointer; }
+                    .emp-div-m { color:#58a6ff;font-weight:bold; }
+                    .emp-div-f { color:#4db84d;font-weight:bold; }
+                    .emp-div-c { color:#ffd700;font-weight:bold; }
+                    .emp-div-manager { color:#cc2222;font-weight:bold; }
+                    .emp-success { display:none;background:#238636;color:#fff;padding:8px;border-radius:4px;text-align:center;margin-top:8px;font-size:11px; }
                 </style>
-                <div class="dp-header">
-                    <h2 class="dp-title">👷 Daftar Pekerja</h2>
-                    <div class="dp-stats">
-                        <div class="dp-stat"><div class="dp-stat-value" id="dp-total">0</div><div class="dp-stat-label">Total</div></div>
-                        <div class="dp-stat"><div class="dp-stat-value" id="dp-active" style="color:#4db84d;">0</div><div class="dp-stat-label">Aktif</div></div>
-                        <div class="dp-stat"><div class="dp-stat-value" id="dp-inactive" style="color:#f85149;">0</div><div class="dp-stat-label">Nonaktif</div></div>
+                <div class="emp-header">
+                    <h2 class="emp-title">👷 Employee - Brothers Company</h2>
+                    <div class="emp-stats">
+                        <div class="emp-stat"><div class="emp-stat-value" id="emp-total">0</div><div class="emp-stat-label">Total</div></div>
+                        <div class="emp-stat"><div class="emp-stat-value" id="emp-mechanic" style="color:#58a6ff;">0</div><div class="emp-stat-label">Mechanic</div></div>
+                        <div class="emp-stat"><div class="emp-stat-value" id="emp-farmer" style="color:#4db84d;">0</div><div class="emp-stat-label">Farmer</div></div>
+                        <div class="emp-stat"><div class="emp-stat-value" id="emp-cargo" style="color:#ffd700;">0</div><div class="emp-stat-label">Cargo</div></div>
+                        <div class="emp-stat"><div class="emp-stat-value" id="emp-manager" style="color:#cc2222;">0</div><div class="emp-stat-label">Manager</div></div>
                     </div>
                 </div>
-                <table class="dp-table">
-                    <thead><tr><th>ID</th><th>Nama</th><th>Jabatan</th><th>Telepon</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody id="dp-table-body"></tbody>
-                </table>
+                <div style="margin-bottom:15px;display:flex;gap:10px;">
+                    <input type="text" id="emp-search" placeholder="Cari nama atau nomor telepon..." style="flex:1;padding:10px;border-radius:6px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;" onkeyup="if(event.key==='Enter')searchEmployee()">
+                    <button onclick="searchEmployee()" style="padding:10px 20px;background:#58a6ff;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🔍 Cari</button>
+                    <button onclick="loadEmployees()" style="padding:10px 20px;background:#30363d;color:#fff;border:none;border-radius:6px;font-weight:bold;cursor:pointer;font-size:12px;">🔄 Reset</button>
+                </div>
+                <div class="emp-container">
+                    <div class="emp-list">
+                        <table class="emp-table">
+                            <thead><tr><th>Nama</th><th>Telepon</th><th>No.Rekening</th><th>Divisi</th><th>Aksi</th></tr></thead>
+                            <tbody id="emp-table-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Loading...</td></tr></tbody>
+                        </table>
+                    </div>
+                    <div class="emp-form-box">
+                        <h3 class="emp-form-title">➕ Tambah Employee Baru</h3>
+                        <form id="emp-form" onsubmit="submitEmployee(event)">
+                            <div class="emp-field"><label>Nama Lengkap *</label><input type="text" id="emp-nama" placeholder="Masukkan nama" required></div>
+                            <div class="emp-field"><label>Nomor Telepon</label><input type="tel" id="emp-telepon" placeholder="08xxxxxxxxxx"></div>
+                            <div class="emp-field"><label>No Rekening</label><input type="text" id="emp-rekening" placeholder="1234567890"></div>
+                            <div class="emp-field"><label>Divisi *</label><select id="emp-divisi" required><option value="">-- Pilih --</option><option value="Mechanic">Mechanic</option><option value="Farmer">Farmer</option><option value="Cargo Driver">Cargo Driver</option><option value="Manager">Manager</option></select></div>
+                            <button type="submit" class="emp-btn-add">💾 Simpan Employee</button>
+                            <div id="emp-success" class="emp-success">✅ Employee berhasil ditambahkan!</div>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <script>loadDaftarPekerja();</script>
-        </div>
-        <div class="window-statusbar"><span class="statusbar-section">Daftar Pekerja</span><span class="statusbar-section">Kelola pekerja</span></div>
-        <div class="resizer" onmousedown="startResize(event, 'win-daftarpekerja')"></div>
-    </div>
+            <script>
+            // Call loadEmployees when window opens
+            document.getElementById('win-employee').addEventListener('focus', loadEmployees);
 
-    <!-- TAMBAH PEKERJA WINDOW -->
-    <div class="window" id="win-tambahpekerja" style="top:90px;left:160px;width:500px;height:400px;display:none;">
-        <div class="window-titlebar" onmousedown="startDrag(event, 'win-tambahpekerja')">
-            <svg class="window-icon" viewBox="0 0 16 16">
-                <rect x="2" y="2" width="12" height="12" rx="1" fill="#238636"/>
-                <path d="M8 5 L8 11 M5 8 L11 8" stroke="#fff" stroke-width="2"/>
-            </svg>
-            <span class="window-title">Tambah Pekerja - Brothers Company</span>
-            <div class="window-controls">
-                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-tambahpekerja')">_</button>
-                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-tambahpekerja')">□</button>
-                <button class="window-btn" onclick="closeWindow('win-tambahpekerja')">✕</button>
-            </div>
+            async function loadEmployees() {
+                const tbody = document.getElementById('emp-table-body');
+                if (!tbody) {
+                    // Retry after a short delay
+                    setTimeout(loadEmployees, 500);
+                    return;
+                }
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                try {
+                    const res = await fetch('api/employee_api.php?action=get_all');
+                    const result = await res.json();
+                    if (result.success) {
+                        renderEmpTable(result.data);
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Error: ' + result.message + '</td></tr>';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Koneksi gagal - klik window untuk retry</td></tr>';
+                }
+            }
+
+            function renderEmpTable(data) {
+                const tbody = document.getElementById('emp-table-body');
+                if (!tbody) return;
+                let m=0,f=0,c=0,manager=0,html='';
+                data.forEach(e => {
+                    const divClass = e.divisi === 'Mechanic' ? 'emp-div-m' : e.divisi === 'Farmer' ? 'emp-div-f' : e.divisi === 'Manager' ? 'emp-div-manager' : 'emp-div-c';
+                    if(e.divisi==='Mechanic')m++;else if(e.divisi==='Farmer')f++;else if(e.divisi==='Manager')manager++;else c++;
+                    html += '<tr><td>'+e.nama+'</td><td>'+(e.telepon||'-')+'</td><td>'+(e.no_rekening||'-')+'</td><td class="'+divClass+'">'+e.divisi+'</td><td><button class="emp-btn-del" onclick="deleteEmployee('+e.id+')">Hapus</button></td></tr>';
+                });
+                tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Tidak ada data employee</td></tr>';
+                const totalEl = document.getElementById('emp-total');
+                const mEl = document.getElementById('emp-mechanic');
+                const fEl = document.getElementById('emp-farmer');
+                const cEl = document.getElementById('emp-cargo');
+                const managerEl = document.getElementById('emp-manager');
+                if(totalEl) totalEl.textContent = data.length;
+                if(mEl) mEl.textContent = m;
+                if(fEl) fEl.textContent = f;
+                if(cEl) cEl.textContent = c;
+                if(managerEl) managerEl.textContent = manager;
+            }
+
+            async function submitEmployee(e) {
+                e.preventDefault();
+                const nama = document.getElementById('emp-nama');
+                const telp = document.getElementById('emp-telepon');
+                const rek = document.getElementById('emp-rekening');
+                const div = document.getElementById('emp-divisi');
+                const success = document.getElementById('emp-success');
+
+                if (!nama.value || !div.value) {
+                    alert('Nama dan Divisi harus diisi!');
+                    return;
+                }
+
+                const fd = new FormData();
+                fd.append('action', 'add');
+                fd.append('nama', nama.value);
+                fd.append('telepon', telp.value || '');
+                fd.append('no_rekening', rek.value || '');
+                fd.append('divisi', div.value);
+
+                try {
+                    const res = await fetch('api/employee_api.php', {method: 'POST', body: fd});
+                    const result = await res.json();
+                    if (result.success) {
+                        success.style.display = 'block';
+                        success.textContent = 'Berhasil ditambahkan!';
+                        nama.value = '';
+                        telp.value = '';
+                        rek.value = '';
+                        div.value = '';
+                        setTimeout(() => { success.style.display = 'none'; }, 3000);
+                        loadEmployees();
+                    } else {
+                        alert('Error: ' + result.message);
+                    }
+                } catch (err) {
+                    alert('Gagal koneksi ke server!');
+                }
+            }
+
+            async function deleteEmployee(id) {
+                if (!confirm('Yakin hapus employee ini?')) return;
+                const fd = new FormData();
+                fd.append('action', 'delete');
+                fd.append('id', id);
+                try {
+                    await fetch('api/employee_api.php', {method: 'POST', body: fd});
+                    loadEmployees();
+                } catch (err) {
+                    alert('Gagal hapus!');
+                }
+            }
+
+            // Initial load
+            loadEmployees();
+
+            async function searchEmployee() {
+                const query = document.getElementById('emp-search').value.trim();
+                const tbody = document.getElementById('emp-table-body');
+                if (!tbody) return;
+
+                if (!query) {
+                    loadEmployees();
+                    return;
+                }
+
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Mencari...</td></tr>';
+
+                try {
+                    const res = await fetch('api/employee_api.php?action=search&q=' + encodeURIComponent(query));
+                    const result = await res.json();
+                    if (result.success) {
+                        renderEmpTable(result.data);
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">Error</td></tr>';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">Koneksi gagal</td></tr>';
+                }
+            }
+            </script>
         </div>
-        <div class="window-menubar">
-            <span class="menu-item">File</span>
-            <span class="menu-item">Edit</span>
-            <span class="menu-item">View</span>
-            <span class="menu-item">Help</span>
-        </div>
-        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
-            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
-                <style>
-                    .tp-form { background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px; }
-                    .tp-title { color:#238636;font-size:16px;margin:0 0 15px 0; }
-                    .tp-field { margin-bottom:12px; }
-                    .tp-field label { display:block;font-size:10px;font-weight:bold;color:#8b949e;text-transform:uppercase;margin-bottom:4px; }
-                    .tp-field input,.tp-field select { width:100%;padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;box-sizing:border-box; }
-                    .tp-btn { padding:10px 20px;border-radius:4px;border:none;font-weight:bold;font-size:12px;cursor:pointer;background:#238636;color:#fff;margin-right:10px; }
-                    .tp-btn:hover { background:#2ea043; }
-                    .tp-btn-reset { background:#30363d;color:#fff; }
-                </style>
-                <form class="tp-form" onsubmit="submitNewPekerja(event)">
-                    <h3 class="tp-title">➕ Form Tambah Pekerja Baru</h3>
-                    <div class="tp-field"><label>Username</label><input type="text" id="tp-username" placeholder="Masukkan username" required></div>
-                    <div class="tp-field"><label>Email</label><input type="email" id="tp-email" placeholder="email@example.com" required></div>
-                    <div class="tp-field"><label>Password</label><input type="password" id="tp-password" placeholder="Masukkan password" required></div>
-                    <div class="tp-field"><label>Nama Lengkap</label><input type="text" id="tp-nama" placeholder="Masukkan nama lengkap"></div>
-                    <div class="tp-field"><label>Nomor Telepon</label><input type="tel" id="tp-telepon" placeholder="08xxxxxxxxxx"></div>
-                    <div class="tp-field"><label>Jabatan</label><select id="tp-jabatan" required><option value="">-- Pilih Jabatan --</option><option value="Mechanic">Mechanic</option><option value="Supervisor">Supervisor</option><option value="Kasir">Kasir</option><option value="Helper">Helper</option><option value="Manager">Manager</option></select></div>
-                    <button type="submit" class="tp-btn">💾 Simpan Pekerja</button>
-                    <button type="button" class="tp-btn tp-btn-reset" onclick="document.getElementById('tp-form').reset()">🔄 Reset</button>
-                </form>
-            </div>
-        </div>
-        <div class="window-statusbar"><span class="statusbar-section">Tambah Pekerja</span><span class="statusbar-section">Tambah pekerja baru</span></div>
-        <div class="resizer" onmousedown="startResize(event, 'win-tambahpekerja')"></div>
+        <div class="window-statusbar"><span class="statusbar-section">Employee</span><span class="statusbar-section">Kelola employee</span></div>
+        <div class="resizer" onmousedown="startResize(event, 'win-employee')"></div>
     </div>
 
     <!-- LAPORAN KERJA WINDOW -->
@@ -3208,58 +3483,38 @@ if ($currentUserId && $currentRole) {
         <div class="window-content">
             <div class="app-panel">
                 <div class="app-section">
-                    <div class="app-section-title">🌱 PENGELOLAAN TANAMAN</div>
-                    <div class="btn-grid">
-                        <button class="app-btn" onclick="showToast('Add Plant', 'Menambah tanaman baru...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="24" width="24" height="6" rx="1" fill="#8b4513"/>
-                                <rect x="14" y="8" width="4" height="16" fill="#228b22"/>
-                                <circle cx="16" cy="8" r="6" fill="#32cd32"/>
-                                <rect x="6" y="26" width="4" height="4" fill="#333"/>
-                                <rect x="22" y="26" width="4" height="4" fill="#333"/>
+                    <div class="app-section-title">🌱 FARMER APP - Brothers Company</div>
+                    <div class="btn-grid" style="justify-content:center;">
+                        <!-- LaporanApp -->
+                        <button class="app-btn" onclick="openWindow('laporanharian')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="6" y="4" width="36" height="40" rx="2" fill="#ffd700" stroke="#b07800" stroke-width="2"/>
+                                <rect x="6" y="4" width="36" height="10" rx="2" fill="#e8b828"/>
+                                <rect x="12" y="18" width="24" height="3" fill="#c8a000"/>
+                                <rect x="12" y="24" width="18" height="3" fill="#c8a000"/>
+                                <rect x="12" y="30" width="20" height="3" fill="#c8a000"/>
+                                <rect x="12" y="36" width="14" height="3" fill="#c8a000"/>
+                                <rect x="12" y="42" width="24" height="4" fill="#cc2222"/>
                             </svg>
-                            Add Plant
+                            LaporanApp
                         </button>
-                        <button class="app-btn" onclick="showToast('Harvest Schedule', 'Melihat jadwal panen...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="4" width="24" height="24" rx="2" fill="#f5f5f5" stroke="#228b22"/>
-                                <rect x="4" y="4" width="24" height="6" rx="2" fill="#228b22"/>
-                                <rect x="8" y="12" width="16" height="2" fill="#90ee90"/>
-                                <rect x="8" y="16" width="12" height="2" fill="#90ee90"/>
-                                <rect x="8" y="20" width="14" height="2" fill="#90ee90"/>
-                                <circle cx="10" cy="12" r="2" fill="#ffd700"/>
-                                <circle cx="16" cy="12" r="2" fill="#ffd700"/>
-                                <circle cx="22" cy="12" r="2" fill="#ffd700"/>
+                        <!-- Tugas Hari Ini -->
+                        <button class="app-btn" onclick="openWindow('tugashariini')" style="min-width:120px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="4" y="4" width="40" height="40" rx="4" fill="#228b22" stroke="#1a5c1a" stroke-width="2"/>
+                                <rect x="8" y="8" width="32" height="8" rx="2" fill="#32cd32"/>
+                                <path d="M16 24 L22 30 L34 18" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                                <rect x="8" y="32" width="32" height="8" rx="2" fill="#1a5c1a"/>
                             </svg>
-                            Harvest Schedule
-                        </button>
-                        <button class="app-btn" onclick="showToast('Inventory', 'Melihat inventori...')">
-                            <svg viewBox="0 0 32 32">
-                                <rect x="4" y="10" width="24" height="18" rx="2" fill="#228b22"/>
-                                <rect x="6" y="12" width="6" height="6" fill="#90ee90"/>
-                                <rect x="14" y="12" width="6" height="6" fill="#90ee90"/>
-                                <rect x="22" y="12" width="4" height="6" fill="#90ee90"/>
-                                <rect x="6" y="20" width="6" height="6" fill="#90ee90"/>
-                                <rect x="14" y="20" width="6" height="6" fill="#90ee90"/>
-                                <rect x="22" y="20" width="4" height="6" fill="#90ee90"/>
-                            </svg>
-                            Inventory
+                            Tugas Hari Ini
                         </button>
                     </div>
                 </div>
                 <div class="app-section">
-                    <div class="app-section-title">📈 STATISTIK FARM</div>
-                    <div class="btn-grid">
-                        <button class="app-btn btn-xp-green" onclick="showToast('Harvested', '25 tanaman dipanen!')">
-                            🌾 Harvested: <strong>25</strong>
-                        </button>
-                        <button class="app-btn btn-xp-orange" onclick="showToast('Growing', '12 tanaman tumbuh')">
-                            🌱 Growing: <strong>12</strong>
-                        </button>
-                        <button class="app-btn btn-xp-red" onclick="showToast('Needs Care', '4 butuh perawatan')">
-                            ⚠️ Needs Care: <strong>4</strong>
-                        </button>
-                    </div>
+                    <div class="app-section-title">📋 INFORMASI</div>
+                    <p class="status-bar-text">
+                        FarmerApp menyediakan akses ke LaporanApp untuk laporan farming dan Tugas Hari Ini untuk melihat tugas harian.
+                    </p>
                 </div>
             </div>
         </div>
@@ -3268,6 +3523,160 @@ if ($currentUserId && $currentRole) {
             <span class="statusbar-section">Kelola pertanian</span>
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-farmer')"></div>
+    </div>
+
+    <!-- LAPORAN HARIAN WINDOW (FARMER) -->
+    <div class="window" id="win-laporanharian" style="top:100px;left:180px;width:380px;height:340px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-laporanharian')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="1" width="12" height="14" rx="1" fill="#ffd700"/>
+                <rect x="4" y="4" width="8" height="1" fill="#8b6914"/>
+                <rect x="4" y="6" width="6" height="1" fill="#8b6914"/>
+                <rect x="4" y="8" width="8" height="1" fill="#8b6914"/>
+                <rect x="4" y="10" width="5" height="1" fill="#8b6914"/>
+            </svg>
+            <span class="window-title">LaporanApp Farming - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-laporanharian')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-laporanharian')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-laporanharian')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Reports</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .fh-form-container { width:100%;max-width:100%; }
+                    .fh-title { color:#ffd700;font-size:16px;text-align:center;margin:0 0 15px 0;padding-bottom:8px;border-bottom:1px solid #30363d; }
+                    .fh-field { margin-bottom:10px; }
+                    .fh-field label { display:block;font-size:10px;font-weight:bold;color:#8b949e;text-transform:uppercase;margin-bottom:4px; }
+                    .fh-field input,.fh-field select { width:100%;padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;box-sizing:border-box; }
+                    .fh-field input:focus,.fh-field select:focus { outline:none;border-color:#ffd700; }
+                    .fh-btn-row { display:flex;gap:8px;margin-top:10px; }
+                    .fh-btn { flex:1;padding:8px;border-radius:4px;border:none;font-weight:bold;font-size:11px;cursor:pointer; }
+                    .fh-btn-submit { background:#ffd700;color:#000; }
+                    .fh-btn-submit:hover { background:#e8b828; }
+                    .fh-btn-reset { background:#30363d;color:#fff; }
+                    .fh-btn-reset:hover { background:#484f58; }
+                    .fh-success { display:none;background:#238636;color:#fff;padding:10px;border-radius:4px;text-align:center;margin-top:8px;font-size:11px; }
+                </style>
+                <div class="fh-form-container">
+                    <h2 class="fh-title">📝 Form Laporan Farming</h2>
+                    <form id="fh-laporan-form" onsubmit="submitFhLaporan(event)">
+                        <div class="fh-field">
+                            <label>Nama Farmer</label>
+                            <input type="text" id="fh-nama" placeholder="Nama farmer" required>
+                        </div>
+                        <div class="fh-field">
+                            <label>Bibit Diambil</label>
+                            <input type="number" id="fh-bibit" placeholder="Jumlah bibit diambil" min="0" required>
+                        </div>
+                        <div class="fh-field">
+                            <label>Jumlah Panen</label>
+                            <input type="number" id="fh-panen" placeholder="Jumlah hasil panen (kg)" min="0" required>
+                        </div>
+                        <div class="fh-btn-row">
+                            <button type="submit" class="fh-btn fh-btn-submit">📤 Kirim</button>
+                            <button type="button" class="fh-btn fh-btn-reset" onclick="resetFhLaporan()">🔄 Reset</button>
+                        </div>
+                    </form>
+                    <div id="fh-success" class="fh-success">
+                        ✅ Laporan berhasil dikirim!
+                    </div>
+                </div>
+            </div>
+            <script>
+                function submitFhLaporan(e) {
+                    e.preventDefault();
+                    const nama = document.getElementById('fh-nama').value;
+                    const bibit = document.getElementById('fh-bibit').value;
+                    const panen = document.getElementById('fh-panen').value;
+
+                    const success = document.getElementById('fh-success');
+                    success.style.display = 'block';
+                    success.innerHTML = '✅ Laporan berhasil!<br><strong>' + nama + '</strong><br>Bibit: ' + Number(bibit).toLocaleString('id-ID') + ' | Panen: ' + Number(panen).toLocaleString('id-ID') + ' kg';
+
+                    setTimeout(() => {
+                        success.style.display = 'none';
+                    }, 3000);
+
+                    console.log('Laporan Farming:', { nama, bibit, panen });
+                }
+
+                function resetFhLaporan() {
+                    document.getElementById('fh-laporan-form').reset();
+                    document.getElementById('fh-success').style.display = 'none';
+                }
+            </script>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Laporan Farming</span>
+            <span class="statusbar-section">Form laporan farming</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-laporanharian')"></div>
+    </div>
+
+    <!-- TUGAS HARI INI WINDOW -->
+    <div class="window" id="win-tugashariini" style="top:110px;left:190px;width:500px;height:400px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-tugashariini')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="1" width="12" height="14" rx="1" fill="#228b22"/>
+                <path d="M5 8 L7 10 L11 6" stroke="#fff" stroke-width="2" fill="none"/>
+            </svg>
+            <span class="window-title">Tugas Hari Ini - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-tugashariini')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-tugashariini')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-tugashariini')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .tht-header { margin-bottom:15px; }
+                    .tht-title { color:#228b22;font-size:16px;margin:0 0 5px 0; }
+                    .tht-date { color:#8b949e;font-size:12px; }
+                    .tht-list { }
+                    .tht-item { display:flex;align-items:center;justify-content:space-between;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;margin-bottom:10px; }
+                    .tht-item-left { display:flex;align-items:center;gap:10px; }
+                    .tht-time { font-size:11px;color:#8b949e;min-width:50px; }
+                    .tht-text { font-size:13px;color:#c9d1d9; }
+                    .tht-status { padding:4px 12px;border-radius:4px;font-size:11px;font-weight:bold; }
+                    .tht-done { background:#238636;color:#fff; }
+                    .tht-progress { background:#e8b828;color:#000; }
+                    .tht-pending { background:#cc2222;color:#fff; }
+                    .tht-btn { padding:8px 16px;background:#228b22;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px; }
+                    .tht-btn:hover { background:#32cd32; }
+                </style>
+                <div class="tht-header">
+                    <h2 class="tht-title">📋 Tugas Hari Ini</h2>
+                    <div class="tht-date"><?php echo date('d/m/Y'); ?></div>
+                </div>
+                <div class="tht-list">
+                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">08:00</span><span class="tht-text">Menyiram tanaman Greenhouse A</span></div><span class="tht-status tht-done">Selesai</span></div>
+                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">09:30</span><span class="tht-text">Pupuk organik cabai</span></div><span class="tht-status tht-progress">Proses</span></div>
+                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">10:00</span><span class="tht-text">Cek pertumbuhan tomat</span></div><span class="tht-status tht-pending">Pending</span></div>
+                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">11:30</span><span class="tht-text">Panen sayur mayur</span></div><span class="tht-status tht-pending">Pending</span></div>
+                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">14:00</span><span class="tht-text">Semprot pestisida Greenhouse B</span></div><span class="tht-status tht-pending">Pending</span></div>
+                </div>
+                <button class="tht-btn" onclick="showToast('Tugas', 'Menambah tugas baru...')">➕ Tambah Tugas</button>
+            </div>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Tugas Hari Ini</span>
+            <span class="statusbar-section">Daftar tugas harian farming</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-tugashariini')"></div>
     </div>
 
     <!-- RESTAURANT APP WINDOW -->
@@ -3351,6 +3760,45 @@ if ($currentUserId && $currentRole) {
             <span class="statusbar-section">Kelola restoran</span>
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-restaurant')"></div>
+    </div>
+
+    <!-- MANAGER APP WINDOW -->
+    <div class="window" id="win-manager" style="top:90px;left:150px;width:620px;height:450px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-manager')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="2" width="12" height="12" rx="1" fill="#b07800"/>
+                <rect x="4" y="4" width="4" height="4" fill="#ffd700"/>
+                <rect x="8" y="4" width="4" height="4" fill="#228b22"/>
+                <rect x="4" y="8" width="4" height="4" fill="#cc2222"/>
+                <rect x="8" y="8" width="4" height="4" fill="#8b5cf6"/>
+            </svg>
+            <span class="window-title">ManagerApp - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-manager')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-manager')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-manager')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content">
+            <div class="app-panel">
+                <div class="app-section">
+                    <div class="app-section-title">📊 MANAGER APP - Brothers Company</div>
+                    <div class="btn-grid" style="justify-content:center;">
+                        <p style="color:#8b949e;font-size:13px;">Fitur dalam pengembangan...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">ManagerApp</span>
+            <span class="statusbar-section">Manager dashboard</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-manager')"></div>
     </div>
 </div>
     <div class="window" id="win-settings" style="top:50px;left:100px;width:600px;height:420px;display:none;">
@@ -4145,11 +4593,11 @@ if ($currentUserId && $currentRole) {
     // ===== RBAC - Role-Based Access Control =====
     const rolePermissions = {
         'admin': {
-            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'adminpanel', 'settings', 'daftarpekerja', 'tambahpekerja', 'laporankerja', 'keuangan'],
+            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'employee', 'laporankerja', 'keuangan', 'historydelivery', 'deliverylist', 'manager'],
             actions: ['create', 'edit', 'delete', 'view', 'manage_users', 'settings']
         },
         'employee': {
-            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member'],
+            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'historydelivery', 'deliverylist'],
             actions: ['create', 'edit', 'view', 'checkin', 'checkout']
         }
     };

@@ -21,6 +21,28 @@ SET time_zone = "+00:00";
 -- Database: `brothers_company`
 --
 
+CREATE TABLE `employees` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama` varchar(100) NOT NULL,
+  `telepon` varchar(20) DEFAULT NULL,
+  `no_rekening` varchar(50) DEFAULT NULL,
+  `divisi` enum('Mechanic','Farmer','Cargo Driver','Manager') NOT NULL,
+  `status` enum('active','inactive') DEFAULT 'active',
+  `tanggal_masuk` date DEFAULT (CURRENT_DATE),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `employees`
+--
+
+INSERT INTO `employees` (`nama`, `telepon`, `no_rekening`, `divisi`, `status`) VALUES
+('Joko Susanto', '081234567890', '1234567890 BCA', 'Mechanic', 'active'),
+('Ahmad Rizki', '085678901234', '0987654321 Mandiri', 'Farmer', 'active'),
+('Dewi Lestari', '087812345678', '5678901234 BNI', 'Cargo Driver', 'active');
+
 -- --------------------------------------------------------
 
 --
