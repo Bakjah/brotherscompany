@@ -123,6 +123,80 @@ INSERT INTO `sparepart_config` (`nama`, `harga_per_unit`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Struktur dari tabel `tugas_harian` (Tugas Harian Farmer)
+--
+
+CREATE TABLE `tugas_harian` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `tanggal` date NOT NULL,
+  `jam_mulai` time NOT NULL,
+  `jam_selesai` time NOT NULL,
+  `tugas` varchar(255) NOT NULL,
+  `status` enum('pending','proses','selesai') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `tanggal` (`tanggal`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `tugas_harian`
+--
+
+INSERT INTO `tugas_harian` (`tanggal`, `jam_mulai`, `jam_selesai`, `tugas`, `status`) VALUES
+(CURRENT_DATE, '08:00:00', '09:00:00', 'Menyiram tanaman Greenhouse A', 'selesai'),
+(CURRENT_DATE, '09:00:00', '10:30:00', 'Pupuk organik cabai', 'proses'),
+(CURRENT_DATE, '10:00:00', '11:00:00', 'Cek pertumbuhan tomat', 'pending'),
+(CURRENT_DATE, '11:00:00', '12:30:00', 'Panen sayur mayur', 'pending'),
+(CURRENT_DATE, '14:00:00', '15:30:00', 'Semprot pestisida Greenhouse B', 'pending');
+
+-- --------------------------------------------------------
+
+--
+-- Struktur dari tabel `delivery_order` (Cargo Delivery Order)
+--
+
+CREATE TABLE `delivery_order` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `jenis_delivery` enum('compo','farmer') NOT NULL,
+  `alamat_tujuan` varchar(255) NOT NULL,
+  `nama_penerima` varchar(100) NOT NULL,
+  `no_telepon` varchar(20) DEFAULT NULL,
+  `jumlah_crate` int(11) NOT NULL DEFAULT 1,
+  `catatan` text DEFAULT NULL,
+  `status` enum('pending','diambil','selesai','batal') NOT NULL DEFAULT 'pending',
+  `driver_id` int(11) DEFAULT NULL,
+  `driver_nama` varchar(100) DEFAULT NULL,
+  `tanggal_input` datetime NOT NULL DEFAULT current_timestamp(),
+  `tanggal_ambil` datetime DEFAULT NULL,
+  `tanggal_selesai` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `driver_id` (`driver_id`),
+  KEY `jenis_delivery` (`jenis_delivery`),
+  KEY `status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `delivery_order`
+--
+
+INSERT INTO `delivery_order` (`jenis_delivery`, `alamat_tujuan`, `nama_penerima`, `no_telepon`, `jumlah_crate`, `catatan`, `status`) VALUES
+('compo', 'Jl. Merdeka No. 10, Bandung', 'Budi Santoso', '081234567890', 10, 'Komponen mesin produksi', 'pending'),
+('compo', 'Jl. Asia Afrika No. 25, Bandung', 'Dewi Lestari', '085678901234', 5, 'Suku cadang motor', 'pending'),
+('farmer', 'Jl. Ganesha No. 5, Bandung', 'Ahmad Rizki', '087812345678', 20, 'Bibit cabai organik', 'pending'),
+('farmer', 'Jl. Dago No. 18, Bandung', 'Joko Susanto', '081987654321', 15, 'Pupuk organik 50kg', 'pending');
+
+--
+-- AUTO_INCREMENT untuk tabel `delivery_order`
+--
+ALTER TABLE `delivery_order`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+-- --------------------------------------------------------
+
+--
 -- Struktur dari tabel `transaksi` (Calculator - Transaksi)
 --
 
@@ -151,63 +225,34 @@ CREATE TABLE `transaksi` (
 
 CREATE TABLE `laporan_mechanic` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_mechanic` varchar(100) NOT NULL,
+  `divisi` enum('mechanic','farmer') NOT NULL DEFAULT 'mechanic',
+  `nama_karyawan` varchar(100) NOT NULL,
   `compo_used` int(11) NOT NULL DEFAULT 0,
   `money_stored` decimal(15,2) NOT NULL DEFAULT 0,
   `keterangan` text DEFAULT NULL,
   `tanggal` date DEFAULT (CURRENT_DATE),
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `mecharing` (Mecharing - Record Mechanic)
---
-
-CREATE TABLE `mecharing` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `nama_mechanic` varchar(100) NOT NULL,
-  `tanggal` date DEFAULT (CURRENT_DATE),
-  `jam_masuk` time DEFAULT NULL,
-  `jam_keluar` time DEFAULT NULL,
-  `total_compo` int(11) DEFAULT 0,
-  `total_transaksi` int(11) DEFAULT 0,
-  `status` enum('active','inactive') DEFAULT 'active',
-  `keterangan` text DEFAULT NULL,
-  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `mecharing`
---
-
-INSERT INTO `mecharing` (`nama_mechanic`, `jam_masuk`, `jam_keluar`, `total_compo`, `total_transaksi`, `status`) VALUES
-('Joko Susanto', '08:00:00', '17:00:00', 15, 8, 'active'),
-('Ahmad Rizki', '09:00:00', '18:00:00', 12, 6, 'active'),
-('Dewi Lestari', '08:30:00', '16:30:00', 20, 10, 'active');
-
--- --------------------------------------------------------
-
---
--- Struktur dari tabel `mecharing_detail` (Detail Recording Mechanic)
---
-
-CREATE TABLE `mecharing_detail` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `mecharing_id` int(11) NOT NULL,
-  `jenis_layanan` varchar(50) NOT NULL,
-  `compo_count` int(11) NOT NULL DEFAULT 0,
-  `harga` decimal(15,2) NOT NULL DEFAULT 0,
-  `waktu` datetime DEFAULT current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `mecharing_id` (`mecharing_id`),
-  CONSTRAINT `mecharing_detail_ibfk_1` FOREIGN KEY (`mecharing_id`) REFERENCES `mecharing` (`id`) ON DELETE CASCADE
+  KEY `divisi` (`divisi`),
+  KEY `tanggal` (`tanggal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data untuk tabel `laporan_mechanic`
+--
+
+INSERT INTO `laporan_mechanic` (`divisi`, `nama_karyawan`, `compo_used`, `money_stored`, `keterangan`) VALUES
+('mechanic', 'Joko Susanto', 10, 500000, 'Service harian'),
+('mechanic', 'Ahmad Rizki', 8, 400000, 'Perbaikan mesin'),
+('farmer', 'Budi Santoso', 15, 750000, 'Routine check'),
+('farmer', 'Dewi Lestari', 12, 600000, 'Modifikasi');
+
+--
+-- AUTO_INCREMENT untuk tabel `laporan_mechanic`
+--
+ALTER TABLE `laporan_mechanic`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 -- --------------------------------------------------------
 
@@ -368,21 +413,15 @@ ALTER TABLE `sparepart_config`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT untuk tabel `tugas_harian`
+--
+ALTER TABLE `tugas_harian`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
 -- AUTO_INCREMENT untuk tabel `laporan_mechanic`
 --
 ALTER TABLE `laporan_mechanic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT untuk tabel `mecharing`
---
-ALTER TABLE `mecharing`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
--- AUTO_INCREMENT untuk tabel `mecharing_detail`
---
-ALTER TABLE `mecharing_detail`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --

@@ -1030,22 +1030,6 @@ if ($currentUserId && $currentRole) {
                             </svg>
                             LaporanApp
                         </button>
-                        <!-- Mecharing -->
-                        <button class="app-btn" onclick="showToast('Mecharing', 'Membuka Mecharing...')" style="min-width:120px;padding:16px;">
-                            <svg viewBox="0 0 48 48">
-                                <circle cx="24" cy="24" r="18" fill="#245edc" stroke="#1038a0" stroke-width="2"/>
-                                <circle cx="24" cy="24" r="12" fill="#fff"/>
-                                <circle cx="24" cy="24" r="8" fill="#c8e0f5"/>
-                                <circle cx="24" cy="24" r="3" fill="#245edc"/>
-                                <line x1="24" y1="24" x2="24" y2="14" stroke="#333" stroke-width="2" stroke-linecap="round"/>
-                                <line x1="24" y1="24" x2="32" y2="28" stroke="#cc2222" stroke-width="2" stroke-linecap="round"/>
-                                <circle cx="24" cy="4" r="2" fill="#ffd700"/>
-                                <circle cx="24" cy="44" r="2" fill="#ffd700"/>
-                                <circle cx="4" cy="24" r="2" fill="#ffd700"/>
-                                <circle cx="44" cy="24" r="2" fill="#ffd700"/>
-                            </svg>
-                            Mecharing
-                        </button>
                         <!-- MemberApp -->
                         <button class="app-btn" onclick="openWindow('member')" style="min-width:120px;padding:16px;">
                             <svg viewBox="0 0 48 48">
@@ -1081,7 +1065,7 @@ if ($currentUserId && $currentRole) {
                 <div class="app-section">
                     <div class="app-section-title">📋 INFORMASI</div>
                     <p class="status-bar-text">
-                        MechanicApp menyediakan akses ke Calculator untuk perhitungan, LaporanApp untuk laporan kerja, Mecharing untuk mechanic recording, dan MemberApp untuk manajemen member.
+                        MechanicApp menyediakan akses ke Calculator untuk perhitungan, LaporanApp untuk laporan kerja, dan MemberApp untuk manajemen member.
                     </p>
                 </div>
             </div>
@@ -1257,15 +1241,14 @@ if ($currentUserId && $currentRole) {
                     }
                     .calc-config-panel.visible { display: block; }
                     .calc-config-panel h3 { color: #58a6ff; margin: 0 0 10px 0; font-size: 14px; }
-                    .calc-config-row { display: flex; align-items: center; margin-bottom: 8px; }
+                    .calc-config-row { display: flex; align-items: center; margin-bottom: 8px; gap: 8px; }
                     .calc-config-row label { flex: 1; font-size: 11px; color: #8b949e; }
                     .calc-config-row input { width: 80px; padding: 5px; border-radius: 4px; border: 1px solid #30363d; background: #010409; color: #fff; font-size: 11px; text-align: center; }
-                    .calc-config-row span { width: 30px; text-align: center; font-size: 10px; }
+                    .calc-show-value { min-width: 50px; padding: 5px 8px; background: #238636; color: #fff; border-radius: 4px; font-size: 11px; font-weight: bold; text-align: center; }
                 </style>
 
                 <div class="calc-app-wrapper">
                     <div class="calc-card-standalone" style="position:relative;">
-                        <button class="calc-config-btn" onclick="toggleCalcConfig()">⚙️ Config</button>
                         <h2>AUTOJUICE</h2>
                         <label>Layanan</label>
                         <select id="calc-service-type" onchange="resetCalcInputs()">
@@ -1279,34 +1262,7 @@ if ($currentUserId && $currentRole) {
                         <button class="btn btn-calc-main" onclick="runCalcCalculation()">Hitung Harga</button>
                         <button class="btn btn-log-main" onclick="logCalcToReceipt()">Simpan ke Struk</button>
                         <div id="calc-hasil">$0</div>
-
-                        <!-- Price Config Panel -->
-                        <div id="calc-config-panel" class="calc-config-panel">
-                            <h3>⚙️ Price Config</h3>
-                            <div class="calc-config-row">
-                                <label>Repair Multiplier:</label>
-                                <input type="number" id="config-repair" value="3.0" step="0.1" onchange="updateCalcConfig()">
-                            </div>
-                            <div class="calc-config-row">
-                                <label>Modif Multiplier:</label>
-                                <input type="number" id="config-modif" value="3.0" step="0.1" onchange="updateCalcConfig()">
-                            </div>
-                            <div class="calc-config-row">
-                                <label>Brother Multiplier:</label>
-                                <input type="number" id="config-brother" value="2.3" step="0.1" onchange="updateCalcConfig()">
-                            </div>
-                            <div class="calc-config-row">
-                                <label>WS Stored Multiplier:</label>
-                                <input type="number" id="config-ws_stored" value="2.0" step="0.1" onchange="updateCalcConfig()">
-                            </div>
-                            <div class="calc-config-row">
-                                <label>Sparepart Price/Unit:</label>
-                                <input type="number" id="config-sparepart" value="2.0" step="0.1" onchange="updateCalcConfig()">
-                            </div>
-                        </div>
-
-                        <!-- Floating Controls -->
-                        <div class="calc-floating">
+                        <div class="calc-floating" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:5px;">
                             <button class="btn-sm calc-btn-show" onclick="toggleCalcReceipt()">Show/Hide</button>
                             <button class="btn-sm calc-btn-reset" onclick="clearCalcData()">Reset</button>
                             <button class="btn-sm calc-btn-download" onclick="downloadCalcReceipt()">Download</button>
@@ -1336,7 +1292,7 @@ if ($currentUserId && $currentRole) {
 
             <script>
             // Calculator Standalone State
-            const calcConfig = {
+            let calcConfig = {
                 multipliers: {
                     repair: 3.0,
                     modif: 3.0,
@@ -1358,20 +1314,61 @@ if ($currentUserId && $currentRole) {
             // Initialize date
             document.getElementById('calc-r-date').innerText = "Tgl: " + new Date().toLocaleDateString('id-ID');
 
-            // Toggle Config Panel
-            function toggleCalcConfig() {
-                const panel = document.getElementById('calc-config-panel');
-                panel.classList.toggle('visible');
+            // Load config from database
+            async function loadCalcConfigFromDB() {
+                // First check localStorage for immediate effect (set by savePriceConfig)
+                const stored = localStorage.getItem('calcConfig');
+                if (stored) {
+                    try {
+                        const parsed = JSON.parse(stored);
+                        if (parsed.multipliers) Object.assign(calcConfig.multipliers, parsed.multipliers);
+                        if (parsed.sparepartPricePerUnit) calcConfig.sparepartPricePerUnit = parsed.sparepartPricePerUnit;
+                    } catch (e) {}
+                }
+                // Then fetch from DB to ensure latest values
+                try {
+                    const res = await fetch('api/price_config_api.php?action=get_all');
+                    const result = await res.json();
+                    if (result.success && result.data && result.data.length > 0) {
+                        result.data.forEach(item => {
+                            if (calcConfig.multipliers.hasOwnProperty(item.jenis_layanan)) {
+                                calcConfig.multipliers[item.jenis_layanan] = parseFloat(item.multiplier) || 3.0;
+                            }
+                        });
+                    }
+                    const spareRes = await fetch('api/sparepart_config_api.php?action=get');
+                    const spareResult = await spareRes.json();
+                    if (spareResult.success && spareResult.data) {
+                        calcConfig.sparepartPricePerUnit = parseFloat(spareResult.data.harga_per_unit) || 2.0;
+                    }
+                } catch (e) {
+                    console.error('Failed to load config from DB:', e);
+                }
             }
 
-            // Update Config from inputs
-            function updateCalcConfig() {
-                calcConfig.multipliers.repair = parseFloat(document.getElementById('config-repair').value) || 3.0;
-                calcConfig.multipliers.modif = parseFloat(document.getElementById('config-modif').value) || 3.0;
-                calcConfig.multipliers.brother = parseFloat(document.getElementById('config-brother').value) || 2.3;
-                calcConfig.multipliers.ws_stored = parseFloat(document.getElementById('config-ws_stored').value) || 2.0;
-                calcConfig.sparepartPricePerUnit = parseFloat(document.getElementById('config-sparepart').value) || 2.0;
+            // Run Calculation
+            function runCalcCalculation() {
+                let bill = 0, compo = 0;
+                const mult = calcConfig.multipliers;
+
+                document.querySelectorAll('.in-val-r, .in-val-m, .in-val-w, .in-val-b').forEach(i => {
+                    let v = parseFloat(i.value) || 0;
+                    if (v < 0) v = 0;
+                    compo += v;
+                    if (i.classList.contains('in-val-r')) bill += v * mult.repair;
+                    else if (i.classList.contains('in-val-m')) bill += v * mult.modif;
+                    else if (i.classList.contains('in-val-w')) bill += v * mult.ws_stored;
+                    else if (i.classList.contains('in-val-b')) bill += v * mult.brother;
+                });
+
+                calcCurrent = { bill, compo };
+                document.getElementById('calc-hasil').innerText = "$" + bill.toLocaleString('en-US', {minimumFractionDigits: 2});
             }
+
+            // Auto-load config on page load (wait for DOM)
+            window.addEventListener('load', function() {
+                setTimeout(loadCalcConfigFromDB, 500);
+            });
 
             // Reset inputs based on service type
             function resetCalcInputs() {
@@ -1532,6 +1529,14 @@ if ($currentUserId && $currentRole) {
                     delBtns.forEach(b => b.style.visibility = 'visible');
                 });
             }
+
+            // Load config when calculator window opens
+            document.getElementById('win-calculator').addEventListener('focus', loadCalcConfigFromDB);
+
+            // Auto-load config on page load (wait a bit for DOM)
+            window.addEventListener('load', function() {
+                setTimeout(loadCalcConfigFromDB, 500);
+            });
             </script>
         </div>
         <div class="window-statusbar">
@@ -1647,48 +1652,120 @@ if ($currentUserId && $currentRole) {
                     <form id="laporan-form" onsubmit="submitLaporan(event)">
                         <div class="laporan-field">
                             <label>Nama Mechanic</label>
-                            <input type="text" id="laporan-nama" placeholder="Nama mechanic" required>
+                            <input type="text" id="laporan-nama" placeholder="Ketik nama mechanic..." autocomplete="off" oninput="checkNamaMechanic()">
+                            <div id="laporan-nama-info" style="font-size:10px;margin-top:4px;color:#8b949e;"></div>
                         </div>
                         <div class="laporan-field">
                             <label>Compo Used</label>
                             <input type="number" id="laporan-compo" placeholder="Jumlah komponen" min="0" required>
                         </div>
                         <div class="laporan-field">
-                            <label>Money Stored</label>
+                            <label>Money Stored (Rp)</label>
                             <input type="number" id="laporan-money" placeholder="Jumlah uang (Rp)" min="0" required>
                         </div>
+                        <div class="laporan-field">
+                            <label>Keterangan</label>
+                            <input type="text" id="laporan-keterangan" placeholder="Keterangan (opsional)">
+                        </div>
                         <div class="laporan-btn-row">
-                            <button type="submit" class="laporan-btn">📤 Kirim</button>
+                            <button type="submit" class="laporan-btn" id="laporan-btn">📤 Kirim</button>
                             <button type="button" class="laporan-btn laporan-btn-reset" onclick="resetLaporan()">🔄 Reset</button>
                         </div>
                     </form>
-                    <div id="laporan-success" class="laporan-success">
-                        ✅ Laporan berhasil dikirim!
-                    </div>
+                    <div id="laporan-success" class="laporan-success"></div>
                 </div>
             </div>
             <script>
-                function submitLaporan(e) {
+                let verifiedMechanicNama = null;
+
+                async function checkNamaMechanic() {
+                    const input = document.getElementById('laporan-nama');
+                    const info = document.getElementById('laporan-nama-info');
+                    const btn = document.getElementById('laporan-btn');
+                    const nama = input.value.trim();
+
+                    if (nama.length < 2) {
+                        info.innerHTML = '';
+                        info.style.color = '#8b949e';
+                        verifiedMechanicNama = null;
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch('api/laporan_kerja_api.php?action=get_employees&divisi=mechanic');
+                        const result = await res.json();
+                        if (result.success && result.data) {
+                            const match = result.data.find(emp => emp.nama.toLowerCase() === nama.toLowerCase());
+                            if (match) {
+                                info.innerHTML = '<span style="color:#4db84d;">✅ Ditemukan: ' + match.nama + ' (Mechanic)</span>';
+                                info.style.color = '#4db84d';
+                                verifiedMechanicNama = match.nama;
+                            } else {
+                                info.innerHTML = '<span style="color:#f85149;">❌ Nama tidak ditemukan atau bukan Mechanic</span>';
+                                info.style.color = '#f85149';
+                                verifiedMechanicNama = null;
+                            }
+                        }
+                    } catch (e) {
+                        info.innerHTML = '<span style="color:#f85149;">⚠️ Gagal cek nama</span>';
+                    }
+                }
+
+                async function submitLaporan(e) {
                     e.preventDefault();
-                    const nama = document.getElementById('laporan-nama').value;
-                    const compo = document.getElementById('laporan-compo').value;
-                    const money = document.getElementById('laporan-money').value;
+                    const nama = document.getElementById('laporan-nama').value.trim();
+                    const compo = parseInt(document.getElementById('laporan-compo').value) || 0;
+                    const money = parseFloat(document.getElementById('laporan-money').value) || 0;
+                    const keterangan = document.getElementById('laporan-keterangan').value || '';
 
-                    const success = document.getElementById('laporan-success');
-                    success.style.display = 'block';
-                    success.innerHTML = `✅ Laporan berhasil!<br><strong>${nama}</strong><br>Compo: ${compo} | Rp ${parseInt(money).toLocaleString('id-ID')}`;
+                    if (!nama) {
+                        alert('Nama mechanic harus diisi!');
+                        return;
+                    }
 
-                    setTimeout(() => {
-                        success.style.display = 'none';
-                    }, 3000);
+                    if (!verifiedMechanicNama) {
+                        alert('Nama tidak valid atau bukan Mechanic!');
+                        return;
+                    }
 
-                    console.log('Laporan:', { nama, compo, money });
+                    try {
+                        const fd = new FormData();
+                        fd.append('action', 'add');
+                        fd.append('divisi', 'mechanic');
+                        fd.append('nama_karyawan', verifiedMechanicNama);
+                        fd.append('compo_used', compo);
+                        fd.append('money_stored', money);
+                        fd.append('keterangan', keterangan);
+                        fd.append('tanggal', new Date().toISOString().split('T')[0]);
+
+                        const res = await fetch('api/laporan_kerja_api.php', { method: 'POST', body: fd });
+                        const result = await res.json();
+
+                        const success = document.getElementById('laporan-success');
+                        if (result.success) {
+                            success.style.display = 'block';
+                            success.innerHTML = '✅ Laporan berhasil!<br><strong>' + verifiedMechanicNama + '</strong><br>Compo: ' + compo + ' | Rp ' + money.toLocaleString('id-ID');
+                            setTimeout(() => {
+                                success.style.display = 'none';
+                                resetLaporan();
+                            }, 3000);
+                        } else {
+                            alert(result.message || 'Gagal mengirim laporan');
+                        }
+                    } catch (e) {
+                        alert('Gagal mengirim laporan!');
+                    }
                 }
 
                 function resetLaporan() {
                     document.getElementById('laporan-form').reset();
+                    document.getElementById('laporan-nama-info').innerHTML = '';
                     document.getElementById('laporan-success').style.display = 'none';
+                    verifiedMechanicNama = null;
                 }
+
+                // Load employee list on focus
+                document.getElementById('win-laporan').addEventListener('focus', checkNamaMechanic);
             </script>
         </div>
         <div class="window-statusbar">
@@ -2800,18 +2877,20 @@ if ($currentUserId && $currentRole) {
                 <style>
                     .hd-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;flex-wrap:wrap;gap:10px; }
                     .hd-title { color:#8b5cf6;font-size:16px;margin:0; }
-                    .hd-filter { display:flex;gap:10px; }
+                    .hd-filter { display:flex;gap:10px;flex-wrap:wrap; }
                     .hd-filter select,.hd-filter input { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
                     .hd-btn { padding:8px 16px;border-radius:4px;border:none;background:#8b5cf6;color:#fff;font-size:12px;font-weight:bold;cursor:pointer; }
                     .hd-btn:hover { background:#7c3aed; }
+                    .hd-btn-reset { background:#30363d; }
+                    .hd-btn-reset:hover { background:#484f58; }
                     .hd-table { width:100%;border-collapse:collapse;font-size:12px; }
                     .hd-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d;text-align:left; }
                     .hd-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
                     .hd-table tr:hover td { background:#21262d; }
                     .hd-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
-                    .hd-done { background:#238636;color:#fff; }
-                    .hd-transit { background:#e8b828;color:#000; }
-                    .hd-pending { background:#cc2222;color:#fff; }
+                    .hd-selesai { background:#238636;color:#fff; }
+                    .hd-diambil { background:#e8b828;color:#000; }
+                    .hd-batal { background:#6b7280;color:#fff; }
                     .hd-total { margin-top:15px;padding:15px;background:#161b22;border:1px solid #30363d;border-radius:8px;display:flex;justify-content:space-between;align-items:center; }
                     .hd-total-label { color:#8b949e;font-size:12px; }
                     .hd-total-value { font-size:18px;font-weight:bold;color:#8b5cf6; }
@@ -2819,26 +2898,84 @@ if ($currentUserId && $currentRole) {
                 <div class="hd-header">
                     <h2 class="hd-title">📜 History Delivery</h2>
                     <div class="hd-filter">
-                        <input type="date" id="hd-tgl" value="<?php echo date('Y-m-d'); ?>">
-                        <button class="hd-btn" onclick="showToast('Filter', 'Menampilkan history...')">🔍 Filter</button>
+                        <input type="date" id="hd-filter-tanggal" value="">
+                        <select id="hd-filter-jenis" style="padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;">
+                            <option value="">Semua Jenis</option>
+                            <option value="compo">🔧 Compo</option>
+                            <option value="farmer">🌱 Farmer</option>
+                        </select>
+                        <button class="hd-btn" onclick="loadHistoryDelivery()">🔍 Filter</button>
+                        <button class="hd-btn hd-btn-reset" onclick="document.getElementById('hd-filter-tanggal').value='';document.getElementById('hd-filter-jenis').value='';loadHistoryDelivery();">🗑️ Reset</button>
                     </div>
                 </div>
                 <table class="hd-table">
-                    <thead><tr><th>No.</th><th>Tanggal</th><th>Pengirim</th><th>Penerima</th><th>Destinasi</th><th>Status</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td>21/05/2026</td><td>Ahmad Basuki</td><td>Dewi Sari</td><td>Jakarta</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
-                        <tr><td>2</td><td>21/05/2026</td><td>Budi Santoso</td><td>Siti Rahayu</td><td>Bandung</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
-                        <tr><td>3</td><td>20/05/2026</td><td>Chandra Wijaya</td><td>Rudi Hermawan</td><td>Surabaya</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
-                        <tr><td>4</td><td>20/05/2026</td><td>Dian Pratama</td><td>Eko Susanto</td><td>Yogyakarta</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
-                        <tr><td>5</td><td>19/05/2026</td><td>Fajar Nugroho</td><td>Gita Permata</td><td>Semarang</td><td><span class="hd-status hd-done">Selesai</span></td></tr>
-                    </tbody>
+                    <thead><tr><th>No.</th><th>Tanggal Input</th><th>Jenis</th><th>Crate</th><th>Alamat Tujuan</th><th>Penerima</th><th>Driver</th><th>Status</th></tr></thead>
+                    <tbody id="hd-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                 </table>
                 <div class="hd-total">
                     <span class="hd-total-label">Total Delivery:</span>
-                    <span class="hd-total-value">5 Pengiriman</span>
+                    <span class="hd-total-value" id="hd-total-count">0 Pengiriman</span>
                 </div>
             </div>
         </div>
+        <script>
+            async function loadHistoryDelivery() {
+                const tbody = document.getElementById('hd-table-body');
+                if (!tbody) return;
+
+                const tanggal = document.getElementById('hd-filter-tanggal').value;
+                const jenis = document.getElementById('hd-filter-jenis').value;
+
+                let url = 'api/delivery_order_api.php?action=get_all';
+                if (tanggal) url += '&tanggal=' + tanggal;
+                if (jenis) url += '&jenis=' + jenis;
+
+                try {
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    if (result.success && result.data && result.data.length > 0) {
+                        document.getElementById('hd-total-count').textContent = result.data.length + ' Pengiriman';
+
+                        let html = '';
+                        let no = 1;
+                        result.data.forEach(item => {
+                            const statusClass = item.status === 'selesai' ? 'hd-selesai' : (item.status === 'diambil' ? 'hd-diambil' : 'hd-batal');
+                            const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'diambil' ? 'Diambil' : 'Batal');
+                            const jenisIcon = item.jenis_delivery === 'compo' ? '🔧' : '🌱';
+                            const tanggalInput = item.tanggal_input ? formatDateTime(item.tanggal_input) : '-';
+                            const driverInfo = item.driver_nama ? item.driver_nama : '-';
+
+                            html += '<tr>' +
+                                '<td>' + (no++) + '</td>' +
+                                '<td>' + tanggalInput + '</td>' +
+                                '<td>' + jenisIcon + ' ' + item.jenis_delivery + '</td>' +
+                                '<td>' + item.jumlah_crate + ' crate</td>' +
+                                '<td>' + item.alamat_tujuan + '</td>' +
+                                '<td>' + item.nama_penerima + '</td>' +
+                                '<td>' + driverInfo + '</td>' +
+                                '<td><span class="hd-status ' + statusClass + '">' + statusText + '</span></td>' +
+                            '</tr>';
+                        });
+                        tbody.innerHTML = html;
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Tidak ada history</td></tr>';
+                        document.getElementById('hd-total-count').textContent = '0 Pengiriman';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Gagal memuat data</td></tr>';
+                }
+            }
+
+            // Load on window focus
+            document.getElementById('win-historydelivery').addEventListener('focus', loadHistoryDelivery);
+
+            // Auto-load on page load
+            window.addEventListener('load', function() {
+                // Set default date to today
+                document.getElementById('hd-filter-tanggal').value = getTodayJakarta();
+                setTimeout(loadHistoryDelivery, 1000);
+            });
+        </script>
         <div class="window-statusbar">
             <span class="statusbar-section">History Delivery</span>
             <span class="statusbar-section">Riwayat pengiriman cargo</span>
@@ -2877,74 +3014,294 @@ if ($currentUserId && $currentRole) {
                     .dl-filter select,.dl-filter input { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
                     .dl-btn { padding:8px 16px;border-radius:4px;border:none;background:#8b5cf6;color:#fff;font-size:12px;font-weight:bold;cursor:pointer; }
                     .dl-btn:hover { background:#7c3aed; }
-                    .dl-btn-add { background:#238636; }
-                    .dl-btn-add:hover { background:#2ea043; }
                     .dl-table { width:100%;border-collapse:collapse;font-size:12px; }
                     .dl-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d;text-align:left; }
                     .dl-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
                     .dl-table tr:hover td { background:#21262d; }
                     .dl-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
-                    .dl-new { background:#58a6ff;color:#fff; }
-                    .dl-process { background:#e8b828;color:#000; }
-                    .dl-ship { background:#8b5cf6;color:#fff; }
+                    .dl-pending { background:#cc2222;color:#fff; }
+                    .dl-diambil { background:#e8b828;color:#000; }
+                    .dl-selesai { background:#238636;color:#fff; }
+                    .dl-batal { background:#6b7280;color:#fff; }
                     .dl-action { display:flex;gap:5px; }
                     .dl-action-btn { padding:4px 8px;border-radius:4px;border:none;font-size:10px;font-weight:bold;cursor:pointer; }
-                    .dl-edit { background:#30363d;color:#fff; }
-                    .dl-edit:hover { background:#484f58; }
+                    .dl-ambil { background:#238636;color:#fff; }
+                    .dl-ambil:hover { background:#2ea043; }
+                    .dl-selesai-btn { background:#4db84d;color:#fff; }
+                    .dl-selesai-btn:hover { background:#5ecc5e; }
                     .dl-delete { background:#cc2222;color:#fff; }
                     .dl-delete:hover { background:#f85149; }
                     .dl-stats { display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap; }
-                    .dl-stat { flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center; }
+                    .dl-stat { flex:1;min-width:100px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center; }
                     .dl-stat-value { font-size:24px;font-weight:bold;color:#8b5cf6; }
                     .dl-stat-label { font-size:11px;color:#8b949e;margin-top:4px; }
+                    .dl-modal { display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center; }
+                    .dl-modal.show { display:flex; }
+                    .dl-modal-content { background:#161b22;border:2px solid #8b5cf6;border-radius:12px;padding:20px;width:400px;max-width:90%; }
+                    .dl-modal-title { color:#8b5cf6;font-size:16px;margin-bottom:15px;text-align:center; }
+                    .dl-modal-row { margin-bottom:12px; }
+                    .dl-modal-row label { display:block;font-size:11px;color:#8b949e;margin-bottom:4px; }
+                    .dl-modal-row select,.dl-modal-row input { width:100%;padding:10px;border-radius:6px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .dl-modal-btn { display:flex;gap:10px;margin-top:15px; }
+                    .dl-modal-btn button { flex:1;padding:10px;border-radius:6px;border:none;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .dl-modal-btn .dl-modal-submit { background:#8b5cf6;color:#fff; }
+                    .dl-modal-btn .dl-modal-cancel { background:#30363d;color:#fff; }
                 </style>
                 <div class="dl-header">
                     <h2 class="dl-title">📋 Delivery List</h2>
                     <div class="dl-filter">
-                        <select id="dl-status-filter">
-                            <option value="">Semua Status</option>
-                            <option value="new">Baru</option>
-                            <option value="process">Diproses</option>
-                            <option value="shipping">Dikirim</option>
+                        <select id="dl-filter-jenis" onchange="loadDeliveryList()">
+                            <option value="">Semua Jenis</option>
+                            <option value="compo">🔧 Compo</option>
+                            <option value="farmer">🌱 Farmer</option>
                         </select>
-                        <input type="date" id="dl-tgl" value="<?php echo date('Y-m-d'); ?>">
-                        <button class="dl-btn" onclick="showToast('Filter', 'Menampilkan daftar...')">🔍 Filter</button>
-                        <button class="dl-btn dl-btn-add" onclick="showToast('Tambah', 'Membuat pengiriman baru...')">➕ Tambah</button>
+                        <select id="dl-filter-status" onchange="loadDeliveryList()">
+                            <option value="">Semua Status</option>
+                            <option value="pending">⏳ Menunggu</option>
+                            <option value="diambil">🚚 Diambil</option>
+                            <option value="selesai">✅ Selesai</option>
+                        </select>
+                        <button class="dl-btn" onclick="loadDeliveryList()">🔍 Refresh</button>
                     </div>
                 </div>
                 <div class="dl-stats">
                     <div class="dl-stat">
-                        <div class="dl-stat-value">8</div>
-                        <div class="dl-stat-label">Total Pengiriman</div>
+                        <div class="dl-stat-value" id="dl-stat-total">0</div>
+                        <div class="dl-stat-label">Total</div>
                     </div>
                     <div class="dl-stat">
-                        <div class="dl-stat-value">3</div>
-                        <div class="dl-stat-label">Baru</div>
+                        <div class="dl-stat-value" id="dl-stat-pending">0</div>
+                        <div class="dl-stat-label">Menunggu</div>
                     </div>
                     <div class="dl-stat">
-                        <div class="dl-stat-value">3</div>
-                        <div class="dl-stat-label">Diproses</div>
+                        <div class="dl-stat-value" id="dl-stat-diambil">0</div>
+                        <div class="dl-stat-label">Diambil</div>
                     </div>
                     <div class="dl-stat">
-                        <div class="dl-stat-value">2</div>
-                        <div class="dl-stat-label">Dikirim</div>
+                        <div class="dl-stat-value" id="dl-stat-selesai">0</div>
+                        <div class="dl-stat-label">Selesai</div>
                     </div>
                 </div>
                 <table class="dl-table">
-                    <thead><tr><th>No.</th><th>Tanggal</th><th>Pengirim</th><th>Penerima</th><th>Destinasi</th><th>Barang</th><th>Status</th><th>Aksi</th></tr></thead>
-                    <tbody>
-                        <tr><td>1</td><td>21/05/2026</td><td>Ahmad Basuki</td><td>Dewi Sari</td><td>Jakarta</td><td>Elektronik 5 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>2</td><td>21/05/2026</td><td>Budi Santoso</td><td>Siti Rahayu</td><td>Bandung</td><td>Pakaian 2 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>3</td><td>21/05/2026</td><td>Chandra Wijaya</td><td>Rudi Hermawan</td><td>Surabaya</td><td>Dokumen 1 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>4</td><td>21/05/2026</td><td>Dian Pratama</td><td>Eko Susanto</td><td>Yogyakarta</td><td>Makanan 10 kg</td><td><span class="dl-status dl-ship">Dikirim</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>5</td><td>21/05/2026</td><td>Fajar Nugroho</td><td>Gita Permata</td><td>Semarang</td><td>Barang 3 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>6</td><td>20/05/2026</td><td>Hendra Kusuma</td><td>Intan Safitri</td><td>Surabaya</td><td>Perabot 15 kg</td><td><span class="dl-status dl-new">Baru</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>7</td><td>20/05/2026</td><td>Irfan Hakim</td><td>Jasmine Lee</td><td>Bandung</td><td>Elektronik 8 kg</td><td><span class="dl-status dl-ship">Dikirim</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                        <tr><td>8</td><td>20/05/2026</td><td>Kiki Amelia</td><td>Lucky Setiawan</td><td>Jakarta</td><td>Pakaian 4 kg</td><td><span class="dl-status dl-process">Diproses</span></td><td><div class="dl-action"><button class="dl-action-btn dl-edit">✏️</button><button class="dl-action-btn dl-delete">🗑️</button></div></td></tr>
-                    </tbody>
+                    <thead><tr><th>No.</th><th>Waktu</th><th>Jenis</th><th>Crate</th><th>Alamat Tujuan</th><th>Penerima</th><th>Telepon</th><th>Status</th><th>Driver</th><th>Aksi</th></tr></thead>
+                    <tbody id="dl-table-body"><tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                 </table>
             </div>
         </div>
+
+        <!-- Modal Ambil Delivery -->
+        <div class="dl-modal" id="dl-ambil-modal">
+            <div class="dl-modal-content">
+                <div class="dl-modal-title">🚚 Ambil Delivery</div>
+                <div class="dl-modal-row">
+                    <label>Nama Driver (Ketik nama, harus Cargo Driver)</label>
+                    <input type="text" id="dl-driver-nama" placeholder="Ketik nama driver..." autocomplete="off" oninput="checkDriverName()">
+                    <div id="dl-driver-info" style="font-size:10px;margin-top:4px;color:#8b949e;"></div>
+                </div>
+                <div class="dl-modal-row" id="dl-delivery-info">
+                    <label>Detail Delivery</label>
+                    <div style="padding:10px;background:#010409;border-radius:6px;font-size:12px;color:#c9d1d9;">
+                        <div id="dl-info-jenis"></div>
+                        <div id="dl-info-alamat"></div>
+                        <div id="dl-info-penerima"></div>
+                    </div>
+                </div>
+                <div class="dl-modal-btn">
+                    <button class="dl-modal-cancel" onclick="closeAmbilModal()">Batal</button>
+                    <button class="dl-modal-submit" onclick="submitAmbilDelivery()">✅ Ambil</button>
+                </div>
+                <input type="hidden" id="dl-ambil-id">
+                <input type="hidden" id="dl-driver-id">
+            </div>
+        </div>
+
+        <script>
+            let currentDeliveryId = null;
+            let verifiedDriverId = null;
+            let verifiedDriverNama = null;
+
+            async function checkDriverName() {
+                const input = document.getElementById('dl-driver-nama');
+                const info = document.getElementById('dl-driver-info');
+                const nama = input.value.trim();
+
+                if (nama.length < 2) {
+                    info.innerHTML = '';
+                    verifiedDriverId = null;
+                    verifiedDriverNama = null;
+                    document.getElementById('dl-driver-id').value = '';
+                    return;
+                }
+
+                try {
+                    const res = await fetch('api/delivery_order_api.php?action=get_employees_cargo');
+                    const result = await res.json();
+                    if (result.success && result.data) {
+                        const match = result.data.find(emp => emp.nama.toLowerCase() === nama.toLowerCase());
+                        if (match) {
+                            info.innerHTML = '<span style="color:#4db84d;">✅ Driver ditemukan: ' + match.nama + ' (' + match.divisi + ')</span>';
+                            verifiedDriverId = match.id;
+                            verifiedDriverNama = match.nama;
+                            document.getElementById('dl-driver-id').value = match.id;
+                        } else {
+                            info.innerHTML = '<span style="color:#f85149;">❌ Driver tidak ditemukan atau bukan Cargo Driver</span>';
+                            verifiedDriverId = null;
+                            verifiedDriverNama = null;
+                            document.getElementById('dl-driver-id').value = '';
+                        }
+                    }
+                } catch (e) {
+                    info.innerHTML = '<span style="color:#f85149;">❌ Gagal cek driver</span>';
+                }
+            }
+
+            async function loadDeliveryList() {
+                const tbody = document.getElementById('dl-table-body');
+                if (!tbody) return;
+
+                const jenis = document.getElementById('dl-filter-jenis').value;
+                const status = document.getElementById('dl-filter-status').value;
+                let url = 'api/delivery_order_api.php?action=get_all';
+                if (jenis) url += '&jenis=' + jenis;
+                if (status) url += '&status=' + status;
+
+                try {
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    if (result.success && result.data && result.data.length > 0) {
+                        // Update stats
+                        document.getElementById('dl-stat-total').textContent = result.data.length;
+                        document.getElementById('dl-stat-pending').textContent = result.data.filter(d => d.status === 'pending').length;
+                        document.getElementById('dl-stat-diambil').textContent = result.data.filter(d => d.status === 'diambil').length;
+                        document.getElementById('dl-stat-selesai').textContent = result.data.filter(d => d.status === 'selesai').length;
+
+                        let html = '';
+                        let no = 1;
+                        result.data.forEach(item => {
+                            const statusClass = item.status === 'selesai' ? 'dl-selesai' : (item.status === 'diambil' ? 'dl-diambil' : 'dl-pending');
+                            const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'diambil' ? 'Diambil' : 'Menunggu');
+                            const jenisIcon = item.jenis_delivery === 'compo' ? '🔧' : '🌱';
+                            const driverInfo = item.driver_nama ? item.driver_nama : '-';
+                            const waktuInput = item.tanggal_input ? formatDateTime(item.tanggal_input) : '-';
+                            let actions = '';
+                            if (item.status === 'pending') {
+                                actions = '<button class="dl-action-btn dl-ambil" onclick="openAmbilModal(' + item.id + ', \'' + item.jenis_delivery + '\', \'' + item.alamat_tujuan + '\', \'' + item.nama_penerima + '\')">🚚 Ambil</button>';
+                            } else if (item.status === 'diambil') {
+                                actions = '<button class="dl-action-btn dl-selesai-btn" onclick="selesaikanDelivery(' + item.id + ')">✅ Selesai</button>';
+                            } else {
+                                actions = '-';
+                            }
+                            html += '<tr>' +
+                                '<td>' + (no++) + '</td>' +
+                                '<td>' + waktuInput + '</td>' +
+                                '<td>' + jenisIcon + ' ' + item.jenis_delivery + '</td>' +
+                                '<td>' + item.jumlah_crate + ' crate</td>' +
+                                '<td>' + item.alamat_tujuan + '</td>' +
+                                '<td>' + item.nama_penerima + '</td>' +
+                                '<td>' + (item.no_telepon || '-') + '</td>' +
+                                '<td><span class="dl-status ' + statusClass + '">' + statusText + '</span></td>' +
+                                '<td>' + driverInfo + '</td>' +
+                                '<td>' + actions + '</td>' +
+                            '</tr>';
+                        });
+                        tbody.innerHTML = html;
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#8b949e;">Tidak ada delivery</td></tr>';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;color:#f85149;">Gagal memuat data</td></tr>';
+                }
+            }
+
+            async function openAmbilModal(id, jenis, alamat, penerima) {
+                currentDeliveryId = id;
+                document.getElementById('dl-ambil-id').value = id;
+                document.getElementById('dl-info-jenis').innerText = 'Jenis: ' + (jenis === 'compo' ? '🔧 Deliver Compo' : '🌱 Deliver Farmer');
+                document.getElementById('dl-info-alamat').innerText = 'Alamat: ' + alamat;
+                document.getElementById('dl-info-penerima').innerText = 'Penerima: ' + penerima;
+                document.getElementById('dl-driver-nama').value = '';
+                document.getElementById('dl-driver-info').innerHTML = '';
+                verifiedDriverId = null;
+                verifiedDriverNama = null;
+                document.getElementById('dl-driver-id').value = '';
+                document.getElementById('dl-ambil-modal').classList.add('show');
+            }
+
+            function closeAmbilModal() {
+                document.getElementById('dl-ambil-modal').classList.remove('show');
+                currentDeliveryId = null;
+                verifiedDriverId = null;
+                verifiedDriverNama = null;
+            }
+
+            async function submitAmbilDelivery() {
+                const driverNama = document.getElementById('dl-driver-nama').value.trim();
+
+                if (!driverNama) {
+                    alert('Ketik nama driver!');
+                    return;
+                }
+
+                if (!verifiedDriverId) {
+                    alert('Driver tidak valid atau bukan Cargo Driver!');
+                    return;
+                }
+
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'ambildelivery');
+                    fd.append('id', currentDeliveryId);
+                    fd.append('driver_id', verifiedDriverId);
+                    fd.append('driver_nama', verifiedDriverNama);
+
+                    const res = await fetch('api/delivery_order_api.php', { method: 'POST', body: fd });
+                    const result = await res.json();
+                    if (result.success) {
+                        closeAmbilModal();
+                        loadDeliveryList();
+                        showToast('Sukses', result.message);
+                    } else {
+                        alert(result.message || 'Gagal mengambil delivery');
+                    }
+                } catch (e) {
+                    alert('Gagal mengambil delivery!');
+                }
+            }
+
+            async function selesaikanDelivery(id) {
+                if (!confirm('Tandai delivery ini sebagai selesai?')) return;
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'selesaikan');
+                    fd.append('id', id);
+                    const res = await fetch('api/delivery_order_api.php', { method: 'POST', body: fd });
+                    const result = await res.json();
+                    if (result.success) {
+                        loadDeliveryList();
+                        showToast('Sukses', result.message);
+                    } else {
+                        alert(result.message || 'Gagal menyelesaikan delivery');
+                    }
+                } catch (e) {
+                    alert('Gagal menyelesaikan delivery!');
+                }
+            }
+
+            // Load on window open
+            document.getElementById('win-deliverylist').addEventListener('focus', loadDeliveryList);
+
+            // Auto-refresh every 15 seconds for realtime updates
+            setInterval(() => {
+                if (document.getElementById('win-deliverylist').style.display === 'block') {
+                    loadDeliveryList();
+                }
+            }, 15000);
+
+            // Also load on page load
+            window.addEventListener('load', function() {
+                setTimeout(loadDeliveryList, 1000);
+            });
+        </script>
         <div class="window-statusbar">
             <span class="statusbar-section">Delivery List</span>
             <span class="statusbar-section">Daftar pengiriman aktif</span>
@@ -3212,19 +3569,41 @@ if ($currentUserId && $currentRole) {
                     .lk-total-value { font-size:20px;font-weight:bold;color:#ffd700; }
                 </style>
                 <div class="lk-header">
-                    <h2 class="lk-title">📊 Laporan Kerja Mechanic</h2>
+                    <h2 class="lk-title">📊 Laporan Kerja</h2>
                     <div class="lk-filter">
-                        <select id="lk-bulan"><option value="">Semua Bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select>
-                        <button class="lk-btn" onclick="loadLaporanKerja()">🔍 Filter</button>
+                        <select id="lk-filter-bulan" onchange="loadLaporanKerja()"><option value="">Semua Bulan</option><option value="2026-01">Januari</option><option value="2026-02">Februari</option><option value="2026-03">Maret</option><option value="2026-04">April</option><option value="2026-05">Mei</option><option value="2026-06">Juni</option><option value="2026-07">Juli</option><option value="2026-08">Agustus</option><option value="2026-09">September</option><option value="2026-10">Oktober</option><option value="2026-11">November</option><option value="2026-12">Desember</option></select>
+                        <select id="lk-filter-divisi" onchange="loadLaporanKerja()" style="padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;">
+                            <option value="">Semua Divisi</option>
+                            <option value="mechanic">🔧 Mechanic</option>
+                            <option value="farmer">🌱 Farmer</option>
+                        </select>
+                        <button class="lk-btn" onclick="loadLaporanKerja()">🔍</button>
+                    </div>
+                </div>
+                <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
+                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                        <div style="font-size:20px;font-weight:bold;color:#ffd700;" id="lk-total-count">0</div>
+                        <div style="font-size:10px;color:#8b949e;">Total Laporan</div>
+                    </div>
+                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                        <div style="font-size:20px;font-weight:bold;color:#58a6ff;" id="lk-total-compo">0</div>
+                        <div style="font-size:10px;color:#8b949e;">Total Compo/Bibit</div>
+                    </div>
+                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                        <div style="font-size:20px;font-weight:bold;color:#4db84d;" id="lk-total-money">Rp 0</div>
+                        <div style="font-size:10px;color:#8b949e;">Total Pendapatan</div>
                     </div>
                 </div>
                 <table class="lk-table">
-                    <thead><tr><th>Tanggal</th><th>Nama Mechanic</th><th>Compo Used</th><th>Money Stored</th><th>Keterangan</th></tr></thead>
-                    <tbody id="lk-table-body"></tbody>
+                    <thead><tr><th>Tanggal</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit</th><th>Money/Panen</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+                    <tbody id="lk-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                 </table>
-                <div class="lk-total"><span class="lk-total-label">Total Pendapatan:</span><span class="lk-total-value" id="lk-total-value">Rp 0</span></div>
             </div>
-            <script>loadLaporanKerja();</script>
+            <script>
+                window.addEventListener('load', function() {
+                    loadLaporanKerja();
+                });
+            </script>
         </div>
         <div class="window-statusbar"><span class="statusbar-section">Laporan Kerja</span><span class="statusbar-section">Laporan kerja mechanic</span></div>
         <div class="resizer" onmousedown="startResize(event, 'win-laporankerja')"></div>
@@ -3657,21 +4036,116 @@ if ($currentUserId && $currentRole) {
                     .tht-pending { background:#cc2222;color:#fff; }
                     .tht-btn { padding:8px 16px;background:#228b22;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer;width:100%;margin-top:10px; }
                     .tht-btn:hover { background:#32cd32; }
+                    .tht-empty { text-align:center;padding:30px;color:#8b949e;font-size:13px; }
                 </style>
                 <div class="tht-header">
                     <h2 class="tht-title">📋 Tugas Hari Ini</h2>
-                    <div class="tht-date"><?php echo date('d/m/Y'); ?></div>
+                    <div class="tht-date" id="tht-date"><?php echo date('d/m/Y'); ?></div>
                 </div>
-                <div class="tht-list">
-                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">08:00</span><span class="tht-text">Menyiram tanaman Greenhouse A</span></div><span class="tht-status tht-done">Selesai</span></div>
-                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">09:30</span><span class="tht-text">Pupuk organik cabai</span></div><span class="tht-status tht-progress">Proses</span></div>
-                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">10:00</span><span class="tht-text">Cek pertumbuhan tomat</span></div><span class="tht-status tht-pending">Pending</span></div>
-                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">11:30</span><span class="tht-text">Panen sayur mayur</span></div><span class="tht-status tht-pending">Pending</span></div>
-                    <div class="tht-item"><div class="tht-item-left"><span class="tht-time">14:00</span><span class="tht-text">Semprot pestisida Greenhouse B</span></div><span class="tht-status tht-pending">Pending</span></div>
+                <div class="tht-list" id="tht-list">
+                    <div class="tht-empty">⏳ Memuat tugas...</div>
                 </div>
-                <button class="tht-btn" onclick="showToast('Tugas', 'Menambah tugas baru...')">➕ Tambah Tugas</button>
             </div>
         </div>
+        <script>
+            // Indonesian day names + timezone
+            const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+            // Get current date/time in Indonesia Jakarta (WIB = UTC+7)
+            function getJakartaDate() {
+                const now = new Date();
+                // Convert to Jakarta time
+                const jakartaOffset = 7 * 60; // WIB is UTC+7
+                const localOffset = now.getTimezoneOffset();
+                const jakartaTime = new Date(now.getTime() + (jakartaOffset + localOffset) * 60000);
+                return jakartaTime;
+            }
+
+            function formatDate(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                const day = dayNames[d.getDay()];
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                return day + ', ' + dd + '/' + mm + '/' + yyyy;
+            }
+
+            function formatDateTime(dateStr) {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                const day = dayNames[d.getDay()];
+                const dd = String(d.getDate()).padStart(2, '0');
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const yyyy = d.getFullYear();
+                const hh = String(d.getHours()).padStart(2, '0');
+                const min = String(d.getMinutes()).padStart(2, '0');
+                return day.substring(0, 3) + ', ' + dd + '/' + mm + '/' + yyyy + ' ' + hh + ':' + min;
+            }
+
+            // Get current date in YYYY-MM-DD format (Jakarta time)
+            function getTodayJakarta() {
+                const jakarta = getJakartaDate();
+                const yyyy = jakarta.getFullYear();
+                const mm = String(jakarta.getMonth() + 1).padStart(2, '0');
+                const dd = String(jakarta.getDate()).padStart(2, '0');
+                return yyyy + '-' + mm + '-' + dd;
+            }
+
+            // Get current time in HH:MM:SS format (Jakarta time)
+            function getNowJakarta() {
+                const jakarta = getJakartaDate();
+                const hh = String(jakarta.getHours()).padStart(2, '0');
+                const mm = String(jakarta.getMinutes()).padStart(2, '0');
+                const ss = String(jakarta.getSeconds()).padStart(2, '0');
+                return hh + ':' + mm + ':' + ss;
+            }
+
+            async function loadTugasHariIni() {
+                const list = document.getElementById('tht-list');
+                const dateEl = document.getElementById('tht-date');
+                if (!list) return;
+
+                try {
+                    const res = await fetch('api/tugas_harian_api.php?action=get_today');
+                    const result = await res.json();
+
+                    if (result.success && result.data && result.data.length > 0) {
+                        // Update date header from first item
+                        const firstDate = result.data[0].tanggal;
+                        if (dateEl) dateEl.innerText = formatDate(firstDate);
+
+                        let html = '';
+                        result.data.forEach(item => {
+                            const statusClass = item.status === 'selesai' ? 'tht-done' : (item.status === 'proses' ? 'tht-progress' : 'tht-pending');
+                            const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'proses' ? 'Proses' : 'Pending');
+                            const jamMulai = item.jam_mulai ? item.jam_mulai.substring(0, 5) : '00:00';
+                            const jamSelesai = item.jam_selesai ? item.jam_selesai.substring(0, 5) : '00:00';
+                            html += '<div class="tht-item">' +
+                                '<div class="tht-item-left"><span class="tht-time">' + jamMulai + ' - ' + jamSelesai + '</span><span class="tht-text">' + item.tugas + '</span></div>' +
+                                '<span class="tht-status ' + statusClass + '">' + statusText + '</span>' +
+                            '</div>';
+                        });
+                        list.innerHTML = html;
+                    } else {
+                        list.innerHTML = '<div class="tht-empty">📭 Tidak ada tugas hari ini</div>';
+                    }
+                } catch (e) {
+                    list.innerHTML = '<div class="tht-empty" style="color:#f85149;">⚠️ Gagal memuat tugas</div>';
+                }
+            }
+
+            // Auto-refresh every 30 seconds to check status (Jakarta time)
+            setInterval(() => { if (document.getElementById('win-tugashariini').style.display === 'block') loadTugasHariIni(); }, 30000);
+
+            // Load on window open
+            document.getElementById('win-tugashariini').addEventListener('focus', loadTugasHariIni);
+
+            // Also load on page load
+            window.addEventListener('load', function() {
+                setTimeout(loadTugasHariIni, 500);
+            });
+        </script>
         <div class="window-statusbar">
             <span class="statusbar-section">Tugas Hari Ini</span>
             <span class="statusbar-section">Daftar tugas harian farming</span>
@@ -3789,8 +4263,54 @@ if ($currentUserId && $currentRole) {
                 <div class="app-section">
                     <div class="app-section-title">📊 MANAGER APP - Brothers Company</div>
                     <div class="btn-grid" style="justify-content:center;">
-                        <p style="color:#8b949e;font-size:13px;">Fitur dalam pengembangan...</p>
+                        <!-- Mechanic Manager -->
+                        <button class="app-btn" onclick="openWindow('mechanicmanager')" style="min-width:140px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="4" y="8" width="40" height="32" rx="2" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="2"/>
+                                <rect x="8" y="12" width="32" height="20" fill="#c8e0f5"/>
+                                <circle cx="14" cy="22" r="5" fill="#f0f0f0" stroke="#707070" stroke-width="1"/>
+                                <circle cx="34" cy="22" r="5" fill="#f0f0f0" stroke="#707070" stroke-width="1"/>
+                                <rect x="16" y="34" width="16" height="4" rx="2" fill="#245edc"/>
+                                <circle cx="14" cy="22" r="2" fill="#2d8a2d"/>
+                                <circle cx="34" cy="22" r="2" fill="#cc2222"/>
+                            </svg>
+                            Mechanic Manager
+                        </button>
+                        <!-- Farmer Manager -->
+                        <button class="app-btn" onclick="openWindow('farmermanager')" style="min-width:140px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="4" y="30" width="40" height="14" rx="2" fill="#8b4513" stroke="#5d3a1a"/>
+                                <rect x="8" y="32" width="8" height="10" fill="#228b22"/>
+                                <rect x="20" y="32" width="8" height="10" fill="#32cd32"/>
+                                <rect x="32" y="32" width="8" height="10" fill="#228b22"/>
+                                <circle cx="12" cy="26" r="6" fill="#90ee90" stroke="#228b22"/>
+                                <circle cx="24" cy="22" r="6" fill="#90ee90" stroke="#228b22"/>
+                                <circle cx="36" cy="26" r="6" fill="#90ee90" stroke="#228b22"/>
+                                <path d="M24 4 L24 16" stroke="#8b4513" stroke-width="2"/>
+                                <circle cx="24" cy="4" r="3" fill="#ffd700"/>
+                            </svg>
+                            Farmer Manager
+                        </button>
+                        <!-- Cargo Manager -->
+                        <button class="app-btn" onclick="openWindow('cargomanager')" style="min-width:140px;padding:16px;">
+                            <svg viewBox="0 0 48 48">
+                                <rect x="6" y="14" width="36" height="26" rx="2" fill="#8b5cf6" stroke="#5b21b6" stroke-width="2"/>
+                                <rect x="10" y="18" width="28" height="18" fill="#c4b5fd"/>
+                                <rect x="14" y="22" width="20" height="10" fill="#7c3aed"/>
+                                <rect x="18" y="8" width="12" height="6" rx="1" fill="#a78bfa"/>
+                                <circle cx="24" cy="4" r="3" fill="#ddd"/>
+                                <rect x="10" y="36" width="8" height="6" fill="#333"/>
+                                <rect x="30" y="36" width="8" height="6" fill="#333"/>
+                            </svg>
+                            Cargo Manager
+                        </button>
                     </div>
+                </div>
+                <div class="app-section">
+                    <div class="app-section-title">📋 INFORMASI</div>
+                    <p class="status-bar-text">
+                        ManagerApp menyediakan akses untuk mengelola setiap divisi: Mechanic, Farmer, dan Cargo.
+                    </p>
                 </div>
             </div>
         </div>
@@ -3799,6 +4319,721 @@ if ($currentUserId && $currentRole) {
             <span class="statusbar-section">Manager dashboard</span>
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-manager')"></div>
+    </div>
+
+    <!-- MECHANIC MANAGER WINDOW -->
+    <div class="window" id="win-mechanicmanager" style="top:100px;left:160px;width:550px;height:500px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-mechanicmanager')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="2" width="12" height="12" rx="1" fill="#3a6ea5"/>
+                <circle cx="5" cy="7" r="2" fill="#f0f0f0"/>
+                <circle cx="11" cy="7" r="2" fill="#f0f0f0"/>
+            </svg>
+            <span class="window-title">Mechanic Manager - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-mechanicmanager')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-mechanicmanager')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-mechanicmanager')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .pm-title { color:#58a6ff;font-size:16px;margin:0 0 15px 0;text-align:center; }
+                    .pm-desc { color:#8b949e;font-size:12px;text-align:center;margin-bottom:20px; }
+                    .pm-card { background:#161b22;padding:20px;border-radius:10px;border:1px solid #30363d;margin-bottom:15px; }
+                    .pm-card h3 { color:#58a6ff;margin:0 0 15px 0;font-size:14px;border-bottom:1px solid #30363d;padding-bottom:10px; }
+                    .pm-row { display:flex;align-items:center;margin-bottom:12px;padding:10px;background:#010409;border-radius:6px;border:1px solid #30363d; }
+                    .pm-row label { flex:1;font-size:12px;color:#c9d1d9; }
+                    .pm-row input { width:80px;padding:8px;border-radius:4px;border:1px solid #30363d;background:#0d1117;color:#fff;font-size:14px;text-align:center;font-weight:bold; }
+                    .pm-row .pm-label { width:40px;text-align:center;font-size:12px;color:#8b949e; }
+                    .pm-row .pm-show { min-width:60px;padding:6px 10px;background:#238636;color:#fff;border-radius:4px;font-size:12px;font-weight:bold;text-align:center; }
+                    .pm-btn { width:100%;padding:12px;background:#58a6ff;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:bold;cursor:pointer;margin-top:10px; }
+                    .pm-btn:hover { background:#79b8ff; }
+                    .pm-btn-reset { background:#30363d;color:#fff;margin-top:5px; }
+                    .pm-btn-reset:hover { background:#484f58; }
+                    .pm-success { display:none;background:#238636;color:#fff;padding:10px;border-radius:6px;text-align:center;margin-top:10px;font-size:12px; }
+                    .pm-note { font-size:10px;color:#8b949e;text-align:center;margin-top:10px; }
+                </style>
+                <h2 class="pm-title">⚙️ Atur Harga Component</h2>
+                <p class="pm-desc">Pengaturan multiplier harga untuk setiap jenis layanan</p>
+
+                <div class="pm-card">
+                    <h3>💰 Multiplier Config</h3>
+                    <div class="pm-row">
+                        <label>Mechanical Repair</label>
+                        <span class="pm-label">x</span>
+                        <input type="number" id="pm-repair" step="0.1" min="0.1">
+                    </div>
+                    <div class="pm-row">
+                        <label>Custom Modification</label>
+                        <span class="pm-label">x</span>
+                        <input type="number" id="pm-modif" step="0.1" min="0.1">
+                    </div>
+                    <div class="pm-row">
+                        <label>Brotherhood Disc</label>
+                        <span class="pm-label">x</span>
+                        <input type="number" id="pm-brother" step="0.1" min="0.1">
+                    </div>
+                    <div class="pm-row">
+                        <label>WS Stored</label>
+                        <span class="pm-label">x</span>
+                        <input type="number" id="pm-ws_stored" step="0.1" min="0.1">
+                    </div>
+                </div>
+
+                <div class="pm-card">
+                    <h3>🔧 Sparepart Price</h3>
+                    <div class="pm-row">
+                        <label>Harga per Unit ($)</label>
+                        <span class="pm-label">$</span>
+                        <input type="number" id="pm-sparepart" step="0.1" min="0">
+                    </div>
+                </div>
+
+                <div id="pm-current-config" class="pm-card" style="background:#0d1117;border-color:#58a6ff;">
+                    <h3 style="border-color:#30363d;">📋 Harga Saat Ini (Dari Database)</h3>
+                    <div id="pm-config-list" style="font-size:12px;color:#8b949e;">
+                        <div style="padding:20px;text-align:center;color:#58a6ff;">⏳ Memuat harga...</div>
+                    </div>
+                </div>
+
+                <button class="pm-btn" onclick="savePriceConfig()">💾 Simpan Konfigurasi</button>
+                <button class="pm-btn" style="background:#30363d;margin-top:5px;" onclick="if(typeof loadPriceConfig==='function')loadPriceConfig();">🔄 Refresh Harga</button>
+                <div id="pm-success" class="pm-success">✅ Konfigurasi berhasil disimpan!</div>
+
+                <p class="pm-note">* Hanya Admin yang dapat mengubah konfigurasi ini</p>
+            </div>
+            <script>
+                async function loadPriceConfig() {
+                    console.log('Loading price config...');
+                    try {
+                        const res = await fetch('api/price_config_api.php?action=get_all');
+                        console.log('API response status:', res.status);
+                        const result = await res.json();
+                        console.log('Price config result:', result);
+                        let configHtml = '<div style="margin-top:8px;">';
+
+                        // Default values
+                        const defaults = {
+                            repair: { name: 'Mechanical Repair', value: 3.0 },
+                            modif: { name: 'Custom Modification', value: 3.0 },
+                            brother: { name: 'Brotherhood Disc', value: 2.3 },
+                            ws_stored: { name: 'WS Stored', value: 2.0 }
+                        };
+
+                        if (result.success && result.data && result.data.length > 0) {
+                            // Use DB values
+                            result.data.forEach(item => {
+                                configHtml += '<div style="padding:6px 0;border-bottom:1px solid #30363d;"><span style="color:#c9d1d9;">' + (item.nama_layanan || item.jenis_layanan) + ':</span> <span style="color:#ffd700;font-weight:bold;">x ' + item.multiplier + '</span></div>';
+                                const el = document.getElementById('pm-' + item.jenis_layanan);
+                                if (el) el.value = item.multiplier;
+                                if (defaults[item.jenis_layanan]) delete defaults[item.jenis_layanan];
+                            });
+                            // Show remaining defaults
+                            Object.values(defaults).forEach(d => {
+                                configHtml += '<div style="padding:6px 0;border-bottom:1px solid #30363d;"><span style="color:#c9d1d9;">' + d.name + ':</span> <span style="color:#ffd700;font-weight:bold;">x ' + d.value + ' (default)</span></div>';
+                            });
+                        } else {
+                            // Show all defaults
+                            Object.values(defaults).forEach(d => {
+                                configHtml += '<div style="padding:6px 0;border-bottom:1px solid #30363d;"><span style="color:#c9d1d9;">' + d.name + ':</span> <span style="color:#ffd700;font-weight:bold;">x ' + d.value + ' (default)</span></div>';
+                            });
+                            configHtml += '<div style="margin-top:8px;padding:6px;background:#21262d;border-radius:4px;font-size:11px;color:#f85149;">⚠️ Database kosong - menggunakan nilai default</div>';
+                        }
+                        configHtml += '</div>';
+
+                        // Load sparepart price
+                        let sparepartValue = 2.0;
+                        try {
+                            const sparepartRes = await fetch('api/sparepart_config_api.php?action=get');
+                            const sparepartResult = await sparepartRes.json();
+                            if (sparepartResult.success && sparepartResult.data) {
+                                sparepartValue = sparepartResult.data.harga_per_unit;
+                                const spareEl = document.getElementById('pm-sparepart');
+                                if (spareEl) spareEl.value = sparepartValue;
+                            }
+                        } catch (e) { /* use default */ }
+
+                        configHtml += '<div style="padding:6px 0;border-top:1px solid #30363d;margin-top:8px;"><span style="color:#c9d1d9;">Sparepart:</span> <span style="color:#ffd700;font-weight:bold;">$ ' + sparepartValue + ' /unit</span></div>';
+
+                        const configList = document.getElementById('pm-config-list');
+                        console.log('pm-config-list element:', configList);
+                        if (configList) {
+                            configList.innerHTML = configHtml;
+                            console.log('Config list updated!');
+                        } else {
+                            console.error('pm-config-list NOT FOUND!');
+                        }
+                    } catch (e) {
+                        console.error('loadPriceConfig error:', e);
+                        // Fallback - show defaults
+                        const defaults = [
+                            { name: 'Mechanical Repair', value: '3.0' },
+                            { name: 'Custom Modification', value: '3.0' },
+                            { name: 'Brotherhood Disc', value: '2.3' },
+                            { name: 'WS Stored', value: '2.0' }
+                        ];
+                        let html = '<div style="margin-top:8px;">';
+                        defaults.forEach(d => {
+                            html += '<div style="padding:6px 0;border-bottom:1px solid #30363d;"><span style="color:#c9d1d9;">' + d.name + ':</span> <span style="color:#ffd700;font-weight:bold;">x ' + d.value + ' (default)</span></div>';
+                        });
+                        html += '</div><div style="padding:6px 0;border-top:1px solid #30363d;margin-top:8px;"><span style="color:#c9d1d9;">Sparepart:</span> <span style="color:#ffd700;font-weight:bold;">$ 2.0 /unit</span></div>';
+                        html += '<div style="margin-top:8px;padding:6px;background:#21262d;border-radius:4px;font-size:11px;color:#f85149;">⚠️ Gagal load dari database</div>';
+                        const configList = document.getElementById('pm-config-list');
+                        if (configList) configList.innerHTML = html;
+                    }
+                }
+
+                async function savePriceConfig() {
+                    const data = {
+                        repair: parseFloat(document.getElementById('pm-repair').value) || 3.0,
+                        modif: parseFloat(document.getElementById('pm-modif').value) || 3.0,
+                        brother: parseFloat(document.getElementById('pm-brother').value) || 2.3,
+                        ws_stored: parseFloat(document.getElementById('pm-ws_stored').value) || 2.0,
+                        sparepart: parseFloat(document.getElementById('pm-sparepart').value) || 2.0
+                    };
+
+                    try {
+                        // Save price config
+                        for (const [jenis, multiplier] of Object.entries(data)) {
+                            if (jenis === 'sparepart') {
+                                await fetch('api/sparepart_config_api.php', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                    body: 'action=update&harga_per_unit=' + multiplier
+                                });
+                            } else {
+                                await fetch('api/price_config_api.php', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                    body: 'action=update&jenis=' + jenis + '&multiplier=' + multiplier
+                                });
+                            }
+                        }
+
+                        // Update localStorage calcConfig for immediate effect
+                        const calcConfigUpdate = {
+                            multipliers: {
+                                repair: data.repair,
+                                modif: data.modif,
+                                brother: data.brother,
+                                ws_stored: data.ws_stored
+                            },
+                            sparepartPricePerUnit: data.sparepart,
+                            timestamp: Date.now()
+                        };
+                        localStorage.setItem('calcConfig', JSON.stringify(calcConfigUpdate));
+
+                        const success = document.getElementById('pm-success');
+                        success.style.display = 'block';
+                        setTimeout(() => { success.style.display = 'none'; }, 3000);
+                    } catch (e) {
+                        alert('Gagal menyimpan konfigurasi!');
+                    }
+                }
+
+                // Auto-load price config on page load
+            window.addEventListener('load', function() {
+                setTimeout(loadPriceConfig, 800);
+            });
+
+            // Also load when window becomes visible
+            const mmWindow = document.getElementById('win-mechanicmanager');
+            if (mmWindow) {
+                const observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                            if (mmWindow.style.display === 'block') {
+                                loadPriceConfig();
+                            }
+                        }
+                    });
+                });
+                observer.observe(mmWindow, { attributes: true });
+            }
+            </script>
+        </div>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Mechanic Manager</span>
+            <span class="statusbar-section">Atur harga component</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-mechanicmanager')"></div>
+    </div>
+
+    <!-- FARMER MANAGER WINDOW -->
+    <div class="window" id="win-farmermanager" style="top:110px;left:170px;width:650px;height:450px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-farmermanager')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="8" width="12" height="6" fill="#228b22"/>
+                <circle cx="5" cy="6" r="3" fill="#90ee90"/>
+                <circle cx="11" cy="6" r="3" fill="#90ee90"/>
+            </svg>
+            <span class="window-title">Farmer Manager - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-farmermanager')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-farmermanager')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-farmermanager')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Reports</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .fm-title { color:#4db84d;font-size:16px;margin:0 0 15px 0;text-align:center; }
+                    .fm-tabs { display:flex;gap:5px;margin-bottom:15px; }
+                    .fm-tab { padding:8px 16px;background:#21262d;border:1px solid #30363d;border-radius:6px;color:#8b949e;font-size:12px;cursor:pointer; }
+                    .fm-tab.active { background:#4db84d;color:#fff;border-color:#4db84d; }
+                    .fm-section { display:none; }
+                    .fm-section.active { display:block; }
+                    .fm-form { background:#161b22;padding:15px;border-radius:8px;border:1px solid #30363d;margin-bottom:15px; }
+                    .fm-form-row { display:flex;gap:10px;margin-bottom:10px; }
+                    .fm-form input, .fm-form select { flex:1;padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .fm-form button { padding:8px 16px;background:#4db84d;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .fm-form button:hover { background:#5ecc5e; }
+                    .fm-table { width:100%;border-collapse:collapse;font-size:12px; }
+                    .fm-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d; }
+                    .fm-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
+                    .fm-table tr:hover td { background:#21262d; }
+                    .fm-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
+                    .fm-done { background:#238636;color:#fff; }
+                    .fm-progress { background:#e8b828;color:#000; }
+                    .fm-pending { background:#cc2222;color:#fff; }
+                    .fm-btn-del { background:#cc2222;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:10px; }
+                    .fm-btn-edit { background:#58a6ff;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:10px;margin-right:4px; }
+                    .fm-success { display:none;background:#238636;color:#fff;padding:8px;border-radius:4px;text-align:center;margin-top:10px;font-size:12px; }
+                </style>
+                <h2 class="fm-title">🌱 Farmer Manager</h2>
+
+                <div class="fm-tabs">
+                    <button class="fm-tab active" onclick="switchFmTab('stats')">📊 Statistik</button>
+                    <button class="fm-tab" onclick="switchFmTab('tugas')">📋 Kelola Tugas Harian</button>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="fm-section active" id="fm-stats">
+                    <div class="fm-stats">
+                        <div class="fm-stat">
+                            <div class="fm-stat-value">2</div>
+                            <div class="fm-stat-label">Total Farmer</div>
+                        </div>
+                        <div class="fm-stat">
+                            <div class="fm-stat-value">120</div>
+                            <div class="fm-stat-label">Bibit Tertanam</div>
+                        </div>
+                        <div class="fm-stat">
+                            <div class="fm-stat-value">85</div>
+                            <div class="fm-stat-label">Total Panen (kg)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tugas Harian Section -->
+                <div class="fm-section" id="fm-tugas">
+                    <div class="fm-form">
+                        <div style="font-size:11px;color:#8b949e;margin-bottom:10px;">📝 Tambah Tugas Baru - <span id="fm-tanggal-label" style="color:#4db84d;font-weight:bold;"></span></div>
+                        <div class="fm-form-row">
+                            <input type="date" id="fm-tugas-tanggal" style="flex:1;">
+                            <input type="time" id="fm-tugas-mulai" value="08:00" placeholder="Jam mulai" style="flex:1;">
+                            <span style="color:#8b949e;padding:0 5px;">-</span>
+                            <input type="time" id="fm-tugas-selesai" value="09:00" placeholder="Jam selesai" style="flex:1;">
+                            <input type="text" id="fm-tugas-nama" placeholder="Nama tugas..." style="flex:2;">
+                            <button onclick="addFmTugas()">➕</button>
+                        </div>
+                        <div style="margin-bottom:10px;display:flex;gap:10px;align-items:center;">
+                            <span style="font-size:12px;color:#8b949e;">📅 Filter:</span>
+                            <input type="date" id="fm-filter-tanggal" onchange="loadFmTugas()" style="padding:6px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;">
+                            <button onclick="document.getElementById('fm-filter-tanggal').value=getTodayJakarta();loadFmTugas();" style="padding:6px 12px;background:#30363d;color:#fff;border:none;border-radius:4px;font-size:11px;cursor:pointer;">🗓️ Hari Ini</button>
+                        </div>
+                    </div>
+                    <table class="fm-table" id="fm-tugas-table">
+                        <thead><tr><th>Jam Mulai</th><th>Jam Selesai</th><th>Tugas</th><th>Status</th><th>Aksi</th></tr></thead>
+                        <tbody id="fm-tugas-body"><tr><td colspan="5" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+            function switchFmTab(tab) {
+                document.querySelectorAll('.fm-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.fm-section').forEach(s => s.classList.remove('active'));
+                event.target.classList.add('active');
+                document.getElementById('fm-' + tab).classList.add('active');
+                if (tab === 'tugas') {
+                    // Set default date to today (Jakarta time)
+                    const today = getTodayJakarta();
+                    document.getElementById('fm-tugas-tanggal').value = today;
+                    document.getElementById('fm-tanggal-label').innerText = formatDate(today);
+                    loadFmTugas();
+                }
+            }
+
+            async function loadFmTugas() {
+                const tbody = document.getElementById('fm-tugas-body');
+                const filterDate = document.getElementById('fm-filter-tanggal').value;
+                if (!tbody) return;
+
+                let url = 'api/tugas_harian_api.php?action=get_today';
+                if (filterDate) {
+                    url = 'api/tugas_harian_api.php?action=get_all&tanggal=' + filterDate;
+                }
+
+                try {
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    if (result.success && result.data && result.data.length > 0) {
+                        let html = '';
+                        result.data.forEach(item => {
+                            const statusClass = item.status === 'selesai' ? 'fm-done' : (item.status === 'proses' ? 'fm-progress' : 'fm-pending');
+                            const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'proses' ? 'Proses' : 'Pending');
+                            const jamMulai = item.jam_mulai ? item.jam_mulai.substring(0, 5) : '00:00';
+                            const jamSelesai = item.jam_selesai ? item.jam_selesai.substring(0, 5) : '00:00';
+                            const tanggal = item.tanggal ? formatDate(item.tanggal) : '';
+                            html += '<tr>' +
+                                '<td>' + jamMulai + '</td>' +
+                                '<td>' + jamSelesai + '</td>' +
+                                '<td>' + item.tugas + '</td>' +
+                                '<td><span class="fm-status ' + statusClass + '">' + statusText + '</span></td>' +
+                                '<td><button class="fm-btn-edit" onclick="editFmTugas(' + item.id + ')">✏️</button><button class="fm-btn-del" onclick="deleteFmTugas(' + item.id + ')">🗑️</button></td>' +
+                            '</tr>';
+                        });
+                        tbody.innerHTML = html;
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Tidak ada tugas</td></tr>';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">Gagal memuat data</td></tr>';
+                }
+            }
+
+            async function addFmTugas() {
+                const tanggal = document.getElementById('fm-tugas-tanggal').value;
+                const jamMulai = document.getElementById('fm-tugas-mulai').value;
+                const jamSelesai = document.getElementById('fm-tugas-selesai').value;
+                const tugas = document.getElementById('fm-tugas-nama').value;
+
+                if (!tugas) { alert('Nama tugas harus diisi!'); return; }
+                if (!jamMulai || !jamSelesai) { alert('Jam mulai dan selesai harus diisi!'); return; }
+
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'add');
+                    fd.append('tanggal', tanggal);
+                    fd.append('jam_mulai', jamMulai + ':00');
+                    fd.append('jam_selesai', jamSelesai + ':00');
+                    fd.append('tugas', tugas);
+                    fd.append('status', 'pending');
+
+                    const res = await fetch('api/tugas_harian_api.php', { method: 'POST', body: fd });
+                    const result = await res.json();
+                    if (result.success) {
+                        document.getElementById('fm-tugas-nama').value = '';
+                        document.getElementById('fm-tugas-success').style.display = 'block';
+                        document.getElementById('fm-tanggal-label').innerText = formatDate(tanggal);
+                        setTimeout(() => { document.getElementById('fm-tugas-success').style.display = 'none'; }, 3000);
+                        loadFmTugas();
+                    }
+                } catch (e) {
+                    alert('Gagal menambahkan tugas!');
+                }
+            }
+
+            async function deleteFmTugas(id) {
+                if (!confirm('Yakin hapus tugas ini?')) return;
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'delete');
+                    fd.append('id', id);
+                    await fetch('api/tugas_harian_api.php', { method: 'POST', body: fd });
+                    loadFmTugas();
+                } catch (e) {}
+            }
+
+            function editFmTugas(id) {
+                alert('Fitur edit dalam pengembangan');
+            }
+        </script>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Farmer Manager</span>
+            <span class="statusbar-section">Kelola farmer</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-farmermanager')"></div>
+    </div>
+
+    <!-- CARGO MANAGER WINDOW -->
+    <div class="window" id="win-cargomanager" style="top:120px;left:180px;width:700px;height:450px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-cargomanager')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="2" y="4" width="12" height="10" rx="1" fill="#8b5cf6"/>
+                <rect x="4" y="6" width="8" height="6" fill="#c4b5fd"/>
+            </svg>
+            <span class="window-title">Cargo Manager - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-cargomanager')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-cargomanager')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-cargomanager')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Reports</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .cm-title { color:#8b5cf6;font-size:16px;margin:0 0 15px 0;text-align:center; }
+                    .cm-tabs { display:flex;gap:5px;margin-bottom:15px; }
+                    .cm-tab { padding:8px 16px;background:#21262d;border:1px solid #30363d;border-radius:6px;color:#8b949e;font-size:12px;cursor:pointer; }
+                    .cm-tab.active { background:#8b5cf6;color:#fff;border-color:#8b5cf6; }
+                    .cm-section { display:none; }
+                    .cm-section.active { display:block; }
+                    .cm-form { background:#161b22;padding:15px;border-radius:8px;border:1px solid #30363d;margin-bottom:15px; }
+                    .cm-form-row { display:flex;gap:10px;margin-bottom:10px; }
+                    .cm-form input, .cm-form select { flex:1;padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .cm-form button { padding:8px 16px;background:#8b5cf6;color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .cm-form button:hover { background:#a78bfa; }
+                    .cm-table { width:100%;border-collapse:collapse;font-size:12px; }
+                    .cm-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d; }
+                    .cm-table td { padding:10px;border:1px solid #30363d;color:#c9d1d9; }
+                    .cm-table tr:hover td { background:#21262d; }
+                    .cm-status { padding:4px 8px;border-radius:4px;font-size:10px;font-weight:bold; }
+                    .cm-pending { background:#cc2222;color:#fff; }
+                    .cm-diambil { background:#e8b828;color:#000; }
+                    .cm-selesai { background:#238636;color:#fff; }
+                    .cm-batal { background:#6b7280;color:#fff; }
+                    .cm-btn { background:#cc2222;color:#fff;border:none;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:10px; }
+                    .cm-success { display:none;background:#238636;color:#fff;padding:8px;border-radius:4px;text-align:center;margin-top:10px;font-size:12px; }
+                    .cm-filter { display:flex;gap:10px;margin-bottom:15px;align-items:center; }
+                    .cm-filter select { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                </style>
+                <h2 class="cm-title">📦 Cargo Manager</h2>
+
+                <div class="cm-tabs">
+                    <button class="cm-tab active" onclick="switchCmTab('stats')">📊 Statistik</button>
+                    <button class="cm-tab" onclick="switchCmTab('order')">📋 Order Delivery</button>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="cm-section active" id="cm-stats">
+                    <div class="cm-stats">
+                        <div class="cm-stat">
+                            <div class="cm-stat-value" id="cm-total-driver">0</div>
+                            <div class="cm-stat-label">Total Driver</div>
+                        </div>
+                        <div class="cm-stat">
+                            <div class="cm-stat-value" id="cm-pending">0</div>
+                            <div class="cm-stat-label">Menunggu</div>
+                        </div>
+                        <div class="cm-stat">
+                            <div class="cm-stat-value" id="cm-diambil">0</div>
+                            <div class="cm-stat-label">Diambil</div>
+                        </div>
+                        <div class="cm-stat">
+                            <div class="cm-stat-value" id="cm-selesai">0</div>
+                            <div class="cm-stat-label">Selesai</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Order Delivery Section -->
+                <div class="cm-section" id="cm-order">
+                    <div class="cm-form">
+                        <div style="font-size:11px;color:#8b949e;margin-bottom:10px;">📝 Tambah Order Delivery Baru (Max 50)</div>
+                        <div class="cm-form-row">
+                            <select id="cm-jenis" style="flex:1;">
+                                <option value="">-- Pilih Jenis --</option>
+                                <option value="compo">🔧 Deliver Compo</option>
+                                <option value="farmer">🌱 Deliver Farmer</option>
+                            </select>
+                            <input type="number" id="cm-crate" placeholder="Jumlah Crate (1-50)" min="1" max="50" value="1" style="width:100px;">
+                            <input type="text" id="cm-alamat" placeholder="Alamat tujuan..." style="flex:2;">
+                        </div>
+                        <div class="cm-form-row">
+                            <input type="text" id="cm-penerima" placeholder="Nama penerima..." style="flex:1;">
+                            <input type="tel" id="cm-telepon" placeholder="No. Telepon..." style="flex:1;">
+                            <input type="text" id="cm-catatan" placeholder="Catatan (opsional)..." style="flex:1;">
+                            <button onclick="addDeliveryOrder()">➕ Tambah</button>
+                        </div>
+                        <div id="cm-success" class="cm-success">✅ Order berhasil ditambahkan!</div>
+                    </div>
+
+                    <div class="cm-filter">
+                        <span style="font-size:12px;color:#8b949e;">Filter:</span>
+                        <select id="cm-filter-jenis" onchange="loadDeliveryOrders()">
+                            <option value="">Semua Jenis</option>
+                            <option value="compo">🔧 Deliver Compo</option>
+                            <option value="farmer">🌱 Deliver Farmer</option>
+                        </select>
+                        <select id="cm-filter-status" onchange="loadDeliveryOrders()">
+                            <option value="">Semua Status</option>
+                            <option value="pending">⏳ Menunggu</option>
+                            <option value="diambil">🚚 Diambil</option>
+                            <option value="selesai">✅ Selesai</option>
+                            <option value="batal">❌ Batal</option>
+                        </select>
+                    </div>
+
+                    <table class="cm-table">
+                        <thead><tr><th>Jenis</th><th>Crate</th><th>Alamat</th><th>Penerima</th><th>Telepon</th><th>Status</th><th>Driver</th><th>Aksi</th></tr></thead>
+                        <tbody id="cm-order-body"><tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <script>
+            function switchCmTab(tab) {
+                document.querySelectorAll('.cm-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.cm-section').forEach(s => s.classList.remove('active'));
+                event.target.classList.add('active');
+                document.getElementById('cm-' + tab).classList.add('active');
+                if (tab === 'order') loadDeliveryOrders();
+                if (tab === 'stats') loadCmStats();
+            }
+
+            async function loadCmStats() {
+                try {
+                    const res = await fetch('api/delivery_order_api.php?action=get_all');
+                    const result = await res.json();
+                    if (result.success && result.data) {
+                        const data = result.data;
+                        document.getElementById('cm-pending').textContent = data.filter(d => d.status === 'pending').length;
+                        document.getElementById('cm-diambil').textContent = data.filter(d => d.status === 'diambil').length;
+                        document.getElementById('cm-selesai').textContent = data.filter(d => d.status === 'selesai').length;
+                        // Get driver count
+                        const driverRes = await fetch('api/delivery_order_api.php?action=get_employees_cargo');
+                        const driverResult = await driverRes.json();
+                        document.getElementById('cm-total-driver').textContent = driverResult.success ? driverResult.data.length : 0;
+                    }
+                } catch (e) {}
+            }
+
+            async function loadDeliveryOrders() {
+                const tbody = document.getElementById('cm-order-body');
+                if (!tbody) return;
+
+                const jenis = document.getElementById('cm-filter-jenis').value;
+                const status = document.getElementById('cm-filter-status').value;
+                let url = 'api/delivery_order_api.php?action=get_all';
+                if (jenis) url += '&jenis=' + jenis;
+                if (status) url += '&status=' + status;
+
+                try {
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    if (result.success && result.data && result.data.length > 0) {
+                        let html = '';
+                        result.data.forEach(item => {
+                            const statusClass = item.status === 'selesai' ? 'cm-selesai' : (item.status === 'diambil' ? 'cm-diambil' : (item.status === 'batal' ? 'cm-batal' : 'cm-pending'));
+                            const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'diambil' ? 'Diambil' : (item.status === 'batal' ? 'Batal' : 'Menunggu'));
+                            const jenisIcon = item.jenis_delivery === 'compo' ? '🔧' : '🌱';
+                            const driverInfo = item.driver_nama ? item.driver_nama : '-';
+                            html += '<tr>' +
+                                '<td>' + jenisIcon + ' ' + item.jenis_delivery + '</td>' +
+                                '<td>' + item.jumlah_crate + ' crate</td>' +
+                                '<td>' + item.alamat_tujuan + '</td>' +
+                                '<td>' + item.nama_penerima + '</td>' +
+                                '<td>' + (item.no_telepon || '-') + '</td>' +
+                                '<td><span class="cm-status ' + statusClass + '">' + statusText + '</span></td>' +
+                                '<td>' + driverInfo + '</td>' +
+                                '<td><button class="cm-btn" onclick="deleteDeliveryOrder(' + item.id + ')">🗑️</button></td>' +
+                            '</tr>';
+                        });
+                        tbody.innerHTML = html;
+                    } else {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Tidak ada order</td></tr>';
+                    }
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Gagal memuat data</td></tr>';
+                }
+            }
+
+            async function addDeliveryOrder() {
+                const jenis = document.getElementById('cm-jenis').value;
+                const crate = document.getElementById('cm-crate').value;
+                const alamat = document.getElementById('cm-alamat').value;
+                const penerima = document.getElementById('cm-penerima').value;
+                const telepon = document.getElementById('cm-telepon').value;
+                const catatan = document.getElementById('cm-catatan').value;
+
+                if (!jenis || !alamat || !penerima) {
+                    alert('Jenis, Alamat, dan Penerima harus diisi!');
+                    return;
+                }
+
+                const crateNum = parseInt(crate) || 1;
+                if (crateNum < 1 || crateNum > 50) {
+                    alert('Jumlah crate minimal 1, maksimal 50!');
+                    return;
+                }
+
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'add');
+                    fd.append('jenis_delivery', jenis);
+                    fd.append('jumlah_crate', crateNum);
+                    fd.append('alamat_tujuan', alamat);
+                    fd.append('nama_penerima', penerima);
+                    fd.append('no_telepon', telepon);
+                    fd.append('catatan', catatan);
+
+                    const res = await fetch('api/delivery_order_api.php', { method: 'POST', body: fd });
+                    const result = await res.json();
+                    if (result.success) {
+                        document.getElementById('cm-jenis').value = '';
+                        document.getElementById('cm-crate').value = '1';
+                        document.getElementById('cm-alamat').value = '';
+                        document.getElementById('cm-penerima').value = '';
+                        document.getElementById('cm-telepon').value = '';
+                        document.getElementById('cm-catatan').value = '';
+                        document.getElementById('cm-success').style.display = 'block';
+                        setTimeout(() => { document.getElementById('cm-success').style.display = 'none'; }, 3000);
+                        loadDeliveryOrders();
+                    } else {
+                        alert(result.message || 'Gagal menambah order');
+                    }
+                } catch (e) {
+                    alert('Gagal menambah order!');
+                }
+            }
+
+            async function deleteDeliveryOrder(id) {
+                if (!confirm('Yakin hapus order ini?')) return;
+                try {
+                    const fd = new FormData();
+                    fd.append('action', 'delete');
+                    fd.append('id', id);
+                    await fetch('api/delivery_order_api.php', { method: 'POST', body: fd });
+                    loadDeliveryOrders();
+                } catch (e) {}
+            }
+
+            // Auto-refresh every 15 seconds
+            setInterval(() => {
+                if (document.getElementById('win-cargomanager').style.display === 'block') {
+                    const orderSection = document.getElementById('cm-order');
+                    if (orderSection && orderSection.classList.contains('active')) {
+                        loadDeliveryOrders();
+                    }
+                }
+            }, 15000);
+        </script>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Cargo Manager</span>
+            <span class="statusbar-section">Kelola cargo</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-cargomanager')"></div>
     </div>
 </div>
     <div class="window" id="win-settings" style="top:50px;left:100px;width:600px;height:420px;display:none;">
@@ -4100,7 +5335,33 @@ if ($currentUserId && $currentRole) {
         bringToFront(`win-${type}`);
         updateTaskbar();
 
-        // Calculator is now built-in, no need to load external content
+        // Call loadCalcConfigFromDB when opening calculator
+        if (type === 'calculator') {
+            setTimeout(loadCalcConfigFromDB, 100);
+        }
+        // Call loadPriceConfig when opening mechanicmanager
+        if (type === 'mechanicmanager') {
+            // Use requestAnimationFrame to ensure window is visible first
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (typeof loadPriceConfig === 'function') {
+                        loadPriceConfig();
+                    }
+                });
+            });
+        }
+        // Call loadFmTugas when opening farmermanager
+        if (type === 'farmermanager') {
+            setTimeout(() => { if (typeof loadFmTugas === 'function') loadFmTugas(); }, 100);
+        }
+        // Call loadDeliveryList when opening deliverylist
+        if (type === 'deliverylist') {
+            setTimeout(() => { if (typeof loadDeliveryList === 'function') loadDeliveryList(); }, 100);
+        }
+        // Call loadHistoryDelivery when opening historydelivery
+        if (type === 'historydelivery') {
+            setTimeout(() => { if (typeof loadHistoryDelivery === 'function') loadHistoryDelivery(); }, 100);
+        }
     }
 
     function loadAppContent(containerId, url) {
@@ -4593,7 +5854,7 @@ if ($currentUserId && $currentRole) {
     // ===== RBAC - Role-Based Access Control =====
     const rolePermissions = {
         'admin': {
-            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'employee', 'laporankerja', 'keuangan', 'historydelivery', 'deliverylist', 'manager'],
+            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'employee', 'laporankerja', 'keuangan', 'historydelivery', 'deliverylist', 'manager', 'mechanicmanager', 'farmermanager', 'cargomanager'],
             actions: ['create', 'edit', 'delete', 'view', 'manage_users', 'settings']
         },
         'employee': {
@@ -4642,6 +5903,15 @@ if ($currentUserId && $currentRole) {
                 icon.style.display = 'flex';
             } else {
                 icon.style.display = 'none';
+            }
+        });
+
+        // Show/hide other admin-only elements (like config button)
+        document.querySelectorAll('.admin-only').forEach(el => {
+            if (currentUser.role === 'admin') {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
             }
         });
     }
