@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <?php
-// Auto-login dari session brotherscompany site
+// Brothers Software - Access Control
+// Only admin and employee roles can access
+
 session_start();
 
 $currentRole = $_SESSION['role'] ?? null;
@@ -9,20 +11,24 @@ $currentUserId = $_SESSION['user_id'] ?? null;
 $autoLogin = false;
 $autoUser = null;
 $accessDenied = false;
+$notLoggedIn = false;
 
-// Allow employee and admin to access
-if ($currentUserId && $currentRole) {
-    if ($currentRole === 'employee' || $currentRole === 'admin') {
-        $autoLogin = true;
-        $autoUser = [
-            'username' => $_SESSION['username'] ?? $currentRole,
-            'name' => $_SESSION['full_name'] ?? $_SESSION['username'] ?? ucfirst($currentRole),
-            'role' => $currentRole
-        ];
-    } else {
-        // User role - show access denied
-        $accessDenied = true;
-    }
+// Check if user is logged in
+if (!$currentUserId || !$currentRole) {
+    // User not logged in
+    $notLoggedIn = true;
+    $accessDenied = true;
+} elseif ($currentRole === 'admin' || $currentRole === 'employee') {
+    // Allow admin and employee to access
+    $autoLogin = true;
+    $autoUser = [
+        'username' => $_SESSION['username'] ?? $currentRole,
+        'name' => $_SESSION['full_name'] ?? $_SESSION['username'] ?? ucfirst($currentRole),
+        'role' => $currentRole
+    ];
+} else {
+    // User role - show access denied
+    $accessDenied = true;
 }
 ?>
 <html lang="id">
@@ -44,6 +50,8 @@ if ($currentUserId && $currentRole) {
             font-family: 'Segoe UI', Tahoma, sans-serif;
             overflow: hidden;
             height: 100vh;
+            margin: 0;
+            padding: 0;
             user-select: none;
         }
 
@@ -287,19 +295,35 @@ if ($currentUserId && $currentRole) {
             background: linear-gradient(135deg, #008080 0%, #1a6b7a 50%, #0d4f5c 100%);
             display: flex;
             flex-direction: column;
-            padding: 10px;
             position: relative;
+            overflow: hidden;
         }
 
         /* ===== DESKTOP ICONS ===== */
         .desktop-icons {
-            flex: 1;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 90px;
+            height: 100%;
             display: flex;
             flex-direction: column;
             flex-wrap: wrap;
             align-content: flex-start;
             gap: 5px;
             padding: 10px;
+            overflow-y: auto;
+            z-index: 10;
+        }
+
+        /* ===== WINDOWS AREA ===== */
+        .windows-area {
+            position: absolute;
+            top: 0;
+            left: 100px;
+            right: 0;
+            bottom: 42px;
+            overflow: hidden;
         }
 
         .desktop-icon {
@@ -339,6 +363,10 @@ if ($currentUserId && $currentRole) {
 
         /* ===== TASKBAR ===== */
         .taskbar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
             height: 42px;
             background: linear-gradient(180deg, #245edc 0%, #1a4db8 50%, #1038a0 100%);
             border-top: 1px solid #6b8fe0;
@@ -405,13 +433,14 @@ if ($currentUserId && $currentRole) {
             display: none;
             position: absolute;
             bottom: 42px;
-            left: 4px;
-            width: 380px;
-            background: linear-gradient(180deg, #ede7de 0%, #ddd4c8 100%);
-            border: 2px solid;
+            left: 0;
+            width: 400px;
+            background: linear-gradient(180deg, #d4d0c8 0%, #c0bfb8 100%);
+            border: 1px solid;
             border-color: #fff #808080 #808080 #fff;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
             z-index: 200;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
         .start-menu.open {
@@ -425,6 +454,7 @@ if ($currentUserId && $currentRole) {
             align-items: flex-end;
             justify-content: center;
             padding-bottom: 8px;
+            border-right: 1px solid #1e4d7a;
         }
 
         .start-menu-sidebar span {
@@ -439,7 +469,8 @@ if ($currentUserId && $currentRole) {
 
         .start-menu-programs {
             flex: 1;
-            padding: 6px 0;
+            padding: 0;
+            background: linear-gradient(180deg, #e8e4dc 0%, #d4d0c8 100%);
         }
 
         .start-menu-title {
@@ -457,8 +488,10 @@ if ($currentUserId && $currentRole) {
             gap: 10px;
             padding: 6px 14px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             color: #000;
+            height: 32px;
+            box-sizing: border-box;
         }
 
         .start-menu-item:hover {
@@ -466,15 +499,89 @@ if ($currentUserId && $currentRole) {
             color: #fff;
         }
 
-        .start-menu-item img {
+        .start-menu-item svg {
             width: 28px;
             height: 28px;
+            flex-shrink: 0;
+        }
+
+        .start-menu-item span {
+            flex: 1;
+        }
+
+        .start-menu-item .arrow {
+            font-size: 10px;
+            opacity: 0.7;
+        }
+
+        .start-menu-item:hover .arrow {
+            opacity: 1;
         }
 
         .start-menu-separator {
             height: 1px;
             background: linear-gradient(90deg, transparent, #bbb, transparent);
             margin: 4px 10px;
+        }
+
+        .start-menu-right {
+            width: 180px;
+            background: linear-gradient(180deg, #c8c4bc 0%, #b8b4ac 100%);
+            border-left: 1px solid #808080;
+            padding: 6px 0;
+        }
+
+        .start-menu-right-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 11px;
+            color: #000;
+            height: 32px;
+            box-sizing: border-box;
+        }
+
+        .start-menu-right-item:hover {
+            background: linear-gradient(180deg, #316ac5 0%, #1a5499 100%);
+            color: #fff;
+        }
+
+        .start-menu-right-item svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .start-menu-logout {
+            margin-top: auto;
+            border-top: 1px solid #bbb;
+            padding-top: 4px;
+        }
+
+        .start-menu-shutdown {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 8px 12px 6px;
+            padding: 6px 12px;
+            background: linear-gradient(180deg, #c8c4bc 0%, #b8b4ac 100%);
+            border: 1px solid;
+            border-color: #fff #808080 #808080 #fff;
+            cursor: pointer;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .start-menu-shutdown:hover {
+            background: linear-gradient(180deg, #316ac5 0%, #1a5499 100%);
+            color: #fff;
+        }
+
+        .start-menu-shutdown svg {
+            width: 20px;
+            height: 20px;
         }
 
         /* ===== WINDOW COMPONENT ===== */
@@ -818,7 +925,7 @@ if ($currentUserId && $currentRole) {
                     <rect x="14" y="8" width="4" height="10" fill="#cc0000"/>
                     <circle cx="16" cy="22" r="3" fill="#cc0000"/>
                 </svg>
-                <span class="login-title" style="color:#fff;">Access Denied</span>
+                <span class="login-title" style="color:#fff;"><?php echo $notLoggedIn ? 'Login Required' : 'Access Denied'; ?></span>
             </div>
         </div>
         <div class="login-body" style="text-align:center;">
@@ -827,19 +934,31 @@ if ($currentUserId && $currentRole) {
                 <rect x="35" y="20" width="10" height="28" rx="5" fill="#cc0000"/>
                 <circle cx="40" cy="56" r="5" fill="#cc0000"/>
             </svg>
-            <h2 style="color:#991b1b;margin-bottom:8px;">Akses Ditolak!</h2>
+            <h2 style="color:#991b1b;margin-bottom:8px;">
+                <?php echo $notLoggedIn ? 'Silakan Login Dulu!' : 'Akses Ditolak!'; ?>
+            </h2>
             <p style="color:#666;margin-bottom:16px;line-height:1.6;">
-                Anda tidak memiliki izin untuk mengakses Brothers Software.<br>
+                <?php if ($notLoggedIn): ?>
+                Anda harus <strong>login</strong> terlebih dahulu untuk mengakses Brothers Software.<br>
                 Hanya <strong>Employee</strong> dan <strong>Admin</strong> yang dapat mengakses sistem ini.
+                <?php else: ?>
+                Anda tidak memiliki izin untuk mengakses Brothers Software.<br>
+                Hanya <strong>Employee</strong> dan <strong>Admin</strong> yang dapat mengakses sistem ini.<br>
+                <small style="color:#999;">(Role Anda: <?php echo htmlspecialchars(ucfirst($currentRole)); ?>)</small>
+                <?php endif; ?>
             </p>
             <div style="padding:12px;background:#fef2f2;border:2px solid #cc0000;border-radius:8px;margin-bottom:16px;">
                 <small style="color:#991b1b;">
-                    <strong>Role Anda saat ini:</strong> <?php echo htmlspecialchars(ucfirst($currentRole)); ?><br>
+                    <?php if ($notLoggedIn): ?>
+                    <strong>Status:</strong> Belum login<br>
+                    <?php else: ?>
+                    <strong>Role Anda:</strong> <?php echo htmlspecialchars(ucfirst($currentRole)); ?><br>
                     <strong>Username:</strong> <?php echo htmlspecialchars($_SESSION['username'] ?? 'Unknown'); ?>
+                    <?php endif; ?>
                 </small>
             </div>
             <a href="../index.php" class="btn-xp btn-xp-primary" style="text-decoration:none;display:inline-block;padding:10px 24px;">
-                ← Kembali ke Beranda
+                ← <?php echo $notLoggedIn ? 'Login di Sini' : 'Kembali ke Beranda'; ?>
             </a>
         </div>
         <div class="login-footer">
@@ -946,7 +1065,7 @@ if ($currentUserId && $currentRole) {
         </div>
 
         <!-- Laporan Kerja -->
-        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('laporan kerja')" style="display:none;">
+        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('laporankerja')" style="display:none;">
             <svg class="icon-img" viewBox="0 0 48 48">
                 <rect x="6" y="4" width="36" height="40" rx="2" fill="#ffd700" stroke="#b07800" stroke-width="2"/>
                 <rect x="6" y="4" width="36" height="10" rx="2" fill="#e8b828"/>
@@ -971,6 +1090,8 @@ if ($currentUserId && $currentRole) {
         </div>
     </div>
 
+    <!-- Windows Area -->
+    <div class="windows-area" id="windows-area">
     <!-- Windows -->
     <div class="window" id="win-mechanic" style="top:30px;left:60px;width:680px;height:480px;display:none;">
         <div class="window-titlebar" onmousedown="startDrag(event, 'win-mechanic')">
@@ -1681,7 +1802,6 @@ if ($currentUserId && $currentRole) {
                 async function checkNamaMechanic() {
                     const input = document.getElementById('laporan-nama');
                     const info = document.getElementById('laporan-nama-info');
-                    const btn = document.getElementById('laporan-btn');
                     const nama = input.value.trim();
 
                     if (nama.length < 2) {
@@ -1692,12 +1812,12 @@ if ($currentUserId && $currentRole) {
                     }
 
                     try {
-                        const res = await fetch('api/laporan_kerja_api.php?action=get_employees&divisi=mechanic');
+                        const res = await fetch('api/laporan_api.php?action=get_employees');
                         const result = await res.json();
                         if (result.success && result.data) {
                             const match = result.data.find(emp => emp.nama.toLowerCase() === nama.toLowerCase());
                             if (match) {
-                                info.innerHTML = '<span style="color:#4db84d;">✅ Ditemukan: ' + match.nama + ' (Mechanic)</span>';
+                                info.innerHTML = '<span style="color:#4db84d;">✅ Ditemukan: ' + match.nama + ' (🔧 Mechanic)</span>';
                                 info.style.color = '#4db84d';
                                 verifiedMechanicNama = match.nama;
                             } else {
@@ -1731,14 +1851,13 @@ if ($currentUserId && $currentRole) {
                     try {
                         const fd = new FormData();
                         fd.append('action', 'add');
-                        fd.append('divisi', 'mechanic');
                         fd.append('nama_karyawan', verifiedMechanicNama);
                         fd.append('compo_used', compo);
                         fd.append('money_stored', money);
                         fd.append('keterangan', keterangan);
                         fd.append('tanggal', new Date().toISOString().split('T')[0]);
 
-                        const res = await fetch('api/laporan_kerja_api.php', { method: 'POST', body: fd });
+                        const res = await fetch('api/laporan_api.php', { method: 'POST', body: fd });
                         const result = await res.json();
 
                         const success = document.getElementById('laporan-success');
@@ -1764,8 +1883,9 @@ if ($currentUserId && $currentRole) {
                     verifiedMechanicNama = null;
                 }
 
-                // Load employee list on focus
-                document.getElementById('win-laporan').addEventListener('focus', checkNamaMechanic);
+                document.getElementById('win-laporan').addEventListener('focus', function() {
+                    checkNamaMechanic();
+                });
             </script>
         </div>
         <div class="window-statusbar">
@@ -2525,9 +2645,9 @@ if ($currentUserId && $currentRole) {
                             <thead>
                                 <tr>
                                     <th>Tanggal</th>
-                                    <th>Nama Mechanic</th>
-                                    <th>Compo Used</th>
-                                    <th>Money Stored</th>
+                                    <th>Nama</th>
+                                    <th>Compo/Bibit Used</th>
+                                    <th>Money/Panen (Rp)</th>
                                     <th>Keterangan</th>
                                 </tr>
                             </thead>
@@ -2712,33 +2832,75 @@ if ($currentUserId && $currentRole) {
                         document.getElementById('form-pekerja').reset();
                     }
 
-                    // Load Laporan
+                    // Load Laporan Kerja from database (mechanic + farmer) - Admin Panel
                     async function loadLaporan() {
                         const tbody = document.getElementById('laporan-table-body');
-                        // Demo data
-                        const demoLaporan = [
-                            { tanggal: '2026-05-20', nama_mechanic: 'Joko Susanto', compo_used: 10, money_stored: 500000, keterangan: 'Service harian' },
-                            { tanggal: '2026-05-19', nama_mechanic: 'Ahmad Rizki', compo_used: 8, money_stored: 400000, keterangan: 'Perbaikan mesin' },
-                            { tanggal: '2026-05-18', nama_mechanic: 'Dewi Lestari', compo_used: 15, money_stored: 750000, keterangan: 'Routine check' }
-                        ];
+                        if (!tbody) return;
 
-                        let total = 0;
-                        let html = '';
-                        demoLaporan.forEach(l => {
-                            total += parseFloat(l.money_stored);
-                            html += `
-                                <tr>
-                                    <td>${l.tanggal}</td>
-                                    <td>${l.nama_mechanic}</td>
-                                    <td>${l.compo_used}</td>
-                                    <td>Rp ${parseInt(l.money_stored).toLocaleString('id-ID')}</td>
-                                    <td>${l.keterangan}</td>
-                                </tr>
-                            `;
-                        });
+                        const bulan = document.getElementById('filter-bulan')?.value || '';
 
-                        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Tidak ada data</td></tr>';
-                        document.getElementById('laporan-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+                        try {
+                            let mechanicData = [];
+                            let farmerData = [];
+
+                            // Load mechanic reports
+                            let url1 = 'api/laporan_api.php?action=get_all';
+                            if (bulan) url1 += '&bulan=2026-' + bulan;
+                            const res1 = await fetch(url1);
+                            const result1 = await res1.json();
+                            if (result1.success && result1.data) {
+                                mechanicData = result1.data;
+                            }
+
+                            // Load farmer reports
+                            let url2 = 'api/laporan_farmer_api.php?action=get_all';
+                            if (bulan) url2 += '&bulan=2026-' + bulan;
+                            const res2 = await fetch(url2);
+                            const result2 = await res2.json();
+                            if (result2.success && result2.data) {
+                                farmerData = result2.data;
+                            }
+
+                            let total = 0;
+                            let html = '';
+
+                            // Process mechanic data
+                            mechanicData.forEach(l => {
+                                total += parseFloat(l.money_stored || 0);
+                                html += `
+                                    <tr>
+                                        <td>${l.tanggal || '-'}</td>
+                                        <td>🔧 ${l.nama_karyawan || '-'}</td>
+                                        <td>${l.compo_used ?? 0}</td>
+                                        <td>Rp ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
+                                        <td>${l.keterangan || '-'}</td>
+                                    </tr>
+                                `;
+                            });
+
+                            // Process farmer data
+                            farmerData.forEach(l => {
+                                total += parseFloat(l.panen_hasil || 0);
+                                html += `
+                                    <tr>
+                                        <td>${l.tanggal || '-'}</td>
+                                        <td>🌱 ${l.nama_karyawan || '-'}</td>
+                                        <td>${l.bibit_used ?? 0}</td>
+                                        <td>${parseFloat(l.panen_hasil || 0).toLocaleString('id-ID')} kg</td>
+                                        <td>${l.keterangan || '-'}</td>
+                                    </tr>
+                                `;
+                            });
+
+                            if (!html) {
+                                html = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Tidak ada data laporan</td></tr>';
+                            }
+
+                            tbody.innerHTML = html;
+                            document.getElementById('laporan-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+                        } catch (e) {
+                            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
+                        }
                     }
 
                     // Load Keuangan
@@ -3595,7 +3757,7 @@ if ($currentUserId && $currentRole) {
                     </div>
                 </div>
                 <table class="lk-table">
-                    <thead><tr><th>Tanggal</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit</th><th>Money/Panen</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+                    <thead><tr><th>Tanggal</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit Used</th><th>Panen (kg) / Money (Rp)</th><th>Keterangan</th><th>Aksi</th></tr></thead>
                     <tbody id="lk-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                 </table>
             </div>
@@ -3605,7 +3767,7 @@ if ($currentUserId && $currentRole) {
                 });
             </script>
         </div>
-        <div class="window-statusbar"><span class="statusbar-section">Laporan Kerja</span><span class="statusbar-section">Laporan kerja mechanic</span></div>
+        <div class="window-statusbar"><span class="statusbar-section">Laporan Kerja</span><span class="statusbar-section">Semua laporan mechanic & farmer</span></div>
         <div class="resizer" onmousedown="startResize(event, 'win-laporankerja')"></div>
     </div>
 
@@ -3771,35 +3933,111 @@ if ($currentUserId && $currentRole) {
         }
     }
 
-    // Load Laporan Kerja
+    // Load Laporan Kerja from database (mechanic + farmer)
     async function loadLaporanKerja() {
         const tbody = document.getElementById('lk-table-body');
+        const countEl = document.getElementById('lk-total-count');
+        const compoEl = document.getElementById('lk-total-compo');
+        const moneyEl = document.getElementById('lk-total-money');
         if (!tbody) return;
 
-        // Demo data
-        const demo = [
-            { tanggal: '2026-05-20', nama_mechanic: 'Joko Susanto', compo_used: 10, money_stored: 500000, keterangan: 'Service harian' },
-            { tanggal: '2026-05-19', nama_mechanic: 'Ahmad Rizki', compo_used: 8, money_stored: 400000, keterangan: 'Perbaikan mesin' },
-            { tanggal: '2026-05-18', nama_mechanic: 'Dewi Lestari', compo_used: 15, money_stored: 750000, keterangan: 'Routine check' },
-            { tanggal: '2026-05-17', nama_mechanic: 'Budi Santoso', compo_used: 12, money_stored: 600000, keterangan: 'Modifikasi' },
-            { tanggal: '2026-05-16', nama_mechanic: 'Joko Susanto', compo_used: 6, money_stored: 300000, keterangan: 'Tune up' }
-        ];
+        const bulan = document.getElementById('lk-filter-bulan')?.value || '';
+        const divisi = document.getElementById('lk-filter-divisi')?.value || '';
 
-        let total = 0;
-        let html = '';
-        demo.forEach(l => {
-            total += l.money_stored;
-            html += `<tr>
-                <td>${l.tanggal}</td>
-                <td>${l.nama_mechanic}</td>
-                <td>${l.compo_used}</td>
-                <td>Rp ${l.money_stored.toLocaleString('id-ID')}</td>
-                <td>${l.keterangan}</td>
-            </tr>`;
-        });
+        try {
+            let mechanicData = [];
+            let farmerData = [];
 
-        tbody.innerHTML = html || '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Tidak ada data laporan</td></tr>';
-        document.getElementById('lk-total-value').textContent = 'Rp ' + total.toLocaleString('id-ID');
+            // Load mechanic reports
+            if (!divisi || divisi === 'mechanic') {
+                let url = 'api/laporan_api.php?action=get_all';
+                if (bulan) url += '&bulan=' + bulan;
+                const res = await fetch(url);
+                const result = await res.json();
+                if (result.success && result.data) {
+                    mechanicData = result.data;
+                }
+            }
+
+            // Load farmer reports
+            if (!divisi || divisi === 'farmer') {
+                let url = 'api/laporan_farmer_api.php?action=get_all';
+                if (bulan) url += '&bulan=' + bulan;
+                const res = await fetch(url);
+                const result = await res.json();
+                if (result.success && result.data) {
+                    farmerData = result.data;
+                }
+            }
+
+            let totalCount = 0;
+            let totalCompo = 0;
+            let totalMoney = 0;
+            let html = '';
+
+            // Process mechanic data
+            mechanicData.forEach(l => {
+                totalCount++;
+                totalCompo += parseInt(l.compo_used) || 0;
+                totalMoney += parseFloat(l.money_stored) || 0;
+                html += `<tr>
+                    <td>${l.tanggal || '-'}</td>
+                    <td>🔧 Mechanic</td>
+                    <td>${l.nama_karyawan || '-'}</td>
+                    <td>${l.compo_used ?? 0}</td>
+                    <td>Rp ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
+                    <td>${l.keterangan || '-'}</td>
+                    <td><button class="lk-btn" style="padding:4px 8px;background:#cc2222;" onclick="deleteLaporan('mechanic', ${l.id})">🗑️</button></td>
+                </tr>`;
+            });
+
+            // Process farmer data
+            farmerData.forEach(l => {
+                totalCount++;
+                totalCompo += parseInt(l.bibit_used) || 0;
+                totalMoney += parseFloat(l.panen_hasil) || 0;
+                html += `<tr>
+                    <td>${l.tanggal || '-'}</td>
+                    <td>🌱 Farmer</td>
+                    <td>${l.nama_karyawan || '-'}</td>
+                    <td>${l.bibit_used ?? 0}</td>
+                    <td>${parseFloat(l.panen_hasil || 0).toLocaleString('id-ID')} kg</td>
+                    <td>${l.keterangan || '-'}</td>
+                    <td><button class="lk-btn" style="padding:4px 8px;background:#cc2222;" onclick="deleteLaporan('farmer', ${l.id})">🗑️</button></td>
+                </tr>`;
+            });
+
+            if (!html) {
+                html = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Tidak ada data laporan</td></tr>';
+            }
+
+            tbody.innerHTML = html;
+            if (countEl) countEl.textContent = totalCount;
+            if (compoEl) compoEl.textContent = totalCompo.toLocaleString('id-ID');
+            if (moneyEl) moneyEl.textContent = 'Rp ' + totalMoney.toLocaleString('id-ID');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
+        }
+    }
+
+    // Delete Laporan
+    async function deleteLaporan(type, id) {
+        if (!confirm('Yakin hapus laporan ini?')) return;
+        try {
+            const fd = new FormData();
+            fd.append('action', 'delete');
+            fd.append('id', id);
+            const apiUrl = type === 'farmer' ? 'api/laporan_farmer_api.php' : 'api/laporan_api.php';
+            const res = await fetch(apiUrl, { method: 'POST', body: fd });
+            const result = await res.json();
+            if (result.success) {
+                loadLaporanKerja();
+            } else {
+                alert(result.message || 'Gagal hapus');
+            }
+        } catch (e) {
+            alert('Gagal hapus laporan!');
+        }
     }
 
     // Load Keuangan
@@ -3945,22 +4183,27 @@ if ($currentUserId && $currentRole) {
                     .fh-success { display:none;background:#238636;color:#fff;padding:10px;border-radius:4px;text-align:center;margin-top:8px;font-size:11px; }
                 </style>
                 <div class="fh-form-container">
-                    <h2 class="fh-title">📝 Form Laporan Farming</h2>
+                    <h2 class="fh-title">📝 Form Laporan Farmer</h2>
                     <form id="fh-laporan-form" onsubmit="submitFhLaporan(event)">
                         <div class="fh-field">
                             <label>Nama Farmer</label>
-                            <input type="text" id="fh-nama" placeholder="Nama farmer" required>
+                            <input type="text" id="fh-nama" placeholder="Ketik nama farmer..." autocomplete="off" oninput="checkNamaFarmer()" required>
+                            <div id="fh-nama-info" style="font-size:10px;margin-top:4px;color:#8b949e;"></div>
                         </div>
                         <div class="fh-field">
-                            <label>Bibit Diambil</label>
-                            <input type="number" id="fh-bibit" placeholder="Jumlah bibit diambil" min="0" required>
+                            <label>Bibit Used</label>
+                            <input type="number" id="fh-bibit" placeholder="Jumlah bibit digunakan" min="0" required>
                         </div>
                         <div class="fh-field">
-                            <label>Jumlah Panen</label>
+                            <label>Panen Hasil (kg)</label>
                             <input type="number" id="fh-panen" placeholder="Jumlah hasil panen (kg)" min="0" required>
                         </div>
+                        <div class="fh-field">
+                            <label>Keterangan</label>
+                            <input type="text" id="fh-keterangan" placeholder="Keterangan (opsional)">
+                        </div>
                         <div class="fh-btn-row">
-                            <button type="submit" class="fh-btn fh-btn-submit">📤 Kirim</button>
+                            <button type="submit" class="fh-btn fh-btn-submit" id="fh-btn-submit">📤 Kirim</button>
                             <button type="button" class="fh-btn fh-btn-reset" onclick="resetFhLaporan()">🔄 Reset</button>
                         </div>
                     </form>
@@ -3970,32 +4213,98 @@ if ($currentUserId && $currentRole) {
                 </div>
             </div>
             <script>
-                function submitFhLaporan(e) {
+                let verifiedFarmerNama = null;
+
+                async function checkNamaFarmer() {
+                    const input = document.getElementById('fh-nama');
+                    const info = document.getElementById('fh-nama-info');
+                    const nama = input.value.trim();
+
+                    if (nama.length < 2) {
+                        info.innerHTML = '';
+                        info.style.color = '#8b949e';
+                        verifiedFarmerNama = null;
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch('api/laporan_farmer_api.php?action=get_employees');
+                        const result = await res.json();
+                        if (result.success && result.data) {
+                            const match = result.data.find(emp => emp.nama.toLowerCase() === nama.toLowerCase());
+                            if (match) {
+                                info.innerHTML = '<span style="color:#4db84d;">✅ Ditemukan: ' + match.nama + ' (🌱 Farmer)</span>';
+                                info.style.color = '#4db84d';
+                                verifiedFarmerNama = match.nama;
+                            } else {
+                                info.innerHTML = '<span style="color:#f85149;">❌ Nama tidak ditemukan atau bukan Farmer</span>';
+                                info.style.color = '#f85149';
+                                verifiedFarmerNama = null;
+                            }
+                        }
+                    } catch (e) {
+                        info.innerHTML = '<span style="color:#f85149;">⚠️ Gagal cek nama</span>';
+                    }
+                }
+
+                async function submitFhLaporan(e) {
                     e.preventDefault();
-                    const nama = document.getElementById('fh-nama').value;
-                    const bibit = document.getElementById('fh-bibit').value;
-                    const panen = document.getElementById('fh-panen').value;
+                    const nama = document.getElementById('fh-nama').value.trim();
+                    const bibit = parseInt(document.getElementById('fh-bibit').value) || 0;
+                    const panen = parseFloat(document.getElementById('fh-panen').value) || 0;
+                    const keterangan = document.getElementById('fh-keterangan').value || '';
 
-                    const success = document.getElementById('fh-success');
-                    success.style.display = 'block';
-                    success.innerHTML = '✅ Laporan berhasil!<br><strong>' + nama + '</strong><br>Bibit: ' + Number(bibit).toLocaleString('id-ID') + ' | Panen: ' + Number(panen).toLocaleString('id-ID') + ' kg';
+                    if (!nama) {
+                        alert('Nama farmer harus diisi!');
+                        return;
+                    }
 
-                    setTimeout(() => {
-                        success.style.display = 'none';
-                    }, 3000);
+                    if (!verifiedFarmerNama) {
+                        alert('Nama tidak valid atau bukan Farmer!');
+                        return;
+                    }
 
-                    console.log('Laporan Farming:', { nama, bibit, panen });
+                    try {
+                        const fd = new FormData();
+                        fd.append('action', 'add');
+                        fd.append('nama_karyawan', verifiedFarmerNama);
+                        fd.append('bibit_used', bibit);
+                        fd.append('panen_hasil', panen);
+                        fd.append('keterangan', keterangan);
+                        fd.append('tanggal', new Date().toISOString().split('T')[0]);
+
+                        const res = await fetch('api/laporan_farmer_api.php', { method: 'POST', body: fd });
+                        const result = await res.json();
+
+                        const success = document.getElementById('fh-success');
+                        if (result.success) {
+                            success.style.display = 'block';
+                            success.innerHTML = '✅ Laporan berhasil!<br><strong>' + verifiedFarmerNama + '</strong><br>Bibit: ' + Number(bibit).toLocaleString('id-ID') + ' | Panen: ' + Number(panen).toLocaleString('id-ID') + ' kg';
+                            setTimeout(() => {
+                                success.style.display = 'none';
+                                resetFhLaporan();
+                            }, 3000);
+                        } else {
+                            alert(result.message || 'Gagal mengirim laporan');
+                        }
+                    } catch (e) {
+                        alert('Gagal mengirim laporan!');
+                    }
                 }
 
                 function resetFhLaporan() {
                     document.getElementById('fh-laporan-form').reset();
+                    document.getElementById('fh-nama-info').innerHTML = '';
                     document.getElementById('fh-success').style.display = 'none';
+                    verifiedFarmerNama = null;
                 }
+
+                document.getElementById('win-laporanharian').addEventListener('focus', checkNamaFarmer);
             </script>
         </div>
         <div class="window-statusbar">
-            <span class="statusbar-section">Laporan Farming</span>
-            <span class="statusbar-section">Form laporan farming</span>
+            <span class="statusbar-section">Laporan Farmer</span>
+            <span class="statusbar-section">Form laporan farmer</span>
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-laporanharian')"></div>
     </div>
@@ -5141,9 +5450,9 @@ if ($currentUserId && $currentRole) {
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-settings')"></div>
     </div>
-</div>
+    </div>
 
-<!-- Taskbar -->
+    <!-- Taskbar -->
 <div class="taskbar">
     <button class="start-button" onclick="toggleStartMenu()">
         <svg viewBox="0 0 20 20">
@@ -5166,36 +5475,6 @@ if ($currentUserId && $currentRole) {
             <span class="user-role" id="user-role-badge">Employee</span>
         </div>
     </div>
-    <!-- Quick Launch -->
-    <button class="app-btn app-btn-small" onclick="openWindow('cargo')" title="CargoApp" style="height:28px;padding:2px 6px;">
-        <svg viewBox="0 0 18 18">
-            <rect x="2" y="5" width="14" height="10" rx="1" fill="#8b5cf6"/>
-            <rect x="4" y="7" width="10" height="6" fill="#c4b5fd"/>
-            <rect x="6" y="15" width="2" height="2" fill="#333"/>
-            <rect x="10" y="15" width="2" height="2" fill="#333"/>
-        </svg>
-    </button>
-    <button class="app-btn app-btn-small" onclick="openWindow('farmer')" title="FarmerApp" style="height:28px;padding:2px 6px;">
-        <svg viewBox="0 0 18 18">
-            <rect x="2" y="12" width="14" height="5" rx="1" fill="#228b22"/>
-            <circle cx="6" cy="9" r="3" fill="#90ee90"/>
-            <circle cx="12" cy="9" r="3" fill="#90ee90"/>
-        </svg>
-    </button>
-    <button class="app-btn app-btn-small" onclick="openWindow('mechanic')" title="MechanicApp" style="height:28px;padding:2px 6px;">
-        <svg viewBox="0 0 18 18">
-            <rect x="2" y="4" width="14" height="11" rx="1" fill="#3a6ea5"/>
-            <rect x="4" y="6" width="10" height="7" fill="#c8e0f5"/>
-            <rect x="6" y="13" width="6" height="2" rx="1" fill="#245edc"/>
-        </svg>
-    </button>
-    <button class="app-btn app-btn-small" onclick="openWindow('restaurant')" title="RestauranApp" style="height:28px;padding:2px 6px;">
-        <svg viewBox="0 0 18 18">
-            <ellipse cx="9" cy="13" rx="6" ry="2" fill="#8b4513"/>
-            <path d="M5 11 Q5 6 9 6 Q13 6 13 11" fill="#cc2222"/>
-            <rect x="7" y="4" width="4" height="3" rx="1" fill="#ffd700"/>
-        </svg>
-    </button>
 
     <!-- Taskbar Window Buttons -->
     <div id="taskbar-windows" style="display:flex;gap:2px;flex:1;"></div>
@@ -5217,7 +5496,26 @@ if ($currentUserId && $currentRole) {
         <span>Start</span>
     </div>
     <div class="start-menu-programs">
-        <div class="start-menu-title">Brothers Software</div>
+        <div class="start-menu-item" onclick="openWindow('mechanic');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <rect x="2" y="6" width="24" height="18" rx="2" fill="#3a6ea5"/>
+                <rect x="4" y="8" width="20" height="12" fill="#c8e0f5"/>
+                <rect x="9" y="20" width="10" height="3" rx="1" fill="#245edc"/>
+            </svg>
+            <span>MechanicApp</span>
+            <span class="arrow">▶</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('farmer');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <rect x="2" y="18" width="24" height="8" rx="1" fill="#228b22"/>
+                <circle cx="8" cy="14" r="4" fill="#90ee90"/>
+                <circle cx="14" cy="12" r="4" fill="#90ee90"/>
+                <circle cx="20" cy="14" r="4" fill="#90ee90"/>
+                <rect x="13" y="6" width="2" height="6" fill="#8b4513"/>
+            </svg>
+            <span>FarmerApp</span>
+            <span class="arrow">▶</span>
+        </div>
         <div class="start-menu-item" onclick="openWindow('cargo');toggleStartMenu()">
             <svg viewBox="0 0 28 28">
                 <rect x="4" y="8" width="20" height="14" rx="2" fill="#8b5cf6"/>
@@ -5225,25 +5523,8 @@ if ($currentUserId && $currentRole) {
                 <rect x="8" y="22" width="4" height="4" fill="#333"/>
                 <rect x="16" y="22" width="4" height="4" fill="#333"/>
             </svg>
-            CargoApp
-        </div>
-        <div class="start-menu-item" onclick="openWindow('farmer');toggleStartMenu()">
-            <svg viewBox="0 0 28 28">
-                <rect x="2" y="18" width="24" height="8" rx="1" fill="#8b4513"/>
-                <circle cx="8" cy="14" r="5" fill="#90ee90"/>
-                <circle cx="14" cy="12" r="5" fill="#90ee90"/>
-                <circle cx="20" cy="14" r="5" fill="#90ee90"/>
-                <rect x="13" y="6" width="2" height="6" fill="#8b4513"/>
-            </svg>
-            FarmerApp
-        </div>
-        <div class="start-menu-item" onclick="openWindow('mechanic');toggleStartMenu()">
-            <svg viewBox="0 0 28 28">
-                <rect x="2" y="6" width="24" height="18" rx="2" fill="#3a6ea5"/>
-                <rect x="4" y="8" width="20" height="12" fill="#c8e0f5"/>
-                <rect x="9" y="20" width="10" height="3" rx="1" fill="#245edc"/>
-            </svg>
-            MechanicApp
+            <span>CargoApp</span>
+            <span class="arrow">▶</span>
         </div>
         <div class="start-menu-item" onclick="openWindow('restaurant');toggleStartMenu()">
             <svg viewBox="0 0 28 28">
@@ -5251,7 +5532,39 @@ if ($currentUserId && $currentRole) {
                 <path d="M6 18 Q6 10 14 10 Q22 10 22 18" fill="#cc2222"/>
                 <rect x="12" y="6" width="4" height="4" rx="1" fill="#ffd700"/>
             </svg>
-            RestauranApp
+            <span>RestauranApp</span>
+            <span class="arrow">▶</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('employee');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <circle cx="14" cy="10" r="6" fill="#f5c890"/>
+                <ellipse cx="14" cy="24" rx="8" ry="4" fill="#3a6ea5"/>
+            </svg>
+            <span>Employee</span>
+            <span class="arrow">▶</span>
+        </div>
+        <div class="start-menu-separator"></div>
+        <div class="start-menu-item" onclick="openWindow('laporankerja');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <rect x="4" y="4" width="20" height="22" rx="2" fill="#ffd700" stroke="#b07800"/>
+                <rect x="8" y="8" width="12" height="2" fill="#8b6914"/>
+                <rect x="8" y="12" width="10" height="2" fill="#8b6914"/>
+                <rect x="8" y="16" width="12" height="2" fill="#8b6914"/>
+                <rect x="8" y="20" width="8" height="2" fill="#8b6914"/>
+            </svg>
+            <span>Laporan Kerja</span>
+            <span class="arrow">▶</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('adminpanel');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <rect x="2" y="6" width="24" height="18" rx="2" fill="#245edc"/>
+                <rect x="4" y="8" width="20" height="12" fill="#c8e0f5"/>
+                <rect x="6" y="10" width="4" height="4" fill="#ffd700"/>
+                <rect x="12" y="10" width="4" height="4" fill="#4db84d"/>
+                <rect x="18" y="10" width="4" height="4" fill="#cc2222"/>
+            </svg>
+            <span>Admin Panel</span>
+            <span class="arrow">▶</span>
         </div>
         <div class="start-menu-separator"></div>
         <div class="start-menu-item" onclick="openWindow('settings');toggleStartMenu()">
@@ -5263,18 +5576,32 @@ if ($currentUserId && $currentRole) {
                 <rect x="2" y="12" width="5" height="4" rx="2" fill="#aaa"/>
                 <rect x="21" y="12" width="5" height="4" rx="2" fill="#aaa"/>
             </svg>
-            Settings
+            <span>Settings</span>
+            <span class="arrow">▶</span>
         </div>
-        <div class="start-menu-separator"></div>
-        <div class="start-menu-item" onclick="logout();toggleStartMenu()">
+    </div>
+    <div class="start-menu-right">
+        <div class="start-menu-right-item" id="sm-user-info">
             <svg viewBox="0 0 28 28">
                 <circle cx="14" cy="10" r="6" fill="#f5c890"/>
                 <ellipse cx="14" cy="24" rx="8" ry="4" fill="#3a6ea5"/>
-                <path d="M2 18 L10 14 L2 10" stroke="#cc2222" stroke-width="2" fill="none"/>
-                <path d="M10 14 L26 14" stroke="#cc2222" stroke-width="2"/>
-                <path d="M24 10 L26 14 L24 18" stroke="#cc2222" stroke-width="2" fill="none"/>
             </svg>
-            Log Off
+            <span id="sm-user-name">User</span>
+        </div>
+        <div class="start-menu-right-item">
+            <svg viewBox="0 0 28 28">
+                <rect x="2" y="2" width="24" height="24" rx="4" fill="#ddd" stroke="#888"/>
+                <path d="M14 8 L14 20 M8 14 L20 14" stroke="#888" stroke-width="2"/>
+            </svg>
+            <span>Help and Support</span>
+        </div>
+        <div class="start-menu-separator"></div>
+        <div class="start-menu-shutdown" onclick="logout();toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <circle cx="14" cy="14" r="10" fill="none" stroke="#cc2222" stroke-width="2"/>
+                <rect x="12" y="6" width="4" height="8" fill="#cc2222"/>
+            </svg>
+            <span>Turn Off Computer</span>
         </div>
     </div>
 </div>
@@ -5931,6 +6258,7 @@ if ($currentUserId && $currentRole) {
         document.getElementById('desktop').style.display = 'flex';
         document.getElementById('user-info').style.display = 'flex';
         document.getElementById('user-name').textContent = autoLoginData.name;
+        document.getElementById('sm-user-name').textContent = autoLoginData.name;
 
         const roleBadge = document.getElementById('user-role-badge');
         roleBadge.textContent = autoLoginData.role === 'admin' ? 'Admin' : 'Employee';

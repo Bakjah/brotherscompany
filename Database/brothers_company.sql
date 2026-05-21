@@ -220,12 +220,18 @@ CREATE TABLE `transaksi` (
 -- --------------------------------------------------------
 
 --
--- Struktur dari tabel `laporan_mechanic` (LaporanApp)
+-- Struktur dari tabel `laporan_mechanic` (DEPRECATED - gunakan tabel `laporan` dan `laporan_farmer`)
 --
 
-CREATE TABLE `laporan_mechanic` (
+-- Tabel lama dipertahankan untuk backward compatibility
+
+-- --------------------------------------------------------
+--
+-- Struktur dari tabel `laporan` (LaporanApp Mechanic)
+--
+
+CREATE TABLE `laporan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `divisi` enum('mechanic','farmer') NOT NULL DEFAULT 'mechanic',
   `nama_karyawan` varchar(100) NOT NULL,
   `compo_used` int(11) NOT NULL DEFAULT 0,
   `money_stored` decimal(15,2) NOT NULL DEFAULT 0,
@@ -234,25 +240,46 @@ CREATE TABLE `laporan_mechanic` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   PRIMARY KEY (`id`),
-  KEY `divisi` (`divisi`),
+  KEY `nama_karyawan` (`nama_karyawan`),
   KEY `tanggal` (`tanggal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- Dumping data untuk tabel `laporan_mechanic`
+-- Dumping data untuk tabel `laporan`
 --
 
-INSERT INTO `laporan_mechanic` (`divisi`, `nama_karyawan`, `compo_used`, `money_stored`, `keterangan`) VALUES
-('mechanic', 'Joko Susanto', 10, 500000, 'Service harian'),
-('mechanic', 'Ahmad Rizki', 8, 400000, 'Perbaikan mesin'),
-('farmer', 'Budi Santoso', 15, 750000, 'Routine check'),
-('farmer', 'Dewi Lestari', 12, 600000, 'Modifikasi');
+INSERT INTO `laporan` (`nama_karyawan`, `compo_used`, `money_stored`, `keterangan`, `tanggal`) VALUES
+('Joko Susanto', 10, 500000, 'Service harian', '2026-05-20'),
+('Ahmad Rizki', 8, 400000, 'Perbaikan mesin', '2026-05-19'),
+('Joko Susanto', 6, 300000, 'Tune up', '2026-05-18');
+
+-- --------------------------------------------------------
+--
+-- Struktur dari tabel `laporan_farmer` (LaporanApp Farmer)
+--
+
+CREATE TABLE `laporan_farmer` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nama_karyawan` varchar(100) NOT NULL,
+  `bibit_used` int(11) NOT NULL DEFAULT 0,
+  `panen_hasil` decimal(15,2) NOT NULL DEFAULT 0,
+  `keterangan` text DEFAULT NULL,
+  `tanggal` date DEFAULT (CURRENT_DATE),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `nama_karyawan` (`nama_karyawan`),
+  KEY `tanggal` (`tanggal`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
--- AUTO_INCREMENT untuk tabel `laporan_mechanic`
+-- Dumping data untuk tabel `laporan_farmer`
 --
-ALTER TABLE `laporan_mechanic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+INSERT INTO `laporan_farmer` (`nama_karyawan`, `bibit_used`, `panen_hasil`, `keterangan`, `tanggal`) VALUES
+('Budi Santoso', 15, 50, 'Routine check Greenhouse A - Panen cabai 50 kg', '2026-05-20'),
+('Dewi Lestari', 12, 30, 'Panen cabai organik', '2026-05-19'),
+('Budi Santoso', 8, 25, 'Pupuk organik cabai', '2026-05-18');
 
 -- --------------------------------------------------------
 
