@@ -4252,40 +4252,45 @@ if (!$currentUserId || !$currentRole) {
                             if (bulan && !tgl.startsWith(bulan)) return;
                             if (jenis && item.jenis_delivery !== jenis) return;
                             const crate = parseInt(item.jumlah_crate) || 0;
+                            // 1 crate = 20 buah (hanya untuk perhitungan harga farm)
+                            const buah = crate * 20;
 
                             // Tentukan (+) atau (-) berdasarkan jenis_delivery
                             // farmer_jual → (+) Penjualan Buah
-                            // compo → (-) Pembelian Component (bukan penjualan!)
+                            // compo → (-) Pembelian Component ($1000/crate)
                             // farmer / farmer_beli → (-) Pengeluaran Bibit
                             const isPendapatan = item.jenis_delivery === 'farmer_jual';
 
-                            // Tentukan harga per crate dari farm_price_config
-                            let hargaPerUnit = 0;
+                            // Tentukan harga
+                            let total = 0;
                             let labelJenis = '';
                             if (item.jenis_delivery === 'farmer_jual') {
-                                hargaPerUnit = hargaJualBuah; // farm_harga_jual_buah
+                                // Farm: crate x 20 buah x harga per buah
+                                total = buah * hargaJualBuah;
                                 labelJenis = '🌱 Penjualan Buah';
                             } else if (item.jenis_delivery === 'compo') {
-                                hargaPerUnit = hargaCompo; // mechanic_harga_component
+                                // Mechanic: crate x $1000 (harga per crate)
+                                total = crate * hargaCompo;
                                 labelJenis = '🔧 Beli Component';
                             } else if (item.jenis_delivery === 'farmer') {
-                                hargaPerUnit = hargaBibit; // farm_harga_bibit
+                                // Farmer Delivery: crate x harga (sama seperti mechanic)
+                                total = crate * hargaBibit;
                                 labelJenis = '🌱 Farmer Delivery';
                             } else if (item.jenis_delivery === 'farmer_beli') {
-                                hargaPerUnit = hargaBibit; // farm_harga_bibit
+                                // Beli Bibit: crate x harga (sama seperti mechanic)
+                                total = crate * hargaBibit;
                                 labelJenis = '🌱 Beli Bibit';
                             } else {
-                                hargaPerUnit = hargaBibit;
+                                total = crate * hargaBibit;
                                 labelJenis = item.jenis_delivery;
                             }
 
-                            const total = crate * hargaPerUnit;
                             // Nama = driver_nama (bukan nama_penerima)
                             allRows.push({
                                 tanggal: tgl,
                                 jenis: labelJenis,
                                 nama: item.driver_nama || item.nama_penerima || '-',
-                                jumlah: crate,
+                                jumlah: crate, // Selalu tampilkan crate
                                 total: total,
                                 isIncome: isPendapatan
                             });
