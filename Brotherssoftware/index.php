@@ -3965,7 +3965,7 @@ if (!$currentUserId || !$currentRole) {
                     <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);">
                         <div class="keu-card"><div class="keu-card-value income" id="lap-total-pemasukan">$0.00</div><div class="keu-card-label">Total Pendapatan (+)</div></div>
                         <div class="keu-card"><div class="keu-card-value income" id="lap-penjualan-buah">$0.00</div><div class="keu-card-label">Penjualan Buah (+)</div></div>
-                        <div class="keu-card"><div class="keu-card-value income" id="lap-penjualan-compo">$0.00</div><div class="keu-card-label">Beli Component (-)</div></div>
+                        <div class="keu-card"><div class="keu-card-value expense" id="lap-penjualan-compo">$0.00</div><div class="keu-card-label">Beli Component (-)</div></div>
                         <div class="keu-card"><div class="keu-card-value expense" id="lap-total-pengeluaran">$0.00</div><div class="keu-card-label">Total Pengeluaran (-)</div></div>
                     </div>
                     <div class="keu-filter">
@@ -4321,7 +4321,7 @@ if (!$currentUserId || !$currentRole) {
                     // Update cards
                     document.getElementById('lap-total-pemasukan').textContent = '+ $' + formatDollar(totalPendapatan);
                     document.getElementById('lap-penjualan-buah').textContent = '+ $' + formatDollar(totalBuah);
-                    document.getElementById('lap-penjualan-compo').textContent = '+ $' + formatDollar(totalCompo);
+                    document.getElementById('lap-penjualan-compo').textContent = '- $' + formatDollar(totalCompo);
                     document.getElementById('lap-total-pengeluaran').textContent = '- $' + formatDollar(totalPengeluaran);
 
                 } catch (e) {
