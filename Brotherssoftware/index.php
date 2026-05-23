@@ -2665,6 +2665,7 @@ if (!$currentUserId || !$currentRole) {
                                 <option value="12">Desember</option>
                             </select>
                             <button onclick="loadLaporan()" class="admin-btn">🔍 Filter</button>
+                            <button onclick="loadLaporan()" class="admin-btn" style="background:#238636;">🔄 Refresh</button>
                         </div>
                         <table class="admin-table">
                             <thead>
@@ -3592,7 +3593,7 @@ if (!$currentUserId || !$currentRole) {
                     setTimeout(loadEmployees, 500);
                     return;
                 }
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
                 try {
                     const res = await fetch('api/employee_api.php?action=get_all');
                     const result = await res.json();
@@ -3773,6 +3774,7 @@ if (!$currentUserId || !$currentRole) {
                             <option value="farmer">🌱 Farmer</option>
                         </select>
                         <button class="lk-btn" onclick="loadLaporanKerja()">🔍</button>
+                        <button class="lk-btn" onclick="loadLaporanKerja()" style="background:#238636;">🔄 Refresh</button>
                     </div>
                 </div>
 
@@ -3920,12 +3922,98 @@ if (!$currentUserId || !$currentRole) {
 
                 <!-- TABS -->
                 <div class="keu-tabs">
-                    <div class="keu-tab active" id="tab-gaji" onclick="switchKeuTab('gaji')">💰 Gaji</div>
+                    <div class="keu-tab active" id="tab-dashboard" onclick="switchKeuTab('dashboard')">📈 Dashboard</div>
+                    <div class="keu-tab" id="tab-gaji" onclick="switchKeuTab('gaji')">💰 Gaji</div>
                     <div class="keu-tab" id="tab-laporan" onclick="switchKeuTab('laporan')">📊 Laporan</div>
                 </div>
 
+                <!-- TAB: DASHBOARD -->
+                <div class="keu-tab-content active" id="content-dashboard">
+                    <div class="keu-header">
+                        <h2 class="keu-title">📈 Dashboard Keuangan Brothers Company</h2>
+                    </div>
+
+                    <!-- Summary Cards -->
+                    <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);">
+                        <div class="keu-card"><div class="keu-card-value income" id="dash-total-pendapatan">$0.00</div><div class="keu-card-label">Total Pendapatan (+)</div></div>
+                        <div class="keu-card"><div class="keu-card-value expense" id="dash-total-pengeluaran">$0.00</div><div class="keu-card-label">Total Pengeluaran (-)</div></div>
+                        <div class="keu-card"><div class="keu-card-value balance" id="dash-profit">$0.00</div><div class="keu-card-label">Profit Bersih</div></div>
+                        <div class="keu-card"><div class="keu-card-value balance" id="dash-modal">$0.00</div><div class="keu-card-label">Modal Tersedia</div></div>
+                    </div>
+
+                    <!-- Detail Cards -->
+                    <div class="keu-cards" style="grid-template-columns:repeat(5,1fr);margin-top:15px;">
+                        <div class="keu-card" style="background:#1a3a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Penjualan Buah (+)</div>
+                            <div class="keu-card-value income" id="dash-penjualan-buah" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#1a3a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Keuntungan Compo (+)</div>
+                            <div class="keu-card-value income" id="dash-keuntungan-compo" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Beli Component (-)</div>
+                            <div class="keu-card-value expense" id="dash-beli-compo" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Beli Bibit (-)</div>
+                            <div class="keu-card-value expense" id="dash-beli-bibit" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Total Gaji (-)</div>
+                            <div class="keu-card-value expense" id="dash-total-gaji" style="font-size:18px;">$0.00</div>
+                        </div>
+                    </div>
+
+                    <!-- Filter -->
+                    <div class="keu-filter" style="margin-top:20px;">
+                        <select id="dash-filter-periode" onchange="loadDashboard()">
+                            <option value="today">Hari Ini</option>
+                            <option value="week">7 Hari Terakhir</option>
+                            <option value="month" selected>Bulan Ini</option>
+                            <option value="all">Semua</option>
+                        </select>
+                        <select id="dash-filter-bulan" onchange="loadDashboard()" style="display:none;">
+                            <option value="">Semua Bulan</option>
+                        </select>
+                        <button onclick="loadDashboard()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
+                    </div>
+
+                    <!-- Profit Table - Mechanic -->
+                    <h3 style="color:#e3b341;margin:20px 0 10px 0;">🔧 Rincian Mechanic per Tanggal</h3>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Compo Used</th><th>Value / Keuntungan</th><th>Beli Component (-)</th><th>Gaji Mechanic (-)</th><th>Profit</th></tr></thead>
+                        <tbody id="dash-mechanic-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <tfoot id="dash-mechanic-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
+                    </table>
+
+                    <!-- Profit Table - Farm -->
+                    <h3 style="color:#3fb950;margin:20px 0 10px 0;">🌱 Rincian Farm per Tanggal</h3>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Penjualan Buah (+)</th><th>Beli Bibit (-)</th><th>Gaji Farmer (-)</th><th>Profit</th></tr></thead>
+                        <tbody id="dash-farm-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <tfoot id="dash-farm-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
+                    </table>
+
+                    <!-- Profit Table - Cargo -->
+                    <h3 style="color:#58a6ff;margin:20px 0 10px 0;">🚚 Rincian Cargo per Tanggal</h3>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Gaji Cargo (-)</th><th>Profit</th></tr></thead>
+                        <tbody id="dash-cargo-body"><tr><td colspan="5" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <tfoot id="dash-cargo-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
+                    </table>
+
+                    <!-- Profit Table - Summary All -->
+                    <h3 style="color:#f778ba;margin:20px 0 10px 0;">💰 Summary All per Tanggal</h3>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Mechanic Profit</th><th>Farm Profit</th><th>Cargo Profit</th><th>Total Profit</th></tr></thead>
+                        <tbody id="dash-summary-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <tfoot id="dash-summary-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
+                    </table>
+                </div>
+
                 <!-- TAB: GAJI -->
-                <div class="keu-tab-content active" id="content-gaji">
+                <div class="keu-tab-content" id="content-gaji">
                     <div class="keu-header">
                         <h2 class="keu-title">💰 Daftar Gaji - Accepted & Cargo Selesai</h2>
                     </div>
@@ -3945,12 +4033,14 @@ if (!$currentUserId || !$currentRole) {
                             <option value="farmer">Farmer</option>
                             <option value="cargo driver">Cargo Driver</option>
                         </select>
+                        <input type="text" id="keu-filter-nama" onkeyup="loadGajiKeuangan()" placeholder="🔍 Cari Nama..." style="padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px;width:150px;"></input>
                         <button onclick="loadGajiKeuangan()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
                         <button onclick="exportGajiExcel()" class="keu-btn keu-btn-secondary">📥 Export</button>
+                        <button onclick="deleteAllGaji()" class="keu-btn keu-btn-danger">🗑️ Hapus Semua</button>
                     </div>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Nama Karyawan</th><th>Divisi</th><th>Jumlah Used</th><th>Rate Gaji</th><th>Total Gaji</th></tr></thead>
-                        <tbody id="gaji-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Nama Karyawan</th><th>Divisi</th><th>Jumlah Used</th><th>Rate Gaji</th><th>Total Gaji</th><th>Aksi</th></tr></thead>
+                        <tbody id="gaji-table-body"><tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                     </table>
                     <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
                         * Mechanic = Comp Used x Gaji/Comp | Farmer = Bibit Used x Gaji/Bibit | Cargo = Crate Selesai x Gaji/Crate
@@ -3979,10 +4069,11 @@ if (!$currentUserId || !$currentRole) {
                             <option value="farmer">🌱 Farmer Delivery (-)</option>
                         </select>
                         <button onclick="loadLaporanKeuangan()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
+                        <button onclick="deleteAllLaporan()" class="keu-btn keu-btn-danger">🗑️ Hapus Semua</button>
                     </div>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Jenis</th><th>Nama</th><th>Jumlah</th><th>Total ($)</th></tr></thead>
-                        <tbody id="lap-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Jenis</th><th>Nama</th><th>Jumlah</th><th>Total ($)</th><th>Aksi</th></tr></thead>
+                        <tbody id="lap-table-body"><tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                     </table>
                     <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
                         * (+)=Pendapatan, (-)=Pengeluaran | farmer_jual/comp/cargo=+ | farmer_beli/farmer=-
@@ -3990,7 +4081,7 @@ if (!$currentUserId || !$currentRole) {
                 </div>
             </div>
             <script>
-            let currentKeuTab = 'gaji';
+            let currentKeuTab = 'dashboard';
             let gajiConfig = {};
 
             function switchKeuTab(tab) {
@@ -3999,8 +4090,289 @@ if (!$currentUserId || !$currentRole) {
                 document.querySelectorAll('.keu-tab-content').forEach(c => c.classList.remove('active'));
                 document.getElementById('tab-' + tab).classList.add('active');
                 document.getElementById('content-' + tab).classList.add('active');
-                if (tab === 'gaji') loadGajiKeuangan();
+                if (tab === 'dashboard') loadDashboard();
+                else if (tab === 'gaji') loadGajiKeuangan();
                 else if (tab === 'laporan') loadLaporanKeuangan();
+            }
+
+            // Load Dashboard Keuangan
+            async function loadDashboard() {
+                const mechanicBody = document.getElementById('dash-mechanic-body');
+                const farmBody = document.getElementById('dash-farm-body');
+                const cargoBody = document.getElementById('dash-cargo-body');
+                const summaryBody = document.getElementById('dash-summary-body');
+                if (!mechanicBody || !farmBody || !cargoBody || !summaryBody) return;
+
+                // Initialize all tables with loading
+                mechanicBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                farmBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                cargoBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                summaryBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+
+                const periode = document.getElementById('dash-filter-periode').value;
+                const now = new Date();
+                let startDate = '';
+                let endDate = '';
+
+                // Tentukan range tanggal berdasarkan periode
+                if (periode === 'today') {
+                    startDate = now.toISOString().split('T')[0];
+                    endDate = startDate;
+                } else if (periode === 'week') {
+                    const weekAgo = new Date(now);
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    startDate = weekAgo.toISOString().split('T')[0];
+                    endDate = now.toISOString().split('T')[0];
+                } else if (periode === 'month') {
+                    startDate = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-01';
+                    endDate = now.toISOString().split('T')[0];
+                }
+
+                let totalPendapatan = 0;
+                let totalPengeluaran = 0;
+                let penjualanBuah = 0;
+                let beliCompo = 0;
+                let totalKeuntunganCompo = 0;
+                let totalPenjualanBuah = 0;
+                let totalBeliCompo = 0;
+                let totalBeliBibit = 0;
+
+                // Data per divisi
+                const mechanicData = {}; // { tanggal: { compoUsed, value, beliCompo, gaji } }
+                const farmData = {};     // { tanggal: { crates, penjualan, beliBibit, gaji } }
+                const cargoData = {};    // { tanggal: { crates, gaji } }
+
+                // Summary
+                let totalMechanicProfit = 0;
+                let totalFarmProfit = 0;
+                let totalCargoProfit = 0;
+
+                try {
+                    // Load config for prices
+                    const configRes = await fetch('api/farm_price_config_api.php?action=get_all');
+                    const configResult = await configRes.json();
+                    let configMap = {};
+                    if (configResult.success) {
+                        configResult.data.forEach(item => {
+                            configMap[item.config_key] = parseFloat(item.value) || 0;
+                        });
+                    }
+                    const hargaJualBuah = configMap['farm_harga_jual_buah'] || 0;
+                    const hargaBibit = configMap['farm_harga_bibit'] || 0;
+                    const hargaCompo = 0; // Will be loaded from mechanic_component_price table
+                    const gajiMekanik = configMap['mechanic_gaji_dasar'] || 0;
+                    const gajiBibit = configMap['farm_gaji_per_bibit'] || 0;
+                    const gajiCargo = configMap['cargo_gaji_per_crate'] || 0;
+
+                    // Load component price from mechanic_component_price table
+                    let componentPrice = 1.0;
+                    try {
+                        const compoRes = await fetch('api/mechanic_component_api.php?action=get');
+                        const compoResult = await compoRes.json();
+                        if (compoResult.success && compoResult.data) {
+                            componentPrice = parseFloat(compoResult.data.harga_per_component) || 1.0;
+                        }
+                    } catch (e) { /* use default 1.0 */ }
+
+                    // Helper function to check date range
+                    function isInRange(tgl) {
+                        if (!tgl) return false;
+                        if (periode === 'all') return true;
+                        return tgl >= startDate && tgl <= endDate;
+                    }
+
+                    // --- Load Delivery Orders (Laporan) ---
+                    const deliveryRes = await fetch('api/delivery_order_api.php?action=get_all&status=selesai');
+                    const deliveryResult = await deliveryRes.json();
+
+                    if (deliveryResult.success && deliveryResult.data.length) {
+                        deliveryResult.data.forEach(item => {
+                            const tgl = (item.tanggal_selesai || item.tanggal_input || '').split(' ')[0];
+                            if (!isInRange(tgl)) return;
+
+                            const crate = parseInt(item.jumlah_crate) || 0;
+                            const storedHarga = parseFloat(item.harga_snapshot) || null;
+
+                            let penjual = 0;
+                            let pengeluara = 0;
+
+                            if (item.jenis_delivery === 'farmer_jual') {
+                                const perBuah = storedHarga || hargaJualBuah;
+                                const buahTotal = crate * 20;
+                                const penjual = buahTotal * perBuah;
+                                totalPenjualanBuah += penjual;
+                                if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
+                                farmData[tgl].crates += crate;
+                                farmData[tgl].penjualan += penjual;
+                            } else if (item.jenis_delivery === 'compo') {
+                                // Component price from mechanic_component_price table
+                                const compoCount = parseInt(item.jumlah_crate) || 0;
+                                const perCompo = storedHarga || componentPrice;
+                                const pengeluara = compoCount * perCompo;
+                                totalBeliCompo += pengeluara;
+                                if (!mechanicData[tgl]) mechanicData[tgl] = { compoUsed: 0, value: 0, beliCompo: 0, gaji: 0 };
+                                mechanicData[tgl].beliCompo += pengeluara;
+                            } else if (item.jenis_delivery === 'farmer' || item.jenis_delivery === 'farmer_beli') {
+                                const perCrate = storedHarga || hargaBibit;
+                                const pengeluara = crate * perCrate;
+                                totalBeliBibit += pengeluara;
+                                if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
+                                farmData[tgl].crates += crate;
+                                farmData[tgl].beliBibit += pengeluara;
+                            }
+
+                            // Cargo dari semua delivery (kecuali farmer_jual)
+                            if (item.jenis_delivery !== 'farmer_jual') {
+                                const gajinya = crate * gajiCargo;
+                                if (!cargoData[tgl]) cargoData[tgl] = { crates: 0, gaji: 0 };
+                                cargoData[tgl].crates += crate;
+                                cargoData[tgl].gaji += gajinya;
+                            }
+                        });
+                    }
+
+                    // --- Load Accepted Laporan (Gaji) ---
+                    const acceptedRes = await fetch('api/accepted_laporan_api.php?action=get_all');
+                    const acceptedResult = await acceptedRes.json();
+
+                    if (acceptedResult.success && acceptedResult.data.length) {
+                        acceptedResult.data.forEach(item => {
+                            const tgl = (item.tanggal_laporan || '').split(' ')[0];
+                            if (!isInRange(tgl)) return;
+
+                            const divisi = (item.divisi || '').toLowerCase();
+                            const jumlah = parseFloat(item.jumlah_used) || 0;
+                            const storedRate = parseFloat(item.harga_rate) || null;
+                            let gajinya = 0;
+
+                            if (divisi === 'mechanic') {
+                                const rate = storedRate || gajiMekanik;
+                                gajinya = jumlah * rate;
+                                // Value = keuntungan dari mechanic (jumlah_value dari accepted_laporan)
+                                const value = parseFloat(item.jumlah_value) || 0;
+                                if (value > 0) {
+                                    totalKeuntunganCompo += value;
+                                }
+                            } else if (divisi === 'farmer') {
+                                const rate = storedRate || gajiBibit;
+                                gajinya = jumlah * rate;
+                            }
+
+                            if (gajinya > 0) {
+                                if (divisi === 'mechanic') {
+                                    if (!mechanicData[tgl]) mechanicData[tgl] = { compoUsed: 0, value: 0, beliCompo: 0, gaji: 0 };
+                                    mechanicData[tgl].compoUsed += jumlah;
+                                    mechanicData[tgl].value += parseFloat(item.jumlah_value) || 0;
+                                    mechanicData[tgl].gaji += gajinya;
+                                } else if (divisi === 'farmer') {
+                                    if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
+                                    farmData[tgl].gaji += gajinya;
+                                }
+                            }
+                        });
+                    }
+
+                    // Calculate profits per date
+                    const allDates = new Set([...Object.keys(mechanicData), ...Object.keys(farmData), ...Object.keys(cargoData)]);
+                    const sortedDates = Array.from(allDates).sort().reverse();
+
+                    // Render Mechanic Table
+                    let mHtml = '';
+                    let mNo = 1;
+                    let mTotalComp = 0, mTotalValue = 0, mTotalBeli = 0, mTotalGaji = 0;
+                    sortedDates.forEach(tgl => {
+                        const d = mechanicData[tgl];
+                        if (!d) return;
+                        const profit = d.value - d.beliCompo - d.gaji;
+                        mTotalComp += d.compoUsed;
+                        mTotalValue += d.value;
+                        mTotalBeli += d.beliCompo;
+                        mTotalGaji += d.gaji;
+                        totalMechanicProfit += profit;
+                        const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        mHtml += '<tr><td style="text-align:center;">' + mNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.compoUsed + '</td><td style="color:#4db84d;">$' + formatDollar(d.value) + '</td><td style="color:#f85149;">-$' + formatDollar(d.beliCompo) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:' + (profit >= 0 ? '#4db84d' : '#f85149') + ';">' + (profit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        mNo++;
+                    });
+                    if (!mHtml) mHtml = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data Mechanic</td></tr>';
+                    mechanicBody.innerHTML = mHtml;
+                    document.getElementById('dash-mechanic-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + mTotalComp + '</td><td style="color:#4db84d;">$' + formatDollar(mTotalValue) + '</td><td style="color:#f85149;">-$' + formatDollar(mTotalBeli) + '</td><td style="color:#f85149;">-$' + formatDollar(mTotalGaji) + '</td><td style="color:' + (totalMechanicProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalMechanicProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalMechanicProfit)) + '</td></tr>';
+
+                    // Render Farm Table
+                    let fHtml = '';
+                    let fNo = 1;
+                    let fTotalCrate = 0, fTotalJual = 0, fTotalBibit = 0, fTotalGaji = 0;
+                    sortedDates.forEach(tgl => {
+                        const d = farmData[tgl];
+                        if (!d) return;
+                        const profit = d.penjualan - d.beliBibit - d.gaji;
+                        fTotalCrate += d.crates;
+                        fTotalJual += d.penjualan;
+                        fTotalBibit += d.beliBibit;
+                        fTotalGaji += d.gaji;
+                        totalFarmProfit += profit;
+                        const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        fHtml += '<tr><td style="text-align:center;">' + fNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.crates + '</td><td style="color:#4db84d;">$' + formatDollar(d.penjualan) + '</td><td style="color:#f85149;">-$' + formatDollar(d.beliBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:' + (profit >= 0 ? '#4db84d' : '#f85149') + ';">' + (profit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        fNo++;
+                    });
+                    if (!fHtml) fHtml = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data Farm</td></tr>';
+                    farmBody.innerHTML = fHtml;
+                    document.getElementById('dash-farm-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + fTotalCrate + '</td><td style="color:#4db84d;">$' + formatDollar(fTotalJual) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalGaji) + '</td><td style="color:' + (totalFarmProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalFarmProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalFarmProfit)) + '</td></tr>';
+
+                    // Render Cargo Table
+                    let cHtml = '';
+                    let cNo = 1;
+                    let cTotalCrate = 0, cTotalGaji = 0;
+                    sortedDates.forEach(tgl => {
+                        const d = cargoData[tgl];
+                        if (!d) return;
+                        const profit = -d.gaji;
+                        cTotalCrate += d.crates;
+                        cTotalGaji += d.gaji;
+                        totalCargoProfit += profit;
+                        const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        cHtml += '<tr><td style="text-align:center;">' + cNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.crates + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:#f85149;">-$' + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        cNo++;
+                    });
+                    if (!cHtml) cHtml = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Belum ada data Cargo</td></tr>';
+                    cargoBody.innerHTML = cHtml;
+                    document.getElementById('dash-cargo-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + cTotalCrate + '</td><td style="color:#f85149;">-$' + formatDollar(cTotalGaji) + '</td><td style="color:#f85149;">-$' + formatDollar(Math.abs(totalCargoProfit)) + '</td></tr>';
+
+                    // Render Summary Table
+                    let sHtml = '';
+                    let sNo = 1;
+                    sortedDates.forEach(tgl => {
+                        const m = mechanicData[tgl] || { value: 0, beliCompo: 0, gaji: 0 };
+                        const f = farmData[tgl] || { penjualan: 0, beliBibit: 0, gaji: 0 };
+                        const c = cargoData[tgl] || { gaji: 0 };
+                        const mProfit = m.value - m.beliCompo - m.gaji;
+                        const fProfit = f.penjualan - f.beliBibit - f.gaji;
+                        const cProfit = -(c.gaji || 0);
+                        const totalProfit = mProfit + fProfit + cProfit;
+                        const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+                        sHtml += '<tr><td style="text-align:center;">' + sNo + '</td><td>' + tglFormatted + '</td><td style="color:' + (mProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (mProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(mProfit)) + '</td><td style="color:' + (fProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (fProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(fProfit)) + '</td><td style="color:' + (cProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (cProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(cProfit)) + '</td><td style="color:' + (totalProfit >= 0 ? '#4db84d' : '#f85149') + ';font-weight:bold;">' + (totalProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalProfit)) + '</td></tr>';
+                        sNo++;
+                    });
+                    if (!sHtml) sHtml = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+                    summaryBody.innerHTML = sHtml;
+                    const grandTotalProfit = totalMechanicProfit + totalFarmProfit + totalCargoProfit;
+                    document.getElementById('dash-summary-foot').innerHTML = '<tr><td colspan="2" style="text-align:right;">GRAND TOTAL</td><td style="color:' + (totalMechanicProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalMechanicProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalMechanicProfit)) + '</td><td style="color:' + (totalFarmProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalFarmProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalFarmProfit)) + '</td><td style="color:' + (totalCargoProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalCargoProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalCargoProfit)) + '</td><td style="color:' + (grandTotalProfit >= 0 ? '#4db84d' : '#f85149') + ';font-weight:bold;font-size:14px;">' + (grandTotalProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(grandTotalProfit)) + '</td></tr>';
+
+                    // Update summary cards
+                    const finalProfit = totalMechanicProfit + totalFarmProfit + totalCargoProfit;
+                    document.getElementById('dash-profit').textContent = '$' + formatDollar(finalProfit);
+                    document.getElementById('dash-profit').className = 'keu-card-value ' + (finalProfit >= 0 ? 'balance' : 'expense');
+                    document.getElementById('dash-modal').textContent = '$' + formatDollar(finalProfit);
+                    document.getElementById('dash-penjualan-buah').textContent = '$' + formatDollar(totalPenjualanBuah);
+                    document.getElementById('dash-keuntungan-compo').textContent = '$' + formatDollar(totalKeuntunganCompo);
+                    document.getElementById('dash-beli-compo').textContent = '$' + formatDollar(totalBeliCompo);
+                    document.getElementById('dash-beli-bibit').textContent = '$' + formatDollar(totalBeliBibit);
+
+                } catch (e) {
+                    mechanicBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
+                    farmBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
+                    cargoBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
+                    summaryBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
+                }
             }
 
             // Load farm_price_config for salary rates
@@ -4047,7 +4419,7 @@ if (!$currentUserId || !$currentRole) {
             async function loadGajiKeuangan() {
                 const tbody = document.getElementById('gaji-table-body');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
 
                 try {
                     // Load config rates first
@@ -4055,6 +4427,7 @@ if (!$currentUserId || !$currentRole) {
 
                     const bulan = document.getElementById('keu-filter-bulan').value;
                     const filterDivisi = document.getElementById('keu-filter-divisi').value;
+                    const filterNama = document.getElementById('keu-filter-nama').value.toLowerCase().trim();
                     const allRows = [];
 
                     // --- Load Accepted Laporan (Mechanic + Farmer) ---
@@ -4087,12 +4460,14 @@ if (!$currentUserId || !$currentRole) {
                                 const tgl = item.tanggal_selesai || item.tanggal_input || '';
                                 // Filter by bulan if selected
                                 if (bulan && !tgl.startsWith(bulan)) return;
+                                // Gaji cargo = jumlah_crate x cargo_gaji_per_crate (dari farm_price_config)
+                                const jumlahCrate = parseInt(item.jumlah_crate) || 0;
                                 allRows.push({
                                     tanggal: tgl,
                                     nama: item.driver_nama || item.nama_penerima || '-',
                                     divisi: 'cargo driver',
-                                    jumlah: parseInt(item.jumlah_crate) || 0,
-                                    harga_rate: parseFloat(item.harga_snapshot) || null,
+                                    jumlah: jumlahCrate,
+                                    harga_rate: null, // Akan pakai config
                                     source: 'cargo'
                                 });
                             });
@@ -4100,7 +4475,7 @@ if (!$currentUserId || !$currentRole) {
                     }
 
                     if (!allRows.length) {
-                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
                         document.getElementById('keu-total-gaji').textContent = '$0.00';
                         document.getElementById('keu-total-mekanik').textContent = '$0.00';
                         document.getElementById('keu-total-farmer').textContent = '$0.00';
@@ -4110,6 +4485,20 @@ if (!$currentUserId || !$currentRole) {
 
                     // Sort by tanggal desc
                     allRows.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+                    // Filter by nama if search is active
+                    const filteredRows = filterNama
+                        ? allRows.filter(item => (item.nama || '').toLowerCase().includes(filterNama))
+                        : allRows;
+
+                    if (!filteredRows.length) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Tidak ada data dengan nama: "' + filterNama + '"</td></tr>';
+                        document.getElementById('keu-total-gaji').textContent = '$0.00';
+                        document.getElementById('keu-total-mekanik').textContent = '$0.00';
+                        document.getElementById('keu-total-farmer').textContent = '$0.00';
+                        document.getElementById('keu-total-cargo').textContent = '$0.00';
+                        return;
+                    }
 
                     // Populate bulan filter dari semua data
                     populateBulanFilterFromArray(allRows);
@@ -4121,7 +4510,7 @@ if (!$currentUserId || !$currentRole) {
                     let totalFarmer = 0;
                     let totalCargo = 0;
 
-                    allRows.forEach(item => {
+                    filteredRows.forEach(item => {
                         const div = item.divisi;
                         let rateGaji = '-';
                         let totalGajiItem = '-';
@@ -4154,8 +4543,9 @@ if (!$currentUserId || !$currentRole) {
                         const tglFormatted = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
                         const divClass = div === 'mechanic' ? 'keu-div-mechanic' : div === 'farmer' ? 'keu-div-farmer' : 'keu-div-cargo';
                         const divLabel = div === 'mechanic' ? 'Mechanic' : div === 'farmer' ? 'Farmer' : 'Cargo Driver';
+                        const deleteBtn = '<button onclick="deleteAcceptedLaporan(' + item.id + ', \'' + item.source + '\', \'' + (item.nama || '').replace(/'/g, "\\'") + '\')" style="padding:4px 8px;background:#da3633;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;">🗑️</button>';
 
-                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td>' + item.nama + '</td><td class="' + divClass + '">' + divLabel + '</td><td style="text-align:center;">' + item.jumlah + '</td><td>' + rateGaji + '</td><td class="keu-income">' + totalGajiItem + '</td></tr>';
+                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td>' + item.nama + '</td><td class="' + divClass + '">' + divLabel + '</td><td style="text-align:center;">' + item.jumlah + '</td><td>' + rateGaji + '</td><td class="keu-income">' + totalGajiItem + '</td><td style="text-align:center;">' + deleteBtn + '</td></tr>';
 
                         no++;
                     });
@@ -4170,7 +4560,7 @@ if (!$currentUserId || !$currentRole) {
                     document.getElementById('keu-total-cargo').textContent = '$' + formatDollar(totalCargo);
 
                 } catch (e) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
                 }
             }
 
@@ -4220,7 +4610,7 @@ if (!$currentUserId || !$currentRole) {
             async function loadLaporanKeuangan() {
                 const tbody = document.getElementById('lap-table-body');
                 if (!tbody) return;
-                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
 
                 const bulan = document.getElementById('lap-filter-bulan').value;
                 const jenis = document.getElementById('lap-filter-jenis').value;
@@ -4301,12 +4691,15 @@ if (!$currentUserId || !$currentRole) {
 
                             // Nama = driver_nama (bukan nama_penerima)
                             allRows.push({
+                                id: item.id,
                                 tanggal: tgl,
                                 jenis: labelJenis,
+                                jenis_delivery: item.jenis_delivery,
                                 nama: item.driver_nama || item.nama_penerima || '-',
                                 jumlah: crate, // Selalu tampilkan crate
                                 total: total,
-                                isIncome: isPendapatan
+                                isIncome: isPendapatan,
+                                storedHarga: storedHarga
                             });
 
                             if (isPendapatan) {
@@ -4333,11 +4726,17 @@ if (!$currentUserId || !$currentRole) {
                         const jamFormatted = item.tanggal ? new Date(item.tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
                         const cellClass = item.isIncome ? 'keu-income' : 'keu-expense';
                         const sign = item.isIncome ? '+' : '-';
-                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td style="color:#8b949e;">' + jamFormatted + '</td><td class="' + cellClass + '">' + item.jenis + '</td><td>' + item.nama + '</td><td style="text-align:center;">' + item.jumlah + '</td><td class="' + cellClass + '">' + sign + '$' + formatDollar(item.total) + '</td></tr>';
+                        // Action buttons - hanya untuk farmer_jual
+                        let actionBtn = '-';
+                        if (item.jenis_delivery === 'farmer_jual') {
+                            actionBtn = '<button onclick="editHargaBuah(' + item.id + ', ' + (item.storedHarga || hargaJualBuah) + ')" style="padding:4px 8px;background:#6f42c1;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;margin-right:3px;">✏️</button>';
+                            actionBtn += '<button onclick="deleteDeliveryOrder(' + item.id + ', \'' + item.nama + '\')" style="padding:4px 8px;background:#da3633;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;">🗑️</button>';
+                        }
+                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td style="color:#8b949e;">' + jamFormatted + '</td><td class="' + cellClass + '">' + item.jenis + '</td><td>' + item.nama + '</td><td style="text-align:center;">' + item.jumlah + '</td><td class="' + cellClass + '">' + sign + '$' + formatDollar(item.total) + '</td><td style="text-align:center;">' + actionBtn + '</td></tr>';
                         no++;
                     });
 
-                    tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+                    tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
 
                     // Update cards
                     document.getElementById('lap-total-pemasukan').textContent = '+ $' + formatDollar(totalPendapatan);
@@ -4346,7 +4745,7 @@ if (!$currentUserId || !$currentRole) {
                     document.getElementById('lap-total-pengeluaran').textContent = '- $' + formatDollar(totalPengeluaran);
 
                 } catch (e) {
-                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
                 }
             }
 
@@ -4368,16 +4767,122 @@ if (!$currentUserId || !$currentRole) {
                 select.value = currentVal;
             }
 
+            // Edit harga jual buah untuk satu transaksi
+            async function editHargaBuah(id, currentHarga) {
+                const newHarga = prompt('Edit Harga Jual Buah ($ per buah):\n\nHarga saat ini: $' + currentHarga.toFixed(2), currentHarga.toFixed(2));
+                if (newHarga === null) return;
+
+                const harga = parseFloat(newHarga);
+                if (isNaN(harga) || harga < 0) {
+                    alert('Harga harus angka positif!');
+                    return;
+                }
+
+                try {
+                    const res = await fetch('api/delivery_order_api.php?action=update_harga', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: id, harga: harga })
+                    });
+                    const json = await res.json();
+                    if (json.success) {
+                        alert('✓ Harga berhasil diupdate!');
+                        loadLaporanKeuangan();
+                    } else {
+                        alert('✗ Gagal: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('✗ Error: ' + e.message);
+                }
+            }
+
+            // Delete single delivery order (Laporan tab)
+            async function deleteDeliveryOrder(id, nama) {
+                if (!confirm('Yakin hapus data ini?\n\nID: ' + id + '\nNama: ' + nama)) return;
+                try {
+                    const res = await fetch('api/delivery_order_api.php?action=delete&id=' + id);
+                    const json = await res.json();
+                    if (json.success) {
+                        alert('✓ Data berhasil dihapus!');
+                        loadLaporanKeuangan();
+                    } else {
+                        alert('✗ Gagal: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('✗ Error: ' + e.message);
+                }
+            }
+
+            // Delete all delivery orders (Laporan tab)
+            async function deleteAllLaporan() {
+                if (!confirm('⚠️ YAKIN HAPUS SEMUA DATA?\n\nSemua data di Tab Laporan akan dihapus permanen!\n\nKlik OK untuk melanjutkan.')) return;
+                try {
+                    const res = await fetch('api/delivery_order_api.php?action=delete_all');
+                    const json = await res.json();
+                    if (json.success) {
+                        alert('✓ Berhasil hapus ' + json.deleted + ' data!');
+                        loadLaporanKeuangan();
+                    } else {
+                        alert('✗ Gagal: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('✗ Error: ' + e.message);
+                }
+            }
+
+            // Delete all accepted laporan (Gaji tab)
+            async function deleteAllGaji() {
+                if (!confirm('⚠️ YAKIN HAPUS SEMUA DATA GAJI?\n\nSemua accepted laporan akan dihapus permanen!\n\nKlik OK untuk melanjutkan.')) return;
+                try {
+                    const res = await fetch('api/accepted_laporan_api.php?action=delete_all');
+                    const json = await res.json();
+                    if (json.success) {
+                        alert('✓ Berhasil hapus ' + json.deleted + ' data!');
+                        loadGajiKeuangan();
+                    } else {
+                        alert('✗ Gagal: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('✗ Error: ' + e.message);
+                }
+            }
+
+            // Delete single accepted laporan (Gaji tab)
+            async function deleteAcceptedLaporan(id, source, nama) {
+                if (!confirm('Yakin hapus data ini?\n\nID: ' + id + '\nNama: ' + nama)) return;
+                try {
+                    let res, json;
+                    if (source === 'cargo') {
+                        // Cargo comes from delivery_order
+                        res = await fetch('api/delivery_order_api.php?action=delete&id=' + id);
+                    } else {
+                        // Mechanic/Farmer comes from accepted_laporan
+                        res = await fetch('api/accepted_laporan_api.php?action=delete&id=' + id);
+                    }
+                    json = await res.json();
+                    if (json.success) {
+                        alert('✓ Data berhasil dihapus!');
+                        loadGajiKeuangan();
+                    } else {
+                        alert('✗ Gagal: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('✗ Error: ' + e.message);
+                }
+            }
+
             // Initial load when window opens
             const winKeuangan = document.getElementById('win-keuangan');
             if (winKeuangan) {
                 winKeuangan.addEventListener('focus', function() {
-                    if (currentKeuTab === 'gaji') loadGajiKeuangan();
+                    if (currentKeuTab === 'dashboard') loadDashboard();
+                    else if (currentKeuTab === 'gaji') loadGajiKeuangan();
                     else if (currentKeuTab === 'laporan') loadLaporanKeuangan();
                 });
             }
             // Load tab yang aktif saat ini
-            if (currentKeuTab === 'gaji') loadGajiKeuangan();
+            if (currentKeuTab === 'dashboard') loadDashboard();
+            else if (currentKeuTab === 'gaji') loadGajiKeuangan();
             else if (currentKeuTab === 'laporan') loadLaporanKeuangan();
             </script>
         </div>
@@ -5428,9 +5933,14 @@ if (!$currentUserId || !$currentRole) {
                 </div>
 
                 <div class="pm-card">
-                    <h3>🔧 Sparepart Price</h3>
+                    <h3>🔧 Component & Sparepart Price</h3>
                     <div class="pm-row">
-                        <label>Harga per Unit ($)</label>
+                        <label>Harga per Component ($)</label>
+                        <span class="pm-label">$</span>
+                        <input type="number" id="pm-harga-compo" step="0.1" min="0">
+                    </div>
+                    <div class="pm-row">
+                        <label>Harga per Unit Sparepart ($)</label>
                         <span class="pm-label">$</span>
                         <input type="number" id="pm-sparepart" step="0.1" min="0">
                     </div>
@@ -5500,7 +6010,19 @@ if (!$currentUserId || !$currentRole) {
                             }
                         } catch (e) { /* use default */ }
 
-                        configHtml += '<div style="padding:6px 0;border-top:1px solid #30363d;margin-top:8px;"><span style="color:#c9d1d9;">Sparepart:</span> <span style="color:#ffd700;font-weight:bold;">$ ' + sparepartValue + ' /unit</span></div>';
+                        // Load component price from mechanic_component_price table
+                        try {
+                            const compoRes = await fetch('api/mechanic_component_api.php?action=get');
+                            const compoResult = await compoRes.json();
+                            if (compoResult.success && compoResult.data) {
+                                hargaCompoValue = parseFloat(compoResult.data.harga_per_component) || 1.0;
+                                const compoEl = document.getElementById('pm-harga-compo');
+                                if (compoEl) compoEl.value = hargaCompoValue;
+                            }
+                        } catch (e) { /* use default */ }
+
+                        configHtml += '<div style="padding:6px 0;border-top:1px solid #30363d;margin-top:8px;"><span style="color:#c9d1d9;">Component:</span> <span style="color:#ffd700;font-weight:bold;">$ ' + hargaCompoValue + ' /unit</span></div>';
+                        configHtml += '<div style="padding:6px 0;border-top:1px solid #30363d;"><span style="color:#c9d1d9;">Sparepart:</span> <span style="color:#ffd700;font-weight:bold;">$ ' + sparepartValue + ' /unit</span></div>';
 
                         const configList = document.getElementById('pm-config-list');
                         console.log('pm-config-list element:', configList);
@@ -5536,7 +6058,8 @@ if (!$currentUserId || !$currentRole) {
                         modif: parseFloat(document.getElementById('pm-modif').value) || 3.0,
                         brother: parseFloat(document.getElementById('pm-brother').value) || 2.3,
                         ws_stored: parseFloat(document.getElementById('pm-ws_stored').value) || 2.0,
-                        sparepart: parseFloat(document.getElementById('pm-sparepart').value) || 2.0
+                        sparepart: parseFloat(document.getElementById('pm-sparepart').value) || 2.0,
+                        hargaCompo: parseFloat(document.getElementById('pm-harga-compo').value) || 1.0
                     };
 
                     try {
@@ -5547,6 +6070,13 @@ if (!$currentUserId || !$currentRole) {
                                     method: 'POST',
                                     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                                     body: 'action=update&harga_per_unit=' + multiplier
+                                });
+                            } else if (jenis === 'hargaCompo') {
+                                // Save component price to mechanic_component_price table
+                                await fetch('api/mechanic_component_api.php', {
+                                    method: 'POST',
+                                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                                    body: 'action=update&harga=' + multiplier
                                 });
                             } else {
                                 await fetch('api/price_config_api.php', {
@@ -5580,24 +6110,9 @@ if (!$currentUserId || !$currentRole) {
 
                 // Auto-load price config on page load
             window.addEventListener('load', function() {
-                setTimeout(loadPriceConfig, 800);
+                setTimeout(loadPriceConfig, 500);
             });
-
-            // Also load when window becomes visible
-            const mmWindow = document.getElementById('win-mechanicmanager');
-            if (mmWindow) {
-                const observer = new MutationObserver(function(mutations) {
-                    mutations.forEach(function(mutation) {
-                        if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                            if (mmWindow.style.display === 'block') {
-                                loadPriceConfig();
-                            }
-                        }
-                    });
-                });
-                observer.observe(mmWindow, { attributes: true });
-            }
-            </script>
+                </script>
         </div>
         <div class="window-statusbar">
             <span class="statusbar-section">Mechanic Manager</span>

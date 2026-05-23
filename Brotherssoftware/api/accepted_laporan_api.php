@@ -127,7 +127,8 @@ switch ($action) {
     // Delete all accepted laporan
     case 'delete_all':
         $stmt = $pdo->query("DELETE FROM accepted_laporan");
-        echo json_encode(['success' => true, 'message' => 'Semua accepted laporan berhasil dihapus!']);
+        $deleted = $stmt->rowCount();
+        echo json_encode(['success' => true, 'message' => "Berhasil hapus $deleted data", 'deleted' => $deleted]);
         break;
 
     // Get statistics

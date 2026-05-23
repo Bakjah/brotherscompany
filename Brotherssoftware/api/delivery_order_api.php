@@ -242,6 +242,57 @@ switch ($action) {
         echo json_encode(['success' => true, 'message' => "Migrated $updated delivery_order records", 'updated' => $updated]);
         break;
 
+    // Update harga untuk satu transaksi
+    case 'update_harga':
+        $input = json_decode(file_get_contents('php://input'), true);
+        $id = intval($input['id'] ?? 0);
+        $harga = floatval($input['harga'] ?? 0);
+
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID tidak valid']);
+            break;
+        }
+
+        $stmt = $pdo->prepare("UPDATE delivery_order SET harga_snapshot = ? WHERE id = ?");
+        $stmt->execute([$harga, $id]);
+
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true, 'message' => 'Harga berhasil diupdate']);
+        } else {
+            // Cek apakah ID ada
+            $check = $pdo->prepare("SELECT id FROM delivery_order WHERE id = ?");
+            $check->execute([$id]);
+            if ($check->fetch()) {
+                echo json_encode(['success' => true, 'message' => 'Harga tidak berubah (nilai sama)']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Data tidak ditemukan']);
+            }
+        }
+        break;
+
+    // Delete single delivery order
+    case 'delete':
+        $id = intval($_GET['id'] ?? 0);
+        if (!$id) {
+            echo json_encode(['success' => false, 'message' => 'ID tidak valid']);
+            break;
+        }
+        $stmt = $pdo->prepare("DELETE FROM delivery_order WHERE id = ?");
+        $stmt->execute([$id]);
+        if ($stmt->rowCount() > 0) {
+            echo json_encode(['success' => true, 'message' => 'Data berhasil dihapus']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Data tidak ditemukan']);
+        }
+        break;
+
+    // Delete all delivery order (status = selesai only)
+    case 'delete_all':
+        $stmt = $pdo->query("DELETE FROM delivery_order WHERE status = 'selesai'");
+        $deleted = $stmt->rowCount();
+        echo json_encode(['success' => true, 'message' => "Berhasil hapus $deleted data", 'deleted' => $deleted]);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
 }
