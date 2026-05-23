@@ -312,18 +312,31 @@ if (!$currentUserId || !$currentRole) {
             align-content: flex-start;
             gap: 5px;
             padding: 10px;
-            overflow-y: auto;
-            z-index: 10;
+            overflow: hidden;
+            z-index: 1;
         }
 
         /* ===== WINDOWS AREA ===== */
         .windows-area {
             position: absolute;
             top: 0;
-            left: 100px;
+            left: 0;
             right: 0;
             bottom: 42px;
-            overflow: hidden;
+            overflow: visible;
+            z-index: 9999;
+        }
+
+        /* ===== WINDOW COMPONENT ===== */
+        .window {
+            position: absolute;
+            background: #ece9d8;
+            border: 2px solid;
+            border-color: #fff #808080 #808080 #fff;
+            box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+            min-width: 400px;
+            min-height: 250px;
+            z-index: 10000;
         }
 
         .desktop-icon {
@@ -374,7 +387,7 @@ if (!$currentUserId || !$currentRole) {
             align-items: center;
             padding: 0 4px;
             gap: 2px;
-            z-index: 100;
+            z-index: 99998;
         }
 
         .start-button {
@@ -439,7 +452,7 @@ if (!$currentUserId || !$currentRole) {
             border: 1px solid;
             border-color: #fff #808080 #808080 #fff;
             box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
-            z-index: 200;
+            z-index: 999999;
             font-family: 'Segoe UI', Tahoma, sans-serif;
         }
 
@@ -593,7 +606,7 @@ if (!$currentUserId || !$currentRole) {
             box-shadow: 2px 2px 8px rgba(0,0,0,0.4);
             min-width: 400px;
             min-height: 250px;
-            z-index: 50;
+            z-index: 10000;
         }
 
         .window-titlebar {
@@ -975,10 +988,11 @@ if (!$currentUserId || !$currentRole) {
         <div class="toast-body" id="toast-body">Pesan notifikasi</div>
     </div>
 
-    <!-- Desktop Icons -->
-    <div class="desktop-icons">
-        <!-- CargoApp -->
-        <div class="desktop-icon" ondblclick="openWindow('cargo')">
+    <!-- Windows Area (includes Desktop Icons) -->
+    <div class="windows-area" id="windows-area">
+        <div class="desktop-icons">
+            <!-- CargoApp -->
+            <div class="desktop-icon" ondblclick="openWindow('cargo')">
             <svg class="icon-img" viewBox="0 0 48 48">
                 <rect x="6" y="14" width="36" height="26" rx="2" fill="#8b5cf6" stroke="#5b21b6" stroke-width="2"/>
                 <rect x="10" y="18" width="28" height="18" fill="#c4b5fd"/>
@@ -1104,10 +1118,8 @@ if (!$currentUserId || !$currentRole) {
         </div>
     </div>
 
-    <!-- Windows Area -->
-    <div class="windows-area" id="windows-area">
     <!-- Windows -->
-    <div class="window" id="win-mechanic" style="top:30px;left:60px;width:680px;height:480px;display:none;">
+        <div class="window" id="win-mechanic" style="top:30px;left:60px;width:680px;height:480px;display:none;">
         <div class="window-titlebar" onmousedown="startDrag(event, 'win-mechanic')">
             <svg class="window-icon" viewBox="0 0 16 16">
                 <rect x="1" y="3" width="14" height="11" rx="1" fill="#3a6ea5" stroke="#1e4d7a" stroke-width="1"/>
@@ -6228,7 +6240,7 @@ if (!$currentUserId || !$currentRole) {
     }
 
     // ===== WINDOW MANAGEMENT =====
-    let zIndex = 100;
+    let zIndex = 20000;
     const openWindows = {};
 
     function openWindow(type) {
