@@ -1088,6 +1088,20 @@ if (!$currentUserId || !$currentRole) {
             </svg>
             <span class="icon-label">Keuangan<br>Company</span>
         </div>
+
+        <!-- Price & Salary Config -->
+        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('priceconfig')" style="display:none;">
+            <svg class="icon-img" viewBox="0 0 48 48">
+                <rect x="4" y="6" width="40" height="36" rx="3" fill="#9333ea" stroke="#7c3aed" stroke-width="2"/>
+                <rect x="8" y="10" width="32" height="8" fill="#a855f7"/>
+                <text x="24" y="18" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">PRICE</text>
+                <rect x="10" y="22" width="28" height="4" fill="#c084fc"/>
+                <rect x="10" y="30" width="14" height="4" fill="#c084fc"/>
+                <rect x="28" y="30" width="10" height="4" fill="#c084fc"/>
+                <rect x="10" y="36" width="28" height="4" fill="#e9d5ff"/>
+            </svg>
+            <span class="icon-label">Price &<br>Salary</span>
+        </div>
     </div>
 
     <!-- Windows Area -->
@@ -3722,6 +3736,10 @@ if (!$currentUserId || !$currentRole) {
                     .lk-filter { display:flex;gap:10px; }
                     .lk-filter select { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
                     .lk-btn { padding:8px 16px;border-radius:4px;border:none;background:#58a6ff;color:#fff;font-size:12px;font-weight:bold;cursor:pointer; }
+                    .lk-btn:hover { opacity:0.8; }
+                    .lk-btn-accept { background:#238636; }
+                    .lk-btn-accept:hover { background:#2ea043; }
+                    .lk-btn-delete { background:#cc2222; padding:4px 8px; }
                     .lk-table { width:100%;border-collapse:collapse;font-size:12px; }
                     .lk-table th { background:#21262d;color:#8b949e;padding:10px;border:1px solid #30363d; }
                     .lk-table td { padding:10px;border:1px solid #30363d; }
@@ -3729,6 +3747,12 @@ if (!$currentUserId || !$currentRole) {
                     .lk-total { margin-top:15px;padding:15px;background:#161b22;border:1px solid #30363d;border-radius:8px;display:flex;justify-content:space-between;align-items:center; }
                     .lk-total-label { color:#8b949e;font-size:12px; }
                     .lk-total-value { font-size:20px;font-weight:bold;color:#ffd700; }
+                    .lk-tabs { display:flex;gap:5px;margin-bottom:15px; }
+                    .lk-tab { padding:8px 16px;background:#21262d;border:1px solid #30363d;border-radius:6px;color:#8b949e;font-size:12px;cursor:pointer;font-weight:600; }
+                    .lk-tab.active { background:#ffd700;color:#000;border-color:#ffd700; }
+                    .lk-section { display:none; }
+                    .lk-section.active { display:block; }
+                    .lk-success { display:none;background:#238636;color:#fff;padding:8px;border-radius:4px;text-align:center;font-size:12px;margin-top:10px; }
                 </style>
                 <div class="lk-header">
                     <h2 class="lk-title">📊 Laporan Kerja</h2>
@@ -3742,29 +3766,88 @@ if (!$currentUserId || !$currentRole) {
                         <button class="lk-btn" onclick="loadLaporanKerja()">🔍</button>
                     </div>
                 </div>
-                <div style="display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;">
-                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
-                        <div style="font-size:20px;font-weight:bold;color:#ffd700;" id="lk-total-count">0</div>
-                        <div style="font-size:10px;color:#8b949e;">Total Laporan</div>
-                    </div>
-                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
-                        <div style="font-size:20px;font-weight:bold;color:#58a6ff;" id="lk-total-compo">0</div>
-                        <div style="font-size:10px;color:#8b949e;">Total Compo/Bibit</div>
-                    </div>
-                    <div style="flex:1;min-width:120px;padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
-                        <div style="font-size:20px;font-weight:bold;color:#4db84d;" id="lk-total-money">Rp 0</div>
-                        <div style="font-size:10px;color:#8b949e;">Total Pendapatan</div>
-                    </div>
+
+                <!-- TABS -->
+                <div class="lk-tabs">
+                    <button class="lk-tab active" onclick="switchLkTab('pending')">📝 Pending</button>
+                    <button class="lk-tab" onclick="switchLkTab('accepted')">✅ Accepted</button>
                 </div>
-                <table class="lk-table">
-                    <thead><tr><th>Tanggal</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit Used</th><th>Panen (kg) / Money (Rp)</th><th>Keterangan</th><th>Aksi</th></tr></thead>
-                    <tbody id="lk-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
-                </table>
+
+                <!-- PENDING SECTION -->
+                <div class="lk-section active" id="lk-pending">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;">
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#58a6ff;" id="lk-total-compo">0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Compo (Mechanic)</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#4db84d;" id="lk-total-bibit">0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Bibit (Farmer)</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#f97316;" id="lk-total-buah">0 kg</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Buah Dijual</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-total-money">Rp 0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Money (Mechanic)</div>
+                            </div>
+                        </div>
+                        <button class="lk-btn lk-btn-delete" style="margin-left:15px;padding:10px 16px;font-size:12px;" onclick="deleteAllPending()">🗑️ Hapus Semua Pending</button>
+                    </div>
+                    <table class="lk-table">
+                        <thead><tr><th>Tanggal</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit</th><th>Value</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+                        <tbody id="lk-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+
+                <!-- ACCEPTED SECTION -->
+                <div class="lk-section" id="lk-accepted">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
+                        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;">
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#58a6ff;" id="lk-accepted-compo">0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Compo (Mechanic)</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#4db84d;" id="lk-accepted-bibit">0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Bibit (Farmer)</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#f97316;" id="lk-accepted-buah">0 kg</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Buah Dijual</div>
+                            </div>
+                            <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
+                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-accepted-money">Rp 0</div>
+                                <div style="font-size:10px;color:#8b949e;">Total Money (Mechanic)</div>
+                            </div>
+                        </div>
+                        <button class="lk-btn lk-btn-delete" style="margin-left:15px;padding:10px 16px;font-size:12px;" onclick="deleteAllAccepted()">🗑️ Hapus Semua Accepted</button>
+                    </div>
+                    <table class="lk-table">
+                        <thead><tr><th>Tanggal Accept</th><th>Divisi</th><th>Nama</th><th>Compo/Bibit</th><th>Value</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+                        <tbody id="lk-accepted-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                </div>
+
+                <div id="lk-success" class="lk-success"></div>
             </div>
             <script>
                 window.addEventListener('load', function() {
                     loadLaporanKerja();
                 });
+
+                function switchLkTab(tab) {
+                    document.querySelectorAll('.lk-tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.lk-section').forEach(s => s.classList.remove('active'));
+                    event.target.classList.add('active');
+                    document.getElementById('lk-' + tab).classList.add('active');
+
+                    if (tab === 'accepted') {
+                        loadAcceptedLaporan();
+                    }
+                }
             </script>
         </div>
         <div class="window-statusbar"><span class="statusbar-section">Laporan Kerja</span><span class="statusbar-section">Semua laporan mechanic & farmer</span></div>
@@ -3936,8 +4019,9 @@ if (!$currentUserId || !$currentRole) {
     // Load Laporan Kerja from database (mechanic + farmer)
     async function loadLaporanKerja() {
         const tbody = document.getElementById('lk-table-body');
-        const countEl = document.getElementById('lk-total-count');
         const compoEl = document.getElementById('lk-total-compo');
+        const bibitEl = document.getElementById('lk-total-bibit');
+        const buahEl = document.getElementById('lk-total-buah');
         const moneyEl = document.getElementById('lk-total-money');
         if (!tbody) return;
 
@@ -3970,14 +4054,14 @@ if (!$currentUserId || !$currentRole) {
                 }
             }
 
-            let totalCount = 0;
             let totalCompo = 0;
+            let totalBibit = 0;
+            let totalBuah = 0;
             let totalMoney = 0;
             let html = '';
 
             // Process mechanic data
             mechanicData.forEach(l => {
-                totalCount++;
                 totalCompo += parseInt(l.compo_used) || 0;
                 totalMoney += parseFloat(l.money_stored) || 0;
                 html += `<tr>
@@ -3987,15 +4071,17 @@ if (!$currentUserId || !$currentRole) {
                     <td>${l.compo_used ?? 0}</td>
                     <td>Rp ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
                     <td>${l.keterangan || '-'}</td>
-                    <td><button class="lk-btn" style="padding:4px 8px;background:#cc2222;" onclick="deleteLaporan('mechanic', ${l.id})">🗑️</button></td>
+                    <td>
+                        <button class="lk-btn lk-btn-accept" style="padding:4px 8px;margin-right:4px;" onclick="acceptLaporan('mechanic', ${l.id}, '${l.nama_karyawan || ''}', '${l.tanggal || ''}', ${l.compo_used ?? 0}, ${l.money_stored ?? 0}, '${(l.keterangan || '').replace(/'/g, "\\'")}')">✅</button>
+                        <button class="lk-btn lk-btn-delete" onclick="deleteLaporan('mechanic', ${l.id})">🗑️</button>
+                    </td>
                 </tr>`;
             });
 
             // Process farmer data
             farmerData.forEach(l => {
-                totalCount++;
-                totalCompo += parseInt(l.bibit_used) || 0;
-                totalMoney += parseFloat(l.panen_hasil) || 0;
+                totalBibit += parseInt(l.bibit_used) || 0;
+                totalBuah += parseFloat(l.panen_hasil) || 0;
                 html += `<tr>
                     <td>${l.tanggal || '-'}</td>
                     <td>🌱 Farmer</td>
@@ -4003,7 +4089,10 @@ if (!$currentUserId || !$currentRole) {
                     <td>${l.bibit_used ?? 0}</td>
                     <td>${parseFloat(l.panen_hasil || 0).toLocaleString('id-ID')} kg</td>
                     <td>${l.keterangan || '-'}</td>
-                    <td><button class="lk-btn" style="padding:4px 8px;background:#cc2222;" onclick="deleteLaporan('farmer', ${l.id})">🗑️</button></td>
+                    <td>
+                        <button class="lk-btn lk-btn-accept" style="padding:4px 8px;margin-right:4px;" onclick="acceptLaporan('farmer', ${l.id}, '${l.nama_karyawan || ''}', '${l.tanggal || ''}', ${l.bibit_used ?? 0}, ${l.panen_hasil ?? 0}, '${(l.keterangan || '').replace(/'/g, "\\'")}')">✅</button>
+                        <button class="lk-btn lk-btn-delete" onclick="deleteLaporan('farmer', ${l.id})">🗑️</button>
+                    </td>
                 </tr>`;
             });
 
@@ -4012,8 +4101,9 @@ if (!$currentUserId || !$currentRole) {
             }
 
             tbody.innerHTML = html;
-            if (countEl) countEl.textContent = totalCount;
             if (compoEl) compoEl.textContent = totalCompo.toLocaleString('id-ID');
+            if (bibitEl) bibitEl.textContent = totalBibit.toLocaleString('id-ID');
+            if (buahEl) buahEl.textContent = totalBuah.toLocaleString('id-ID') + ' kg';
             if (moneyEl) moneyEl.textContent = 'Rp ' + totalMoney.toLocaleString('id-ID');
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
@@ -4037,6 +4127,175 @@ if (!$currentUserId || !$currentRole) {
             }
         } catch (e) {
             alert('Gagal hapus laporan!');
+        }
+    }
+
+    // Accept Laporan
+    async function acceptLaporan(type, sourceId, nama, tanggal, jumlahUsed, jumlahValue, keterangan) {
+        if (!confirm('Accept laporan ini?\n\nNama: ' + nama + '\nDivisi: ' + (type === 'mechanic' ? 'Mechanic' : 'Farmer') + '\nJumlah: ' + jumlahUsed + '\nValue: ' + jumlahValue)) return;
+
+        try {
+            // First, accept the laporan
+            const fd = new FormData();
+            fd.append('action', 'accept');
+            fd.append('source_type', type);
+            fd.append('source_id', sourceId);
+            fd.append('nama_karyawan', nama);
+            fd.append('divisi', type);
+            fd.append('jumlah_used', jumlahUsed);
+            fd.append('jumlah_value', jumlahValue);
+            fd.append('keterangan', keterangan);
+            fd.append('tanggal_laporan', tanggal);
+            fd.append('accepted_by', 'Admin');
+
+            const res = await fetch('api/accepted_laporan_api.php', { method: 'POST', body: fd });
+            const result = await res.json();
+
+            if (result.success) {
+                // Then delete from original table (so it disappears from pending)
+                const deleteFd = new FormData();
+                deleteFd.append('action', 'delete');
+                deleteFd.append('id', sourceId);
+                const apiUrl = type === 'farmer' ? 'api/laporan_farmer_api.php' : 'api/laporan_api.php';
+                await fetch(apiUrl, { method: 'POST', body: deleteFd });
+
+                const successEl = document.getElementById('lk-success');
+                successEl.textContent = '✅ Laporan berhasil di-accept!';
+                successEl.style.display = 'block';
+                loadLaporanKerja();
+                setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+            } else {
+                alert(result.message || 'Gagal accept laporan');
+            }
+        } catch (e) {
+            alert('Gagal accept laporan!');
+        }
+    }
+
+    // Load Accepted Laporan
+    async function loadAcceptedLaporan() {
+        const tbody = document.getElementById('lk-accepted-body');
+        const compoEl = document.getElementById('lk-accepted-compo');
+        const bibitEl = document.getElementById('lk-accepted-bibit');
+        const buahEl = document.getElementById('lk-accepted-buah');
+        const moneyEl = document.getElementById('lk-accepted-money');
+        if (!tbody) return;
+
+        const bulan = document.getElementById('lk-filter-bulan')?.value || '';
+        const divisi = document.getElementById('lk-filter-divisi')?.value || '';
+
+        try {
+            let url = 'api/accepted_laporan_api.php?action=get_all';
+            if (bulan) url += '&bulan=' + bulan;
+            if (divisi) url += '&divisi=' + divisi;
+
+            const res = await fetch(url);
+            const result = await res.json();
+
+            let totalCompo = 0;
+            let totalBibit = 0;
+            let totalBuah = 0;
+            let totalMoney = 0;
+            let html = '';
+
+            if (result.success && result.data && result.data.length > 0) {
+                result.data.forEach(l => {
+                    const isMechanic = l.divisi === 'mechanic';
+
+                    if (isMechanic) {
+                        totalCompo += parseInt(l.jumlah_used) || 0;
+                        totalMoney += parseFloat(l.jumlah_value) || 0;
+                    } else {
+                        totalBibit += parseInt(l.jumlah_used) || 0;
+                        totalBuah += parseFloat(l.jumlah_value) || 0;
+                    }
+
+                    html += `<tr>
+                        <td>${l.tanggal_accept ? l.tanggal_accept.substring(0, 10) : '-'}</td>
+                        <td>${isMechanic ? '🔧 Mechanic' : '🌱 Farmer'}</td>
+                        <td>${l.nama_karyawan || '-'}</td>
+                        <td>${l.jumlah_used ?? 0}</td>
+                        <td>${isMechanic ? 'Rp ' + parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') : parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') + ' kg'}</td>
+                        <td>${l.keterangan || '-'}</td>
+                        <td><button class="lk-btn lk-btn-delete" onclick="deleteAcceptedLaporan(${l.id})">🗑️</button></td>
+                    </tr>`;
+                });
+            }
+
+            if (!html) {
+                html = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Tidak ada laporan yang di-accept</td></tr>';
+            }
+
+            tbody.innerHTML = html;
+            if (compoEl) compoEl.textContent = totalCompo.toLocaleString('id-ID');
+            if (bibitEl) bibitEl.textContent = totalBibit.toLocaleString('id-ID');
+            if (buahEl) buahEl.textContent = totalBuah.toLocaleString('id-ID') + ' kg';
+            if (moneyEl) moneyEl.textContent = 'Rp ' + totalMoney.toLocaleString('id-ID');
+        } catch (e) {
+            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
+        }
+    }
+
+    // Delete Accepted Laporan
+    async function deleteAcceptedLaporan(id) {
+        if (!confirm('Yakin hapus laporan accepted ini?')) return;
+        try {
+            const fd = new FormData();
+            fd.append('action', 'delete');
+            fd.append('id', id);
+            const res = await fetch('api/accepted_laporan_api.php', { method: 'POST', body: fd });
+            const result = await res.json();
+            if (result.success) {
+                loadAcceptedLaporan();
+            } else {
+                alert(result.message || 'Gagal hapus');
+            }
+        } catch (e) {
+            alert('Gagal hapus laporan!');
+        }
+    }
+
+    // Delete All Pending Laporan
+    async function deleteAllPending() {
+        if (!confirm('⚠️ YAKIN HAPUS SEMUA DATA PENDING?\n\nSemua laporan mechanic dan farmer yang belum di-accept akan dihapus permanen!')) return;
+
+        try {
+            // Delete all mechanic reports
+            await fetch('api/laporan_api.php?action=delete_all', { method: 'POST' });
+            // Delete all farmer reports
+            await fetch('api/laporan_farmer_api.php?action=delete_all', { method: 'POST' });
+
+            const successEl = document.getElementById('lk-success');
+            successEl.textContent = '🗑️ Semua data Pending berhasil dihapus!';
+            successEl.style.display = 'block';
+            loadLaporanKerja();
+            setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+        } catch (e) {
+            alert('Gagal hapus semua data pending!');
+        }
+    }
+
+    // Delete All Accepted Laporan
+    async function deleteAllAccepted() {
+        if (!confirm('⚠️ YAKIN HAPUS SEMUA DATA ACCEPTED?\n\nSemua laporan yang sudah di-accept akan dihapus permanen!')) return;
+
+        try {
+            const fd = new FormData();
+            fd.append('action', 'delete_all');
+            const res = await fetch('api/accepted_laporan_api.php', { method: 'POST', body: fd });
+            const result = await res.json();
+
+            if (result.success) {
+                const successEl = document.getElementById('lk-success');
+                successEl.textContent = '🗑️ Semua data Accepted berhasil dihapus!';
+                successEl.style.display = 'block';
+                loadAcceptedLaporan();
+                setTimeout(() => { successEl.style.display = 'none'; }, 3000);
+            } else {
+                alert(result.message || 'Gagal hapus');
+            }
+        } catch (e) {
+            alert('Gagal hapus semua data accepted!');
         }
     }
 
@@ -5161,10 +5420,11 @@ if (!$currentUserId || !$currentRole) {
                     <div class="cm-form">
                         <div style="font-size:11px;color:#8b949e;margin-bottom:10px;">📝 Tambah Order Delivery Baru (Max 50)</div>
                         <div class="cm-form-row">
-                            <select id="cm-jenis" style="flex:1;">
+                            <select id="cm-jenis" style="flex:1;" onchange="toggleCmFarmerOptions()">
                                 <option value="">-- Pilih Jenis --</option>
                                 <option value="compo">🔧 Deliver Compo</option>
-                                <option value="farmer">🌱 Deliver Farmer</option>
+                                <option value="farmer_beli">🌱 Deliver Farmer - Beli Bibit</option>
+                                <option value="farmer_jual">🍎 Deliver Farmer - Jual Buah</option>
                             </select>
                             <input type="number" id="cm-crate" placeholder="Jumlah Crate (1-50)" min="1" max="50" value="1" style="width:100px;">
                             <input type="text" id="cm-alamat" placeholder="Alamat tujuan..." style="flex:2;">
@@ -5183,7 +5443,8 @@ if (!$currentUserId || !$currentRole) {
                         <select id="cm-filter-jenis" onchange="loadDeliveryOrders()">
                             <option value="">Semua Jenis</option>
                             <option value="compo">🔧 Deliver Compo</option>
-                            <option value="farmer">🌱 Deliver Farmer</option>
+                            <option value="farmer_beli">🌱 Beli Bibit</option>
+                            <option value="farmer_jual">🍎 Jual Buah</option>
                         </select>
                         <select id="cm-filter-status" onchange="loadDeliveryOrders()">
                             <option value="">Semua Status</option>
@@ -5246,10 +5507,27 @@ if (!$currentUserId || !$currentRole) {
                         result.data.forEach(item => {
                             const statusClass = item.status === 'selesai' ? 'cm-selesai' : (item.status === 'diambil' ? 'cm-diambil' : (item.status === 'batal' ? 'cm-batal' : 'cm-pending'));
                             const statusText = item.status === 'selesai' ? 'Selesai' : (item.status === 'diambil' ? 'Diambil' : (item.status === 'batal' ? 'Batal' : 'Menunggu'));
-                            const jenisIcon = item.jenis_delivery === 'compo' ? '🔧' : '🌱';
+
+                            // Determine icon and label based on jenis_delivery
+                            let jenisLabel = item.jenis_delivery;
+                            let jenisIcon = '🔧';
+                            if (item.jenis_delivery === 'farmer_beli') {
+                                jenisIcon = '🌱';
+                                jenisLabel = 'Beli Bibit';
+                            } else if (item.jenis_delivery === 'farmer_jual') {
+                                jenisIcon = '🍎';
+                                jenisLabel = 'Jual Buah';
+                            } else if (item.jenis_delivery === 'compo') {
+                                jenisIcon = '🔧';
+                                jenisLabel = 'Compo';
+                            } else if (item.jenis_delivery === 'farmer') {
+                                jenisIcon = '🌱';
+                                jenisLabel = 'Farmer';
+                            }
+
                             const driverInfo = item.driver_nama ? item.driver_nama : '-';
                             html += '<tr>' +
-                                '<td>' + jenisIcon + ' ' + item.jenis_delivery + '</td>' +
+                                '<td>' + jenisIcon + ' ' + jenisLabel + '</td>' +
                                 '<td>' + item.jumlah_crate + ' crate</td>' +
                                 '<td>' + item.alamat_tujuan + '</td>' +
                                 '<td>' + item.nama_penerima + '</td>' +
@@ -5279,6 +5557,12 @@ if (!$currentUserId || !$currentRole) {
                 if (!jenis || !alamat || !penerima) {
                     alert('Jenis, Alamat, dan Penerima harus diisi!');
                     return;
+                }
+
+                // Validate farmer types
+                if (jenis === 'farmer_beli' || jenis === 'farmer_jual') {
+                    const label = jenis === 'farmer_beli' ? 'Beli Bibit' : 'Jual Buah';
+                    alert('📦 Deliver Farmer - ' + label + '\nMax: 50 crate per delivery');
                 }
 
                 const crateNum = parseInt(crate) || 1;
@@ -5343,6 +5627,288 @@ if (!$currentUserId || !$currentRole) {
             <span class="statusbar-section">Kelola cargo</span>
         </div>
         <div class="resizer" onmousedown="startResize(event, 'win-cargomanager')"></div>
+    </div>
+
+    <!-- PRICE & SALARY CONFIG WINDOW -->
+    <div class="window" id="win-priceconfig" style="top:80px;left:120px;width:780px;height:520px;display:none;">
+        <div class="window-titlebar" onmousedown="startDrag(event, 'win-priceconfig')">
+            <svg class="window-icon" viewBox="0 0 16 16">
+                <rect x="1" y="2" width="14" height="12" rx="2" fill="#9333ea"/>
+                <rect x="3" y="4" width="10" height="4" fill="#a855f7"/>
+                <rect x="4" y="10" width="4" height="2" fill="#c084fc"/>
+                <rect x="10" y="10" width="3" height="3" fill="#e9d5ff"/>
+            </svg>
+            <span class="window-title">Price & Salary Config - Brothers Company</span>
+            <div class="window-controls">
+                <button class="window-btn window-btn-max" onclick="minimizeWindow('win-priceconfig')">_</button>
+                <button class="window-btn window-btn-max" onclick="maximizeWindow('win-priceconfig')">□</button>
+                <button class="window-btn" onclick="closeWindow('win-priceconfig')">✕</button>
+            </div>
+        </div>
+        <div class="window-menubar">
+            <span class="menu-item">File</span>
+            <span class="menu-item">View</span>
+            <span class="menu-item">Help</span>
+        </div>
+        <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
+            <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
+                <style>
+                    .psc-container { max-width:750px; margin:0 auto; }
+                    .psc-header { text-align:center; margin-bottom:20px; }
+                    .psc-header h2 { color:#a855f7; font-size:18px; margin:0 0 5px 0; }
+                    .psc-header p { color:#8b949e; font-size:12px; margin:0; }
+                    .psc-tabs { display:flex; gap:5px; margin-bottom:15px; flex-wrap:wrap; }
+                    .psc-tab { padding:8px 16px; background:#21262d; border:1px solid #30363d; border-radius:6px; color:#8b949e; font-size:12px; cursor:pointer; font-weight:600; }
+                    .psc-tab.active { background:#9333ea; color:#fff; border-color:#9333ea; }
+                    .psc-section { display:none; }
+                    .psc-section.active { display:block; }
+                    .psc-card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:15px; margin-bottom:15px; }
+                    .psc-card-title { font-size:14px; font-weight:bold; margin-bottom:15px; padding-bottom:10px; border-bottom:1px solid #30363d; }
+                    .psc-row { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+                    .psc-row label { flex:0 0 220px; font-size:12px; color:#c9d1d9; text-align:right; }
+                    .psc-row input { flex:1; padding:8px 12px; border-radius:6px; border:1px solid #30363d; background:#010409; color:#fff; font-size:13px; text-align:right; }
+                    .psc-row input:focus { outline:none; border-color:#9333ea; }
+                    .psc-row .unit { flex:0 0 80px; font-size:11px; color:#8b949e; text-align:left; }
+                    .psc-btn-row { display:flex; gap:10px; justify-content:center; margin-top:15px; }
+                    .psc-btn { padding:10px 24px; border:none; border-radius:6px; font-size:13px; font-weight:bold; cursor:pointer; }
+                    .psc-btn-save { background:#9333ea; color:#fff; }
+                    .psc-btn-save:hover { background:#a855f7; }
+                    .psc-btn-reset { background:#30363d; color:#8b949e; }
+                    .psc-btn-reset:hover { background:#3d444d; }
+                    .psc-success { display:none; background:#238636; color:#fff; padding:10px; border-radius:6px; text-align:center; font-size:12px; margin-top:10px; }
+                    .psc-info { font-size:11px; color:#8b949e; text-align:center; margin-top:5px; }
+                    .psc-card.cargo { border-left:3px solid #8b5cf6; }
+                    .psc-card.farm { border-left:3px solid #4db84d; }
+                    .psc-card.mechanic { border-left:3px solid #245edc; }
+                </style>
+
+                <div class="psc-container">
+                    <div class="psc-header">
+                        <h2>⚙️ Price & Salary Configuration</h2>
+                        <p>Atur harga dan gaji untuk semua divisi - Changes saved to database</p>
+                    </div>
+
+                    <!-- CURRENT PRICES PREVIEW -->
+                    <div id="psc-preview" style="background:#161b22;border:1px solid #30363d;border-radius:8px;padding:15px;margin-bottom:20px;">
+                        <div style="font-size:14px;font-weight:bold;color:#a855f7;margin-bottom:12px;">📋 Harga Saat Ini</div>
+                        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;">
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #8b5cf6;">
+                                <div style="font-size:10px;color:#8b949e;">📦 CARGO</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Gaji/Crate</div>
+                                <div style="font-size:16px;color:#a855f7;font-weight:bold;" id="preview-cargo_gaji_per_crate">$63.00</div>
+                            </div>
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #4db84d;">
+                                <div style="font-size:10px;color:#8b949e;">🌱 FARM</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Gaji/Bibit</div>
+                                <div style="font-size:16px;color:#4db84d;font-weight:bold;" id="preview-farm_gaji_per_bibit">$22.00</div>
+                            </div>
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #4db84d;">
+                                <div style="font-size:10px;color:#8b949e;">🌱 FARM</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Jual Buah</div>
+                                <div style="font-size:16px;color:#4db84d;font-weight:bold;" id="preview-farm_harga_jual_buah">$20.00</div>
+                            </div>
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #4db84d;">
+                                <div style="font-size:10px;color:#8b949e;">🌱 FARM</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Beli Bibit</div>
+                                <div style="font-size:16px;color:#4db84d;font-weight:bold;" id="preview-farm_harga_bibit">$20.00</div>
+                            </div>
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #245edc;">
+                                <div style="font-size:10px;color:#8b949e;">🔧 MECHANIC</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Gaji Pokok</div>
+                                <div style="font-size:16px;color:#58a6ff;font-weight:bold;" id="preview-mechanic_gaji_dasar">$0.00</div>
+                            </div>
+                            <div style="background:#21262d;border-radius:6px;padding:10px;text-align:center;border-left:3px solid #245edc;">
+                                <div style="font-size:10px;color:#8b949e;">🔧 MECHANIC</div>
+                                <div style="font-size:12px;color:#fff;margin-top:4px;">Component</div>
+                                <div style="font-size:16px;color:#58a6ff;font-weight:bold;" id="preview-mechanic_harga_component">$1000.00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="psc-tabs">
+                        <button class="psc-tab active" onclick="switchPscTab('cargo')">📦 CARGO</button>
+                        <button class="psc-tab" onclick="switchPscTab('farm')">🌱 FARM</button>
+                        <button class="psc-tab" onclick="switchPscTab('mechanic')">🔧 MECHANIC</button>
+                    </div>
+
+                    <!-- CARGO SECTION -->
+                    <div class="psc-section active" id="psc-cargo">
+                        <div class="psc-card cargo">
+                            <div class="psc-card-title">📦 Cargo Driver - Gaji per Crate</div>
+                            <div class="psc-row">
+                                <label>Gaji per Crate</label>
+                                <input type="number" id="psc-cargo_gaji_per_crate" step="0.01" min="0">
+                                <span class="unit">$/crate</span>
+                            </div>
+                            <div class="psc-info">Gaji yang diterima cargo driver untuk setiap 1 crate yang diantar</div>
+                        </div>
+                        <div class="psc-btn-row">
+                            <button class="psc-btn psc-btn-save" onclick="savePscConfig('cargo')">💾 Simpan Cargo</button>
+                        </div>
+                    </div>
+
+                    <!-- FARM SECTION -->
+                    <div class="psc-section" id="psc-farm">
+                        <div class="psc-card farm">
+                            <div class="psc-card-title">🌱 Farm Worker - Gaji & Harga</div>
+                            <div class="psc-row">
+                                <label>Gaji per Bibit Ditanam</label>
+                                <input type="number" id="psc-farm_gaji_per_bibit" step="0.01" min="0">
+                                <span class="unit">$/bibit</span>
+                            </div>
+                            <div class="psc-row">
+                                <label>Harga Jual Buah</label>
+                                <input type="number" id="psc-farm_harga_jual_buah" step="0.01" min="0">
+                                <span class="unit">$/kg</span>
+                            </div>
+                            <div class="psc-row">
+                                <label>Harga Beli Bibit</label>
+                                <input type="number" id="psc-farm_harga_bibit" step="0.01" min="0">
+                                <span class="unit">$/kg</span>
+                            </div>
+                            <div class="psc-info">Gaji farmer per bibit, harga jual hasil panen, dan harga beli bibit</div>
+                        </div>
+                        <div class="psc-btn-row">
+                            <button class="psc-btn psc-btn-save" onclick="savePscConfig('farm')">💾 Simpan Farm</button>
+                        </div>
+                    </div>
+
+                    <!-- MECHANIC SECTION -->
+                    <div class="psc-section" id="psc-mechanic">
+                        <div class="psc-card mechanic">
+                            <div class="psc-card-title">🔧 Mechanic - Gaji & Component</div>
+                            <div class="psc-row">
+                                <label>Gaji Pokok Mechanic</label>
+                                <input type="number" id="psc-mechanic_gaji_dasar" step="0.01" min="0">
+                                <span class="unit">$</span>
+                            </div>
+                            <div class="psc-row">
+                                <label>Harga Component / Sparepart</label>
+                                <input type="number" id="psc-mechanic_harga_component" step="0.01" min="0">
+                                <span class="unit">$/crate</span>
+                            </div>
+                            <div class="psc-info">Gaji pokok mechanic per periode dan harga sparepart/component per crate</div>
+                        </div>
+                        <div class="psc-btn-row">
+                            <button class="psc-btn psc-btn-save" onclick="savePscConfig('mechanic')">💾 Simpan Mechanic</button>
+                        </div>
+                    </div>
+
+                    <!-- Simpan Semua -->
+                    <div style="margin-top:15px; text-align:center;">
+                        <div class="psc-btn-row">
+                            <button class="psc-btn psc-btn-save" style="background:#238636;" onclick="savePscAll()">💾💾 Simpan Semua</button>
+                        </div>
+                        <div id="psc-success" class="psc-success">✓ Konfigurasi berhasil disimpan!</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script>
+            // Load all config from DB when window opens
+            document.getElementById('win-priceconfig').addEventListener('focus', loadPscConfig);
+
+            async function loadPscConfig() {
+                try {
+                    const res = await fetch('api/farm_price_config_api.php?action=get_all');
+                    const json = await res.json();
+                    if (json.success && json.data) {
+                        json.data.forEach(item => {
+                            // Update input field
+                            const el = document.getElementById('psc-' + item.config_key);
+                            if (el) el.value = item.config_value;
+                            // Update preview box
+                            const preview = document.getElementById('preview-' + item.config_key);
+                            if (preview) {
+                                const formatted = parseFloat(item.config_value).toFixed(2);
+                                preview.textContent = '$' + formatted;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error('Failed to load price config:', e);
+                }
+            }
+
+            async function savePscConfig(category) {
+                const inputs = document.querySelectorAll('#psc-' + category + ' input[type="number"]');
+                const configs = [];
+                inputs.forEach(input => {
+                    const key = input.id.replace('psc-', '');
+                    configs.push({ key: key, value: parseFloat(input.value) || 0 });
+                });
+
+                try {
+                    const res = await fetch('api/farm_price_config_api.php?action=update_batch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ configs: configs })
+                    });
+                    const json = await res.json();
+                    const success = document.getElementById('psc-success');
+                    if (json.success) {
+                        success.style.display = 'block';
+                        success.textContent = '✓ ' + json.message;
+                        // Update preview boxes
+                        configs.forEach(cfg => {
+                            const preview = document.getElementById('preview-' + cfg.key);
+                            if (preview) preview.textContent = '$' + cfg.value.toFixed(2);
+                        });
+                        setTimeout(() => { success.style.display = 'none'; }, 4000);
+                    } else {
+                        alert('Gagal menyimpan: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('Gagal menyimpan konfigurasi!');
+                }
+            }
+
+            async function savePscAll() {
+                const allInputs = document.querySelectorAll('#win-priceconfig input[type="number"]');
+                const configs = [];
+                allInputs.forEach(input => {
+                    const key = input.id.replace('psc-', '');
+                    configs.push({ key: key, value: parseFloat(input.value) || 0 });
+                });
+
+                try {
+                    const res = await fetch('api/farm_price_config_api.php?action=update_batch', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ configs: configs })
+                    });
+                    const json = await res.json();
+                    const success = document.getElementById('psc-success');
+                    if (json.success) {
+                        success.style.display = 'block';
+                        success.textContent = '✓ Semua konfigurasi berhasil disimpan!';
+                        // Update all preview boxes
+                        configs.forEach(cfg => {
+                            const preview = document.getElementById('preview-' + cfg.key);
+                            if (preview) preview.textContent = '$' + cfg.value.toFixed(2);
+                        });
+                        setTimeout(() => { success.style.display = 'none'; }, 4000);
+                    } else {
+                        alert('Gagal menyimpan: ' + json.message);
+                    }
+                } catch (e) {
+                    alert('Gagal menyimpan konfigurasi!');
+                }
+            }
+
+            function switchPscTab(category) {
+                document.querySelectorAll('.psc-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.psc-section').forEach(s => s.classList.remove('active'));
+                event.target.classList.add('active');
+                document.getElementById('psc-' + category).classList.add('active');
+            }
+        </script>
+        <div class="window-statusbar">
+            <span class="statusbar-section">Price & Salary Config</span>
+            <span class="statusbar-section">Konfigurasi harga & gaji semua divisi</span>
+        </div>
+        <div class="resizer" onmousedown="startResize(event, 'win-priceconfig')"></div>
     </div>
 </div>
     <div class="window" id="win-settings" style="top:50px;left:100px;width:600px;height:420px;display:none;">
@@ -5564,6 +6130,17 @@ if (!$currentUserId || !$currentRole) {
                 <rect x="18" y="10" width="4" height="4" fill="#cc2222"/>
             </svg>
             <span>Admin Panel</span>
+            <span class="arrow">▶</span>
+        </div>
+        <div class="start-menu-item" onclick="openWindow('priceconfig');toggleStartMenu()">
+            <svg viewBox="0 0 28 28">
+                <rect x="2" y="4" width="24" height="20" rx="2" fill="#9333ea"/>
+                <rect x="4" y="6" width="20" height="5" fill="#a855f7"/>
+                <rect x="6" y="14" width="8" height="2" fill="#c084fc"/>
+                <rect x="6" y="18" width="12" height="2" fill="#c084fc"/>
+                <rect x="18" y="14" width="6" height="6" fill="#e9d5ff"/>
+            </svg>
+            <span>Price & Salary</span>
             <span class="arrow">▶</span>
         </div>
         <div class="start-menu-separator"></div>
@@ -6181,7 +6758,7 @@ if (!$currentUserId || !$currentRole) {
     // ===== RBAC - Role-Based Access Control =====
     const rolePermissions = {
         'admin': {
-            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'employee', 'laporankerja', 'keuangan', 'historydelivery', 'deliverylist', 'manager', 'mechanicmanager', 'farmermanager', 'cargomanager'],
+            windows: ['cargo', 'farmer', 'mechanic', 'restaurant', 'laporan', 'member', 'employee', 'laporankerja', 'keuangan', 'historydelivery', 'deliverylist', 'manager', 'mechanicmanager', 'farmermanager', 'cargomanager', 'priceconfig'],
             actions: ['create', 'edit', 'delete', 'view', 'manage_users', 'settings']
         },
         'employee': {

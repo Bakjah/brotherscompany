@@ -107,6 +107,11 @@ switch ($action) {
         echo json_encode(['success' => true, 'message' => 'Laporan dihapus']);
         break;
 
+    case 'delete_all':
+        $stmt = $pdo->query("DELETE FROM laporan_farmer");
+        echo json_encode(['success' => true, 'message' => 'Semua laporan farmer dihapus']);
+        break;
+
     default:
         echo json_encode(['success' => false, 'message' => 'Action tidak valid']);
 }

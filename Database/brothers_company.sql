@@ -158,7 +158,7 @@ INSERT INTO `tugas_harian` (`tanggal`, `jam_mulai`, `jam_selesai`, `tugas`, `sta
 
 CREATE TABLE `delivery_order` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `jenis_delivery` enum('compo','farmer') NOT NULL,
+  `jenis_delivery` enum('compo','farmer','farmer_beli','farmer_jual') NOT NULL,
   `alamat_tujuan` varchar(255) NOT NULL,
   `nama_penerima` varchar(100) NOT NULL,
   `no_telepon` varchar(20) DEFAULT NULL,
@@ -445,11 +445,6 @@ ALTER TABLE `sparepart_config`
 ALTER TABLE `tugas_harian`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT untuk tabel `laporan_mechanic`
---
-ALTER TABLE `laporan_mechanic`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT untuk tabel `compliment_rules`
@@ -495,3 +490,65 @@ COMMIT;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+/*==============================================================
+-- Tabel: farm_price_config
+-- Price & Salary Configuration untuk Brothers Company
+==============================================================*/
+CREATE TABLE IF NOT EXISTS `farm_price_config` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `config_key` varchar(100) NOT NULL,
+  `config_label` varchar(200) NOT NULL,
+  `config_value` decimal(15,2) NOT NULL,
+  `config_unit` varchar(50) DEFAULT NULL,
+  `category` enum('cargo','farm','mechanic') NOT NULL,
+  `deskripsi` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `config_key` (`config_key`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+INSERT INTO `farm_price_config` (`config_key`, `config_label`, `config_value`, `config_unit`, `category`, `deskripsi`) VALUES
+('cargo_gaji_per_crate', 'Gaji Cargo per Crate', 63.00, '$/crate', 'cargo', 'Gaji untuk cargo driver per 1 crate yang diantar'),
+('farm_gaji_per_bibit', 'Gaji Petani per Bibit Ditanam', 22.00, '$/bibit', 'farm', 'Gaji untuk farmer per bibit yang berhasil ditanam'),
+('farm_harga_jual_buah', 'Harga Jual Buah', 20.00, '$/kg', 'farm', 'Harga jual hasil panen buah per kilogram'),
+('farm_harga_bibit', 'Harga Bibit', 20.00, '$/kg', 'farm', 'Harga beli bibit untuk penanaman'),
+('mechanic_gaji_dasar', 'Gaji Pokok Mechanic', 0.00, '$', 'mechanic', 'Gaji pokok mechanic per periode'),
+('mechanic_harga_component', 'Harga Component Sparepart', 1000.00, '$/crate', 'mechanic', 'Harga sparepart/component mechanic per crate');
+
+ALTER TABLE `farm_price_config` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+/*==============================================================
+-- Tabel: accepted_laporan
+-- Laporan Kerja yang sudah di-accept oleh admin
+==============================================================*/
+CREATE TABLE IF NOT EXISTS `accepted_laporan` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `source_type` enum('mechanic','farmer') NOT NULL COMMENT 'Sumber laporan asli',
+  `source_id` int(11) NOT NULL COMMENT 'ID dari tabel laporan atau laporan_farmer',
+  `nama_karyawan` varchar(100) NOT NULL,
+  `divisi` enum('mechanic','farmer') NOT NULL,
+  `jumlah_used` int(11) NOT NULL DEFAULT 0 COMMENT 'Compo used (mechanic) atau Bibit used (farmer)',
+  `jumlah_value` decimal(15,2) NOT NULL DEFAULT 0 COMMENT 'Money stored (Rp) atau Panen hasil (kg)',
+  `keterangan` text DEFAULT NULL,
+  `tanggal_laporan` date NOT NULL COMMENT 'Tanggal laporan asli',
+  `tanggal_accept` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Tanggal accept',
+  `accepted_by` varchar(100) DEFAULT NULL COMMENT 'Admin yang accept',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `source_type` (`source_type`),
+  KEY `nama_karyawan` (`nama_karyawan`),
+  KEY `divisi` (`divisi`),
+  KEY `tanggal_laporan` (`tanggal_laporan`),
+  KEY `tanggal_accept` (`tanggal_accept`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+ALTER TABLE `accepted_laporan` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+/*==============================================================
+-- Update enum untuk delivery_order (tambah farmer_beli & farmer_jual)
+-- Jalankan hanya jika sudah punya tabel delivery_order
+==============================================================*/
+ALTER TABLE `delivery_order`
+  MODIFY `jenis_delivery` enum('compo','farmer','farmer_beli','farmer_jual') NOT NULL;
