@@ -76,24 +76,27 @@ switch ($action) {
 
     // Update satu config berdasarkan key
     case 'update':
-        $key = $_POST['key'] ?? '';
+        $key = $_POST['key'] ?? null;
         $value = $_POST['value'] ?? null;
+
+        // Handle JSON body (application/json)
+        if ($key === null && isset($_SERVER['CONTENT_TYPE']) && strpos($_SERVER['CONTENT_TYPE'], 'application/json') !== false) {
+            $input = json_decode(file_get_contents('php://input'), true);
+            $key = $input['key'] ?? null;
+            $value = $input['value'] ?? null;
+        }
 
         if (empty($key)) {
             echo json_encode(['success' => false, 'message' => 'Config key required']);
             exit;
         }
 
-        $stmt = $pdo->prepare("SELECT id FROM farm_price_config WHERE config_key = ?");
-        $stmt->execute([$key]);
-
-        if ($stmt->fetch()) {
-            // Update existing
+        try {
             $stmt = $pdo->prepare("UPDATE farm_price_config SET config_value = ? WHERE config_key = ?");
             $stmt->execute([$value, $key]);
-            echo json_encode(['success' => true, 'message' => 'Config updated successfully']);
-        } else {
-            echo json_encode(['success' => false, 'message' => 'Config key not found']);
+            echo json_encode(['success' => true, 'message' => 'Config updated successfully', 'key' => $key, 'value' => $value]);
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Failed to update config: ' . $e->getMessage()]);
         }
         break;
 
@@ -101,7 +104,6 @@ switch ($action) {
     case 'update_batch':
         $input = json_decode(file_get_contents('php://input'), true);
         if (!$input || !isset($input['configs'])) {
-            // Try POST
             $input = $_POST;
         }
 
@@ -113,30 +115,32 @@ switch ($action) {
         $updated = 0;
         $errors = [];
 
-        foreach ($input['configs'] as $config) {
-            $key = $config['key'] ?? null;
-            $value = $config['value'] ?? null;
+        try {
+            $pdo->beginTransaction();
+            foreach ($input['configs'] as $config) {
+                $key = $config['key'] ?? null;
+                $value = $config['value'] ?? null;
 
-            if (empty($key)) {
-                $errors[] = 'Missing key for config';
-                continue;
-            }
+                if (empty($key)) {
+                    $errors[] = 'Missing key for config';
+                    continue;
+                }
 
-            $stmt = $pdo->prepare("UPDATE farm_price_config SET config_value = ? WHERE config_key = ?");
-            $result = $stmt->execute([$value, $key]);
-            if ($result && $stmt->rowCount() > 0) {
+                $stmt = $pdo->prepare("UPDATE farm_price_config SET config_value = ? WHERE config_key = ?");
+                $stmt->execute([$value, $key]);
                 $updated++;
-            } else {
-                $errors[] = "Config '$key' not found or unchanged";
             }
+            $pdo->commit();
+            echo json_encode([
+                'success' => true,
+                'message' => "Updated $updated configuration(s)",
+                'updated_count' => $updated,
+                'errors' => $errors
+            ]);
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo json_encode(['success' => false, 'message' => 'Failed to update: ' . $e->getMessage()]);
         }
-
-        echo json_encode([
-            'success' => true,
-            'message' => "Updated $updated configuration(s)",
-            'updated_count' => $updated,
-            'errors' => $errors
-        ]);
         break;
 
     // Insert new config

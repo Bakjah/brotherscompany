@@ -3921,7 +3921,7 @@ if (!$currentUserId || !$currentRole) {
                 <!-- TABS -->
                 <div class="keu-tabs">
                     <div class="keu-tab active" id="tab-gaji" onclick="switchKeuTab('gaji')">💰 Gaji</div>
-                    <div class="keu-tab" id="tab-placeholder" onclick="switchKeuTab('placeholder')">📊 Laporan</div>
+                    <div class="keu-tab" id="tab-laporan" onclick="switchKeuTab('laporan')">📊 Laporan</div>
                 </div>
 
                 <!-- TAB: GAJI -->
@@ -3957,11 +3957,35 @@ if (!$currentUserId || !$currentRole) {
                     </div>
                 </div>
 
-                <!-- TAB: PLACEHOLDER -->
-                <div class="keu-tab-content" id="content-placeholder">
+                <!-- TAB: LAPORAN KEUANGAN -->
+                <div class="keu-tab-content" id="content-laporan">
                     <div class="keu-header">
-                        <h2 class="keu-title">📊 Laporan Keuangan</h2>
-                        <p style="color:#8b949e;font-size:13px;">Tab laporan akan ditambahkan nanti.</p>
+                        <h2 class="keu-title">📊 Laporan Keuangan Brothers Company</h2>
+                    </div>
+                    <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);">
+                        <div class="keu-card"><div class="keu-card-value income" id="lap-total-pemasukan">$0.00</div><div class="keu-card-label">Total Pendapatan (+)</div></div>
+                        <div class="keu-card"><div class="keu-card-value income" id="lap-penjualan-buah">$0.00</div><div class="keu-card-label">Penjualan Buah (+)</div></div>
+                        <div class="keu-card"><div class="keu-card-value income" id="lap-penjualan-compo">$0.00</div><div class="keu-card-label">Beli Component (-)</div></div>
+                        <div class="keu-card"><div class="keu-card-value expense" id="lap-total-pengeluaran">$0.00</div><div class="keu-card-label">Total Pengeluaran (-)</div></div>
+                    </div>
+                    <div class="keu-filter">
+                        <select id="lap-filter-bulan" onchange="loadLaporanKeuangan()">
+                            <option value="">Semua Bulan</option>
+                        </select>
+                        <select id="lap-filter-jenis" onchange="loadLaporanKeuangan()">
+                            <option value="">Semua Jenis</option>
+                            <option value="farmer_jual">🌱 Penjualan Buah (+)</option>
+                            <option value="compo">🔧 Beli Component (-)</option>
+                            <option value="farmer">🌱 Farmer Delivery (-)</option>
+                        </select>
+                        <button onclick="loadLaporanKeuangan()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
+                    </div>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Jenis</th><th>Nama</th><th>Jumlah</th><th>Total ($)</th></tr></thead>
+                        <tbody id="lap-table-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                    <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
+                        * (+)=Pendapatan, (-)=Pengeluaran | farmer_jual/comp/cargo=+ | farmer_beli/farmer=-
                     </div>
                 </div>
             </div>
@@ -3976,6 +4000,7 @@ if (!$currentUserId || !$currentRole) {
                 document.getElementById('tab-' + tab).classList.add('active');
                 document.getElementById('content-' + tab).classList.add('active');
                 if (tab === 'gaji') loadGajiKeuangan();
+                else if (tab === 'laporan') loadLaporanKeuangan();
             }
 
             // Load farm_price_config for salary rates
@@ -4186,11 +4211,148 @@ if (!$currentUserId || !$currentRole) {
                 a.click();
             }
 
+            // ===== LAPORAN KEUANGAN TAB =====
+            async function loadLaporanKeuangan() {
+                const tbody = document.getElementById('lap-table-body');
+                if (!tbody) return;
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+
+                const bulan = document.getElementById('lap-filter-bulan').value;
+                const jenis = document.getElementById('lap-filter-jenis').value;
+                const allRows = [];
+                let totalPendapatan = 0; // (+)
+                let totalPengeluaran = 0; // (-)
+                let totalBuah = 0;
+                let totalCompo = 0;
+
+                try {
+                    // Load farm_price_config for prices
+                    const configRes = await fetch('api/farm_price_config_api.php?action=get_all');
+                    const configResult = await configRes.json();
+                    let configMap = {};
+                    if (configResult.success) {
+                        configResult.data.forEach(item => {
+                            configMap[item.config_key] = parseFloat(item.config_value) || 0;
+                        });
+                    }
+                    const hargaJualBuah = configMap['farm_harga_jual_buah'] || 0;
+                    const hargaBibit = configMap['farm_harga_bibit'] || 0;
+                    const hargaCompo = configMap['mechanic_harga_component'] || 0;
+                    const gajiCargo = configMap['cargo_gaji_per_crate'] || 0;
+                    const gajiMekanik = configMap['mechanic_gaji_dasar'] || 0;
+
+                    // Load delivery_order (status = selesai saja) untuk Laporan Keuangan
+                    let deliveryUrl = 'api/delivery_order_api.php?action=get_all&status=selesai';
+                    const deliveryRes = await fetch(deliveryUrl);
+                    const deliveryResult = await deliveryRes.json();
+
+                    if (deliveryResult.success && deliveryResult.data.length) {
+                        deliveryResult.data.forEach(item => {
+                            const tgl = item.tanggal_input || '';
+                            if (bulan && !tgl.startsWith(bulan)) return;
+                            if (jenis && item.jenis_delivery !== jenis) return;
+                            const crate = parseInt(item.jumlah_crate) || 0;
+
+                            // Tentukan (+) atau (-) berdasarkan jenis_delivery
+                            // farmer_jual → (+) Penjualan Buah
+                            // compo → (-) Pembelian Component (bukan penjualan!)
+                            // farmer / farmer_beli → (-) Pengeluaran Bibit
+                            const isPendapatan = item.jenis_delivery === 'farmer_jual';
+
+                            // Tentukan harga per crate dari farm_price_config
+                            let hargaPerUnit = 0;
+                            let labelJenis = '';
+                            if (item.jenis_delivery === 'farmer_jual') {
+                                hargaPerUnit = hargaJualBuah; // farm_harga_jual_buah
+                                labelJenis = '🌱 Penjualan Buah';
+                            } else if (item.jenis_delivery === 'compo') {
+                                hargaPerUnit = hargaCompo; // mechanic_harga_component
+                                labelJenis = '🔧 Beli Component';
+                            } else if (item.jenis_delivery === 'farmer') {
+                                hargaPerUnit = hargaBibit; // farm_harga_bibit
+                                labelJenis = '🌱 Farmer Delivery';
+                            } else if (item.jenis_delivery === 'farmer_beli') {
+                                hargaPerUnit = hargaBibit; // farm_harga_bibit
+                                labelJenis = '🌱 Beli Bibit';
+                            } else {
+                                hargaPerUnit = hargaBibit;
+                                labelJenis = item.jenis_delivery;
+                            }
+
+                            const total = crate * hargaPerUnit;
+                            // Nama = driver_nama (bukan nama_penerima)
+                            allRows.push({
+                                tanggal: tgl,
+                                jenis: labelJenis,
+                                nama: item.driver_nama || item.nama_penerima || '-',
+                                jumlah: crate,
+                                total: total,
+                                isIncome: isPendapatan
+                            });
+
+                            if (isPendapatan) {
+                                totalPendapatan += total;
+                                if (item.jenis_delivery === 'farmer_jual') totalBuah += total;
+                            } else {
+                                totalPengeluaran += total;
+                                if (item.jenis_delivery === 'compo') totalCompo += total;
+                            }
+                        });
+                    }
+
+                    // Sort by tanggal desc
+                    allRows.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+                    // Populate bulan filter
+                    populateLapBulanFilter(allRows);
+
+                    let html = '';
+                    let no = 1;
+                    allRows.forEach(item => {
+                        const tglFormatted = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                        const cellClass = item.isIncome ? 'keu-income' : 'keu-expense';
+                        const sign = item.isIncome ? '+' : '-';
+                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td class="' + cellClass + '">' + item.jenis + '</td><td>' + item.nama + '</td><td style="text-align:center;">' + item.jumlah + '</td><td class="' + cellClass + '">' + sign + '$' + formatDollar(item.total) + '</td></tr>';
+                        no++;
+                    });
+
+                    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+
+                    // Update cards
+                    document.getElementById('lap-total-pemasukan').textContent = '+ $' + formatDollar(totalPendapatan);
+                    document.getElementById('lap-penjualan-buah').textContent = '+ $' + formatDollar(totalBuah);
+                    document.getElementById('lap-penjualan-compo').textContent = '+ $' + formatDollar(totalCompo);
+                    document.getElementById('lap-total-pengeluaran').textContent = '- $' + formatDollar(totalPengeluaran);
+
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
+                }
+            }
+
+            function populateLapBulanFilter(data) {
+                const select = document.getElementById('lap-filter-bulan');
+                const months = new Set();
+                data.forEach(d => {
+                    if (d.tanggal) {
+                        months.add(d.tanggal.substring(0, 7));
+                    }
+                });
+                const sorted = Array.from(months).sort().reverse();
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Semua Bulan</option>';
+                sorted.forEach(m => {
+                    const [year, month] = m.split('-');
+                    select.innerHTML += '<option value="' + m + '">' + new Date(year, month - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' }) + '</option>';
+                });
+                select.value = currentVal;
+            }
+
             // Initial load when window opens
             const winKeuangan = document.getElementById('win-keuangan');
             if (winKeuangan) {
                 winKeuangan.addEventListener('focus', function() {
                     if (currentKeuTab === 'gaji') loadGajiKeuangan();
+                    else if (currentKeuTab === 'laporan') loadLaporanKeuangan();
                 });
             }
             loadGajiKeuangan();
@@ -6093,23 +6255,28 @@ if (!$currentUserId || !$currentRole) {
             </div>
         </div>
         <script>
-            // Load all config from DB when window opens
+            // Load all config from DB when window opens AND on page load
+            window.addEventListener('load', function() {
+                setTimeout(loadPscConfig, 500);
+            });
             document.getElementById('win-priceconfig').addEventListener('focus', loadPscConfig);
 
             async function loadPscConfig() {
                 try {
                     const res = await fetch('api/farm_price_config_api.php?action=get_all');
                     const json = await res.json();
+                    console.log('Load PSC config:', json);
                     if (json.success && json.data) {
                         json.data.forEach(item => {
                             // Update input field
                             const el = document.getElementById('psc-' + item.config_key);
-                            if (el) el.value = item.config_value;
+                            if (el) {
+                                el.value = item.config_value !== null && item.config_value !== '' ? parseFloat(item.config_value) : '';
+                            }
                             // Update preview box
                             const preview = document.getElementById('preview-' + item.config_key);
                             if (preview) {
-                                const formatted = parseFloat(item.config_value).toFixed(2);
-                                preview.textContent = '$' + formatted;
+                                preview.textContent = item.config_value !== null ? '$' + parseFloat(item.config_value).toFixed(2) : '$0.00';
                             }
                         });
                     }
@@ -6123,8 +6290,17 @@ if (!$currentUserId || !$currentRole) {
                 const configs = [];
                 inputs.forEach(input => {
                     const key = input.id.replace('psc-', '');
-                    configs.push({ key: key, value: parseFloat(input.value) || 0 });
+                    const val = parseFloat(input.value);
+                    // Skip jika kosong, null, atau NaN - JANGAN overwrite dengan 0
+                    if (key && input.value !== '' && !isNaN(val)) {
+                        configs.push({ key: key, value: val });
+                    }
                 });
+
+                if (configs.length === 0) {
+                    alert('Tidak ada config yang diubah');
+                    return;
+                }
 
                 try {
                     const res = await fetch('api/farm_price_config_api.php?action=update_batch', {
@@ -6133,10 +6309,11 @@ if (!$currentUserId || !$currentRole) {
                         body: JSON.stringify({ configs: configs })
                     });
                     const json = await res.json();
+                    console.log('Save result:', json);
                     const success = document.getElementById('psc-success');
                     if (json.success) {
                         success.style.display = 'block';
-                        success.textContent = '✓ ' + json.message;
+                        success.textContent = '✓ Berhasil disimpan (' + json.updated_count + ' config)';
                         // Update preview boxes
                         configs.forEach(cfg => {
                             const preview = document.getElementById('preview-' + cfg.key);
@@ -6147,6 +6324,7 @@ if (!$currentUserId || !$currentRole) {
                         alert('Gagal menyimpan: ' + json.message);
                     }
                 } catch (e) {
+                    console.error('Save error:', e);
                     alert('Gagal menyimpan konfigurasi!');
                 }
             }

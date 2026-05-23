@@ -45,7 +45,7 @@ switch ($action) {
             $params[] = $tanggal;
         }
 
-        $sql .= " ORDER BY tanggal_input DESC, id DESC LIMIT 50";
+        $sql .= " ORDER BY tanggal_input DESC, id DESC LIMIT 200";
 
         $stmt = $pdo->prepare($sql);
         $stmt->execute($params);
