@@ -24,15 +24,8 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 switch ($action) {
 
-    // Ambil semua accepted laporan
+    // Ambil semua accepted laporan (dengan filter opsional)
     case 'get_all':
-        $stmt = $pdo->query("SELECT * FROM accepted_laporan ORDER BY id DESC");
-        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        echo json_encode(['success' => true, 'data' => $data]);
-        break;
-
-    // Ambil berdasarkan filter bulan
-    case 'get_by_bulan':
         $bulan = $_GET['bulan'] ?? '';
         $divisi = $_GET['divisi'] ?? '';
 
@@ -86,6 +79,14 @@ switch ($action) {
         $stmt->execute([$source_type, $source_id, $nama_karyawan, $divisi, $jumlah_used, $jumlah_value, $keterangan, $tanggal_laporan, $accepted_by]);
 
         echo json_encode(['success' => true, 'message' => 'Laporan berhasil di-accept!']);
+        break;
+
+    // Get completed cargo deliveries for gaji calculation
+    case 'get_cargo_deliveries':
+        $bulan = $_GET['bulan'] ?? '';
+        $stmt = $pdo->query("SELECT * FROM delivery_order WHERE status = 'selesai' ORDER BY tanggal_selesai DESC");
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        echo json_encode(['success' => true, 'data' => $data]);
         break;
 
     // Delete accepted laporan

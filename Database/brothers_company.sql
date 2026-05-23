@@ -249,9 +249,9 @@ CREATE TABLE `laporan` (
 --
 
 INSERT INTO `laporan` (`nama_karyawan`, `compo_used`, `money_stored`, `keterangan`, `tanggal`) VALUES
-('Joko Susanto', 10, 500000, 'Service harian', '2026-05-20'),
-('Ahmad Rizki', 8, 400000, 'Perbaikan mesin', '2026-05-19'),
-('Joko Susanto', 6, 300000, 'Tune up', '2026-05-18');
+('Joko Susanto', 10, 500.00, 'Service harian', '2026-05-20'),
+('Ahmad Rizki', 8, 400.00, 'Perbaikan mesin', '2026-05-19'),
+('Joko Susanto', 6, 300.00, 'Tune up', '2026-05-18');
 
 -- --------------------------------------------------------
 --
@@ -530,7 +530,7 @@ CREATE TABLE IF NOT EXISTS `accepted_laporan` (
   `nama_karyawan` varchar(100) NOT NULL,
   `divisi` enum('mechanic','farmer') NOT NULL,
   `jumlah_used` int(11) NOT NULL DEFAULT 0 COMMENT 'Compo used (mechanic) atau Bibit used (farmer)',
-  `jumlah_value` decimal(15,2) NOT NULL DEFAULT 0 COMMENT 'Money stored (Rp) atau Panen hasil (kg)',
+  `jumlah_value` decimal(15,2) NOT NULL DEFAULT 0 COMMENT 'Money stored ($) atau Panen hasil (kg)',
   `keterangan` text DEFAULT NULL,
   `tanggal_laporan` date NOT NULL COMMENT 'Tanggal laporan asli',
   `tanggal_accept` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Tanggal accept',

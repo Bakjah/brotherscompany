@@ -1050,7 +1050,7 @@ if (!$currentUserId || !$currentRole) {
         </div>
 
         <!-- ManagerApp - Admin Only -->
-        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('manager')">
+        <div class="desktop-icon admin-only-icon" ondblclick="openWindow('manager')" style="display:none;">
             <svg class="icon-img" viewBox="0 0 48 48">
                 <rect x="6" y="4" width="36" height="40" rx="3" fill="#b07800" stroke="#8b6914" stroke-width="2"/>
                 <rect x="10" y="8" width="28" height="8" fill="#ffd700"/>
@@ -1807,8 +1807,8 @@ if (!$currentUserId || !$currentRole) {
                             <input type="number" id="laporan-compo" placeholder="Jumlah komponen" min="0" required>
                         </div>
                         <div class="laporan-field">
-                            <label>Money Stored (Rp)</label>
-                            <input type="number" id="laporan-money" placeholder="Jumlah uang (Rp)" min="0" required>
+                            <label>Money Stored ($)</label>
+                            <input type="number" id="laporan-money" placeholder="Jumlah uang ($)" min="0" required>
                         </div>
                         <div class="laporan-field">
                             <label>Keterangan</label>
@@ -1889,7 +1889,7 @@ if (!$currentUserId || !$currentRole) {
                         const success = document.getElementById('laporan-success');
                         if (result.success) {
                             success.style.display = 'block';
-                            success.innerHTML = '✅ Laporan berhasil!<br><strong>' + verifiedMechanicNama + '</strong><br>Compo: ' + compo + ' | Rp ' + money.toLocaleString('id-ID');
+                            success.innerHTML = '✅ Laporan berhasil!<br><strong>' + verifiedMechanicNama + '</strong><br>Compo: ' + compo + ' | $' + money.toLocaleString('id-ID');
                             setTimeout(() => {
                                 success.style.display = 'none';
                                 resetLaporan();
@@ -2624,7 +2624,6 @@ if (!$currentUserId || !$currentRole) {
                                         <option value="Supervisor">Supervisor</option>
                                         <option value="Kasir">Kasir</option>
                                         <option value="Helper">Helper</option>
-                                        <option value="Manager">Manager</option>
                                     </select>
                                 </div>
                                 <div class="admin-field">
@@ -2673,7 +2672,7 @@ if (!$currentUserId || !$currentRole) {
                                     <th>Tanggal</th>
                                     <th>Nama</th>
                                     <th>Compo/Bibit Used</th>
-                                    <th>Money/Panen (Rp)</th>
+                                    <th>Money/Panen ($)</th>
                                     <th>Keterangan</th>
                                 </tr>
                             </thead>
@@ -2683,7 +2682,7 @@ if (!$currentUserId || !$currentRole) {
                         </table>
                         <div style="margin-top:15px;padding:10px;background:#21262d;border-radius:4px;text-align:right;">
                             <span style="color:#8b949e;">Total: </span>
-                            <span id="laporan-total" style="color:#ffd700;font-size:16px;font-weight:bold;">Rp 0</span>
+                            <span id="laporan-total" style="color:#ffd700;font-size:16px;font-weight:bold;">$0</span>
                         </div>
                     </div>
 
@@ -2692,15 +2691,15 @@ if (!$currentUserId || !$currentRole) {
                         <h3 class="admin-panel-title">💰 Keuangan Company</h3>
                         <div class="admin-summary">
                             <div class="admin-summary-card">
-                                <div class="admin-summary-value" style="color:#4db84d;" id="keuangan-pemasukan">Rp 0</div>
+                                <div class="admin-summary-value" style="color:#4db84d;" id="keuangan-pemasukan">$0</div>
                                 <div class="admin-summary-label">Total Pemasukan</div>
                             </div>
                             <div class="admin-summary-card">
-                                <div class="admin-summary-value" style="color:#cc2222;" id="keuangan-pengeluaran">Rp 0</div>
+                                <div class="admin-summary-value" style="color:#cc2222;" id="keuangan-pengeluaran">$0</div>
                                 <div class="admin-summary-label">Total Pengeluaran</div>
                             </div>
                             <div class="admin-summary-card">
-                                <div class="admin-summary-value" id="keuangan-sisa">Rp 0</div>
+                                <div class="admin-summary-value" id="keuangan-sisa">$0</div>
                                 <div class="admin-summary-label">Sisa Saldo</div>
                             </div>
                         </div>
@@ -2898,7 +2897,7 @@ if (!$currentUserId || !$currentRole) {
                                         <td>${l.tanggal || '-'}</td>
                                         <td>🔧 ${l.nama_karyawan || '-'}</td>
                                         <td>${l.compo_used ?? 0}</td>
-                                        <td>Rp ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
+                                        <td>$ ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
                                         <td>${l.keterangan || '-'}</td>
                                     </tr>
                                 `;
@@ -2923,7 +2922,7 @@ if (!$currentUserId || !$currentRole) {
                             }
 
                             tbody.innerHTML = html;
-                            document.getElementById('laporan-total').textContent = 'Rp ' + total.toLocaleString('id-ID');
+                            document.getElementById('laporan-total').textContent = '$' + total.toLocaleString('id-ID');
                         } catch (e) {
                             tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
                         }
@@ -2932,12 +2931,12 @@ if (!$currentUserId || !$currentRole) {
                     // Load Keuangan
                     async function loadKeuangan() {
                         const tbody = document.getElementById('keuangan-table-body');
-                        // Demo data
+                        // Demo data (dalam dollar)
                         const demoKeuangan = [
-                            { tanggal: '2026-05-20', jenis: 'Pemasukan', keterangan: 'Service Motor', jumlah: 500000 },
-                            { tanggal: '2026-05-20', jenis: 'Pengeluaran', keterangan: 'Beli Sparepart', jumlah: 150000 },
-                            { tanggal: '2026-05-19', jenis: 'Pemasukan', keterangan: 'Modifikasi', jumlah: 800000 },
-                            { tanggal: '2026-05-18', jenis: 'Pengeluaran', keterangan: 'Gaji Karyawan', jumlah: 2000000 }
+                            { tanggal: '2026-05-20', jenis: 'Pemasukan', keterangan: 'Service Motor', jumlah: 500 },
+                            { tanggal: '2026-05-20', jenis: 'Pengeluaran', keterangan: 'Beli Sparepart', jumlah: 150 },
+                            { tanggal: '2026-05-19', jenis: 'Pemasukan', keterangan: 'Modifikasi', jumlah: 800 },
+                            { tanggal: '2026-05-18', jenis: 'Pengeluaran', keterangan: 'Gaji Karyawan', jumlah: 2000 }
                         ];
 
                         let pemasukan = 0;
@@ -2952,15 +2951,15 @@ if (!$currentUserId || !$currentRole) {
                                     <td>${k.tanggal}</td>
                                     <td><span style="color:${k.jenis === 'Pemasukan' ? '#4db84d' : '#f85149'};">${k.jenis}</span></td>
                                     <td>${k.keterangan}</td>
-                                    <td style="color:${k.jenis === 'Pemasukan' ? '#4db84d' : '#f85149'};">Rp ${parseInt(k.jumlah).toLocaleString('id-ID')}</td>
+                                    <td style="color:${k.jenis === 'Pemasukan' ? '#4db84d' : '#f85149'};">$${k.jumlah.toLocaleString('id-ID')}</td>
                                 </tr>
                             `;
                         });
 
                         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;color:#8b949e;">Tidak ada data</td></tr>';
-                        document.getElementById('keuangan-pemasukan').textContent = 'Rp ' + pemasukan.toLocaleString('id-ID');
-                        document.getElementById('keuangan-pengeluaran').textContent = 'Rp ' + pengeluaran.toLocaleString('id-ID');
-                        document.getElementById('keuangan-sisa').textContent = 'Rp ' + (pemasukan - pengeluaran).toLocaleString('id-ID');
+                        document.getElementById('keuangan-pemasukan').textContent = '$' + pemasukan.toLocaleString('id-ID');
+                        document.getElementById('keuangan-pengeluaran').textContent = '$' + pengeluaran.toLocaleString('id-ID');
+                        document.getElementById('keuangan-sisa').textContent = '$' + (pemasukan - pengeluaran).toLocaleString('id-ID');
                     }
                 </script>
             </div>
@@ -3555,7 +3554,6 @@ if (!$currentUserId || !$currentRole) {
                         <div class="emp-stat"><div class="emp-stat-value" id="emp-mechanic" style="color:#58a6ff;">0</div><div class="emp-stat-label">Mechanic</div></div>
                         <div class="emp-stat"><div class="emp-stat-value" id="emp-farmer" style="color:#4db84d;">0</div><div class="emp-stat-label">Farmer</div></div>
                         <div class="emp-stat"><div class="emp-stat-value" id="emp-cargo" style="color:#ffd700;">0</div><div class="emp-stat-label">Cargo</div></div>
-                        <div class="emp-stat"><div class="emp-stat-value" id="emp-manager" style="color:#cc2222;">0</div><div class="emp-stat-label">Manager</div></div>
                     </div>
                 </div>
                 <div style="margin-bottom:15px;display:flex;gap:10px;">
@@ -3576,7 +3574,7 @@ if (!$currentUserId || !$currentRole) {
                             <div class="emp-field"><label>Nama Lengkap *</label><input type="text" id="emp-nama" placeholder="Masukkan nama" required></div>
                             <div class="emp-field"><label>Nomor Telepon</label><input type="tel" id="emp-telepon" placeholder="08xxxxxxxxxx"></div>
                             <div class="emp-field"><label>No Rekening</label><input type="text" id="emp-rekening" placeholder="1234567890"></div>
-                            <div class="emp-field"><label>Divisi *</label><select id="emp-divisi" required><option value="">-- Pilih --</option><option value="Mechanic">Mechanic</option><option value="Farmer">Farmer</option><option value="Cargo Driver">Cargo Driver</option><option value="Manager">Manager</option></select></div>
+                            <div class="emp-field"><label>Divisi *</label><select id="emp-divisi" required><option value="">-- Pilih --</option><option value="Mechanic">Mechanic</option><option value="Farmer">Farmer</option><option value="Cargo Driver">Cargo Driver</option></select></div>
                             <button type="submit" class="emp-btn-add">💾 Simpan Employee</button>
                             <div id="emp-success" class="emp-success">✅ Employee berhasil ditambahkan!</div>
                         </form>
@@ -3611,10 +3609,10 @@ if (!$currentUserId || !$currentRole) {
             function renderEmpTable(data) {
                 const tbody = document.getElementById('emp-table-body');
                 if (!tbody) return;
-                let m=0,f=0,c=0,manager=0,html='';
+                let m=0,f=0,c=0,html='';
                 data.forEach(e => {
-                    const divClass = e.divisi === 'Mechanic' ? 'emp-div-m' : e.divisi === 'Farmer' ? 'emp-div-f' : e.divisi === 'Manager' ? 'emp-div-manager' : 'emp-div-c';
-                    if(e.divisi==='Mechanic')m++;else if(e.divisi==='Farmer')f++;else if(e.divisi==='Manager')manager++;else c++;
+                    const divClass = e.divisi === 'Mechanic' ? 'emp-div-m' : e.divisi === 'Farmer' ? 'emp-div-f' : 'emp-div-c';
+                    if(e.divisi==='Mechanic')m++;else if(e.divisi==='Farmer')f++;else c++;
                     html += '<tr><td>'+e.nama+'</td><td>'+(e.telepon||'-')+'</td><td>'+(e.no_rekening||'-')+'</td><td class="'+divClass+'">'+e.divisi+'</td><td><button class="emp-btn-del" onclick="deleteEmployee('+e.id+')">Hapus</button></td></tr>';
                 });
                 tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Tidak ada data employee</td></tr>';
@@ -3627,7 +3625,6 @@ if (!$currentUserId || !$currentRole) {
                 if(mEl) mEl.textContent = m;
                 if(fEl) fEl.textContent = f;
                 if(cEl) cEl.textContent = c;
-                if(managerEl) managerEl.textContent = manager;
             }
 
             async function submitEmployee(e) {
@@ -3802,7 +3799,7 @@ if (!$currentUserId || !$currentRole) {
                                 <div style="font-size:10px;color:#8b949e;">Total Buah Dijual</div>
                             </div>
                             <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
-                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-total-money">Rp 0</div>
+                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-total-money">$0</div>
                                 <div style="font-size:10px;color:#8b949e;">Total Money (Mechanic)</div>
                             </div>
                         </div>
@@ -3831,7 +3828,7 @@ if (!$currentUserId || !$currentRole) {
                                 <div style="font-size:10px;color:#8b949e;">Total Buah Dijual</div>
                             </div>
                             <div style="padding:12px;background:#161b22;border:1px solid #30363d;border-radius:8px;text-align:center;">
-                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-accepted-money">Rp 0</div>
+                                <div style="font-size:18px;font-weight:bold;color:#ffd700;" id="lk-accepted-money">$0</div>
                                 <div style="font-size:10px;color:#8b949e;">Total Money (Mechanic)</div>
                             </div>
                         </div>
@@ -3867,7 +3864,7 @@ if (!$currentUserId || !$currentRole) {
     </div>
 
     <!-- KEUANGAN COMPANY WINDOW -->
-    <div class="window" id="win-keuangan" style="top:110px;left:180px;width:750px;height:500px;display:none;">
+    <div class="window" id="win-keuangan" style="top:110px;left:180px;width:900px;height:550px;display:none;">
         <div class="window-titlebar" onmousedown="startDrag(event, 'win-keuangan')">
             <svg class="window-icon" viewBox="0 0 16 16">
                 <circle cx="8" cy="8" r="6" fill="#4db84d"/>
@@ -3890,8 +3887,13 @@ if (!$currentUserId || !$currentRole) {
         <div class="window-content" style="padding:0;background:#0d1117;height:calc(100% - 48px);overflow:auto;">
             <div style="width:100%;min-height:100%;background:#0d1117;padding:15px;box-sizing:border-box;font-family:'Segoe UI',sans-serif;color:#c9d1d9;">
                 <style>
+                    .keu-tabs { display:flex;gap:4px;margin-bottom:15px; }
+                    .keu-tab { padding:10px 24px;background:#21262d;border:1px solid #30363d;color:#8b949e;border-radius:6px 6px 0 0;cursor:pointer;font-size:13px;font-weight:bold; }
+                    .keu-tab.active { background:#161b22;color:#4db84d;border-bottom:2px solid #4db84d; }
+                    .keu-tab-content { display:none; }
+                    .keu-tab-content.active { display:block; }
                     .keu-header { margin-bottom:15px; }
-                    .keu-title { color:#4db84d;font-size:16px;margin:0 0 15px 0; }
+                    .keu-title { color:#4db84d;font-size:16px;margin:0 0 10px 0; }
                     .keu-cards { display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:15px; }
                     .keu-card { background:#161b22;border:1px solid #30363d;border-radius:8px;padding:20px;text-align:center; }
                     .keu-card-value { font-size:24px;font-weight:bold; }
@@ -3905,21 +3907,294 @@ if (!$currentUserId || !$currentRole) {
                     .keu-table tr:hover td { background:#21262d; }
                     .keu-income { color:#4db84d; }
                     .keu-expense { color:#cc2222; }
+                    .keu-div-mechanic { color:#58a6ff;font-weight:bold; }
+                    .keu-div-farmer { color:#4db84d;font-weight:bold; }
+                    .keu-div-cargo { color:#ffd700;font-weight:bold; }
+                    .keu-filter { display:flex;gap:10px;margin-bottom:15px;align-items:center;flex-wrap:wrap; }
+                    .keu-filter select,.keu-filter input { padding:8px;border-radius:4px;border:1px solid #30363d;background:#010409;color:#fff;font-size:12px; }
+                    .keu-btn { padding:8px 16px;background:#238636;color:#fff;border:none;border-radius:4px;font-weight:bold;cursor:pointer;font-size:12px; }
+                    .keu-btn:hover { background:#2ea043; }
+                    .keu-btn-secondary { background:#30363d; }
+                    .keu-btn-secondary:hover { background:#484f58; }
                 </style>
-                <div class="keu-header">
-                    <h2 class="keu-title">💰 Keuangan Brothers Company</h2>
+
+                <!-- TABS -->
+                <div class="keu-tabs">
+                    <div class="keu-tab active" id="tab-gaji" onclick="switchKeuTab('gaji')">💰 Gaji</div>
+                    <div class="keu-tab" id="tab-placeholder" onclick="switchKeuTab('placeholder')">📊 Laporan</div>
                 </div>
-                <div class="keu-cards">
-                    <div class="keu-card"><div class="keu-card-value income" id="keu-pemasukan">Rp 0</div><div class="keu-card-label">Total Pemasukan</div></div>
-                    <div class="keu-card"><div class="keu-card-value expense" id="keu-pengeluaran">Rp 0</div><div class="keu-card-label">Total Pengeluaran</div></div>
-                    <div class="keu-card"><div class="keu-card-value balance" id="keu-sisa">Rp 0</div><div class="keu-card-label">Saldo Tersisa</div></div>
+
+                <!-- TAB: GAJI -->
+                <div class="keu-tab-content active" id="content-gaji">
+                    <div class="keu-header">
+                        <h2 class="keu-title">💰 Daftar Gaji - Accepted & Cargo Selesai</h2>
+                    </div>
+                    <div class="keu-cards">
+                        <div class="keu-card"><div class="keu-card-value balance" id="keu-total-gaji">$0.00</div><div class="keu-card-label">Total Gaji</div></div>
+                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-mekanik">$0.00</div><div class="keu-card-label">Gaji Mechanic</div></div>
+                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-farmer">$0.00</div><div class="keu-card-label">Gaji Farmer</div></div>
+                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-cargo">$0.00</div><div class="keu-card-label">Gaji Cargo</div></div>
+                    </div>
+                    <div class="keu-filter">
+                        <select id="keu-filter-bulan" onchange="loadGajiKeuangan()">
+                            <option value="">Semua Bulan</option>
+                        </select>
+                        <select id="keu-filter-divisi" onchange="loadGajiKeuangan()">
+                            <option value="">Semua Divisi</option>
+                            <option value="mechanic">Mechanic</option>
+                            <option value="farmer">Farmer</option>
+                            <option value="cargo driver">Cargo Driver</option>
+                        </select>
+                        <button onclick="loadGajiKeuangan()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
+                        <button onclick="exportGajiExcel()" class="keu-btn keu-btn-secondary">📥 Export</button>
+                    </div>
+                    <table class="keu-table">
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Nama Karyawan</th><th>Divisi</th><th>Jumlah Used</th><th>Rate Gaji</th><th>Total Gaji</th></tr></thead>
+                        <tbody id="gaji-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                    </table>
+                    <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
+                        * Mechanic = Comp Used x Gaji/Comp | Farmer = Bibit Used x Gaji/Bibit | Cargo = Crate Selesai x Gaji/Crate
+                    </div>
                 </div>
-                <table class="keu-table">
-                    <thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th></tr></thead>
-                    <tbody id="keu-table-body"></tbody>
-                </table>
+
+                <!-- TAB: PLACEHOLDER -->
+                <div class="keu-tab-content" id="content-placeholder">
+                    <div class="keu-header">
+                        <h2 class="keu-title">📊 Laporan Keuangan</h2>
+                        <p style="color:#8b949e;font-size:13px;">Tab laporan akan ditambahkan nanti.</p>
+                    </div>
+                </div>
             </div>
-            <script>loadKeuangan();</script>
+            <script>
+            let currentKeuTab = 'gaji';
+            let gajiConfig = {};
+
+            function switchKeuTab(tab) {
+                currentKeuTab = tab;
+                document.querySelectorAll('.keu-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.keu-tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById('tab-' + tab).classList.add('active');
+                document.getElementById('content-' + tab).classList.add('active');
+                if (tab === 'gaji') loadGajiKeuangan();
+            }
+
+            // Load farm_price_config for salary rates
+            async function loadGajiConfig() {
+                try {
+                    const res = await fetch('api/farm_price_config_api.php?action=get_all');
+                    const result = await res.json();
+                    if (result.success) {
+                        const map = {};
+                        result.data.forEach(item => {
+                            map[item.config_key] = parseFloat(item.config_value) || 0;
+                        });
+                        // Config keys dari farm_price_config
+                        gajiConfig = {
+                            gaji_mekanik: map['mechanic_gaji_dasar'] || 0,
+                            harga_bibit: map['farm_gaji_per_bibit'] || 0,
+                            gaji_cargo: map['cargo_gaji_per_crate'] || 0
+                        };
+                    }
+                } catch (e) {
+                    console.warn('Failed to load config:', e);
+                }
+            }
+
+            // Populate bulan filter
+            function populateBulanFilter(data) {
+                const select = document.getElementById('keu-filter-bulan');
+                const months = new Set();
+                data.forEach(d => {
+                    if (d.tanggal_laporan) {
+                        const ym = d.tanggal_laporan.substring(0, 7);
+                        months.add(ym);
+                    }
+                });
+                const sorted = Array.from(months).sort().reverse();
+                select.innerHTML = '<option value="">Semua Bulan</option>';
+                sorted.forEach(m => {
+                    const [year, month] = m.split('-');
+                    const label = new Date(year, month - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    select.innerHTML += '<option value="' + m + '">' + label + '</option>';
+                });
+            }
+
+            async function loadGajiKeuangan() {
+                const tbody = document.getElementById('gaji-table-body');
+                if (!tbody) return;
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+
+                try {
+                    // Load config rates first
+                    await loadGajiConfig();
+
+                    const bulan = document.getElementById('keu-filter-bulan').value;
+                    const filterDivisi = document.getElementById('keu-filter-divisi').value;
+                    const allRows = [];
+
+                    // --- Load Accepted Laporan (Mechanic + Farmer) ---
+                    let url = 'api/accepted_laporan_api.php?action=get_all';
+                    if (bulan) url += '&bulan=' + bulan;
+                    if (filterDivisi) url += '&divisi=' + filterDivisi;
+
+                    const res = await fetch(url);
+                    const result = await res.json();
+                    if (result.success && result.data.length) {
+                        result.data.forEach(item => {
+                            allRows.push({
+                                tanggal: item.tanggal_laporan || '',
+                                nama: item.nama_karyawan || '-',
+                                divisi: (item.divisi || '').toLowerCase(),
+                                jumlah: parseFloat(item.jumlah_used) || 0,
+                                source: 'accepted'
+                            });
+                        });
+                    }
+
+                    // --- Load Cargo Delivery (status = selesai) ---
+                    if (!filterDivisi || filterDivisi === 'cargo driver') {
+                        let cargoUrl = 'api/delivery_order_api.php?action=get_all&status=selesai';
+                        const cargoRes = await fetch(cargoUrl);
+                        const cargoResult = await cargoRes.json();
+                        if (cargoResult.success && cargoResult.data.length) {
+                            cargoResult.data.forEach(item => {
+                                const tgl = item.tanggal_selesai || item.tanggal_input || '';
+                                // Filter by bulan if selected
+                                if (bulan && !tgl.startsWith(bulan)) return;
+                                allRows.push({
+                                    tanggal: tgl,
+                                    nama: item.driver_nama || item.nama_penerima || '-',
+                                    divisi: 'cargo driver',
+                                    jumlah: parseInt(item.jumlah_crate) || 0,
+                                    source: 'cargo'
+                                });
+                            });
+                        }
+                    }
+
+                    if (!allRows.length) {
+                        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+                        document.getElementById('keu-total-gaji').textContent = '$0.00';
+                        document.getElementById('keu-total-mekanik').textContent = '$0.00';
+                        document.getElementById('keu-total-farmer').textContent = '$0.00';
+                        document.getElementById('keu-total-cargo').textContent = '$0.00';
+                        return;
+                    }
+
+                    // Sort by tanggal desc
+                    allRows.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+
+                    // Populate bulan filter dari semua data
+                    populateBulanFilterFromArray(allRows);
+
+                    let html = '';
+                    let no = 1;
+                    let totalGaji = 0;
+                    let totalMekanik = 0;
+                    let totalFarmer = 0;
+                    let totalCargo = 0;
+
+                    allRows.forEach(item => {
+                        const div = item.divisi;
+                        let rateGaji = '-';
+                        let totalGajiItem = '-';
+
+                        if (div === 'mechanic') {
+                            const rate = gajiConfig.gaji_mekanik || 0;
+                            rateGaji = '$' + formatDollar(rate) + '/comp';
+                            const total = item.jumlah * rate;
+                            totalGajiItem = '$' + formatDollar(total);
+                            totalMekanik += total;
+                        } else if (div === 'farmer') {
+                            const rate = gajiConfig.harga_bibit || 0;
+                            rateGaji = '$' + formatDollar(rate) + '/bibit';
+                            const total = item.jumlah * rate;
+                            totalGajiItem = '$' + formatDollar(total);
+                            totalFarmer += total;
+                        } else if (div === 'cargo driver') {
+                            const rate = gajiConfig.gaji_cargo || 0;
+                            rateGaji = rate > 0 ? '$' + formatDollar(rate) + '/crate' : '-';
+                            if (rate > 0) {
+                                const total = item.jumlah * rate;
+                                totalGajiItem = '$' + formatDollar(total);
+                                totalCargo += total;
+                            }
+                        }
+
+                        const tglFormatted = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                        const divClass = div === 'mechanic' ? 'keu-div-mechanic' : div === 'farmer' ? 'keu-div-farmer' : 'keu-div-cargo';
+                        const divLabel = div === 'mechanic' ? 'Mechanic' : div === 'farmer' ? 'Farmer' : 'Cargo Driver';
+
+                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td>' + item.nama + '</td><td class="' + divClass + '">' + divLabel + '</td><td style="text-align:center;">' + item.jumlah + '</td><td>' + rateGaji + '</td><td class="keu-income">' + totalGajiItem + '</td></tr>';
+
+                        no++;
+                    });
+
+                    // Total Gaji = Mechanic + Farmer + Cargo
+                    totalGaji = totalMekanik + totalFarmer + totalCargo;
+
+                    tbody.innerHTML = html;
+                    document.getElementById('keu-total-gaji').textContent = '$' + formatDollar(totalGaji);
+                    document.getElementById('keu-total-mekanik').textContent = '$' + formatDollar(totalMekanik);
+                    document.getElementById('keu-total-farmer').textContent = '$' + formatDollar(totalFarmer);
+                    document.getElementById('keu-total-cargo').textContent = '$' + formatDollar(totalCargo);
+
+                } catch (e) {
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
+                }
+            }
+
+            function populateBulanFilterFromArray(data) {
+                const select = document.getElementById('keu-filter-bulan');
+                const months = new Set();
+                data.forEach(d => {
+                    if (d.tanggal) {
+                        const ym = d.tanggal.substring(0, 7);
+                        months.add(ym);
+                    }
+                });
+                const sorted = Array.from(months).sort().reverse();
+                const currentVal = select.value;
+                select.innerHTML = '<option value="">Semua Bulan</option>';
+                sorted.forEach(m => {
+                    const [year, month] = m.split('-');
+                    const label = new Date(year, month - 1).toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+                    select.innerHTML += '<option value="' + m + '">' + label + '</option>';
+                });
+                select.value = currentVal;
+            }
+
+            function formatDollar(num) {
+                if (isNaN(num) || num === 0) return '0.00';
+                return num.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            }
+
+            function exportGajiExcel() {
+                const tbl = document.querySelector('#content-gaji .keu-table');
+                if (!tbl) return;
+                let csv = '﻿';
+                tbl.querySelectorAll('thead th').forEach(th => { csv += th.textContent.trim() + ';'; });
+                csv += '\n';
+                tbl.querySelectorAll('tbody tr').forEach(tr => {
+                    tr.querySelectorAll('td').forEach(td => { csv += '"' + td.textContent.trim() + '";'; });
+                    csv += '\n';
+                });
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+                const a = document.createElement('a');
+                a.href = URL.createObjectURL(blob);
+                a.download = 'gaji_' + new Date().toISOString().substring(0, 10) + '.csv';
+                a.click();
+            }
+
+            // Initial load when window opens
+            const winKeuangan = document.getElementById('win-keuangan');
+            if (winKeuangan) {
+                winKeuangan.addEventListener('focus', function() {
+                    if (currentKeuTab === 'gaji') loadGajiKeuangan();
+                });
+            }
+            loadGajiKeuangan();
+            </script>
         </div>
         <div class="window-statusbar"><span class="statusbar-section">Keuangan</span><span class="statusbar-section">Kelola keuangan company</span></div>
         <div class="resizer" onmousedown="startResize(event, 'win-keuangan')"></div>
@@ -4081,7 +4356,7 @@ if (!$currentUserId || !$currentRole) {
                     <td>🔧 Mechanic</td>
                     <td>${l.nama_karyawan || '-'}</td>
                     <td>${l.compo_used ?? 0}</td>
-                    <td>Rp ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
+                    <td>$ ${parseFloat(l.money_stored || 0).toLocaleString('id-ID')}</td>
                     <td>${l.keterangan || '-'}</td>
                     <td>
                         <button class="lk-btn lk-btn-accept" style="padding:4px 8px;margin-right:4px;" onclick="acceptLaporan('mechanic', ${l.id}, '${l.nama_karyawan || ''}', '${l.tanggal || ''}', ${l.compo_used ?? 0}, ${l.money_stored ?? 0}, '${(l.keterangan || '').replace(/'/g, "\\'")}')">✅</button>
@@ -4116,7 +4391,7 @@ if (!$currentUserId || !$currentRole) {
             if (compoEl) compoEl.textContent = totalCompo.toLocaleString('id-ID');
             if (bibitEl) bibitEl.textContent = totalBibit.toLocaleString('id-ID');
             if (buahEl) buahEl.textContent = totalBuah.toLocaleString('id-ID') + ' kg';
-            if (moneyEl) moneyEl.textContent = 'Rp ' + totalMoney.toLocaleString('id-ID');
+            if (moneyEl) moneyEl.textContent = '$' + totalMoney.toLocaleString('id-ID');
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
         }
@@ -4227,7 +4502,7 @@ if (!$currentUserId || !$currentRole) {
                         <td>${isMechanic ? '🔧 Mechanic' : '🌱 Farmer'}</td>
                         <td>${l.nama_karyawan || '-'}</td>
                         <td>${l.jumlah_used ?? 0}</td>
-                        <td>${isMechanic ? 'Rp ' + parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') : parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') + ' kg'}</td>
+                        <td>${isMechanic ? '$' + parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') : parseFloat(l.jumlah_value || 0).toLocaleString('id-ID') + ' kg'}</td>
                         <td>${l.keterangan || '-'}</td>
                         <td><button class="lk-btn lk-btn-delete" onclick="deleteAcceptedLaporan(${l.id})">🗑️</button></td>
                     </tr>`;
@@ -4242,7 +4517,7 @@ if (!$currentUserId || !$currentRole) {
             if (compoEl) compoEl.textContent = totalCompo.toLocaleString('id-ID');
             if (bibitEl) bibitEl.textContent = totalBibit.toLocaleString('id-ID');
             if (buahEl) buahEl.textContent = totalBuah.toLocaleString('id-ID') + ' kg';
-            if (moneyEl) moneyEl.textContent = 'Rp ' + totalMoney.toLocaleString('id-ID');
+            if (moneyEl) moneyEl.textContent = '$' + totalMoney.toLocaleString('id-ID');
         } catch (e) {
             tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">⚠️ Gagal memuat data</td></tr>';
         }
@@ -4318,12 +4593,12 @@ if (!$currentUserId || !$currentRole) {
 
         // Demo data
         const demo = [
-            { tanggal: '2026-05-20', jenis: 'Pemasukan', keterangan: 'Service Motor', jumlah: 500000 },
-            { tanggal: '2026-05-20', jenis: 'Pengeluaran', keterangan: 'Beli Sparepart', jumlah: 150000 },
-            { tanggal: '2026-05-19', jenis: 'Pemasukan', keterangan: 'Modifikasi', jumlah: 800000 },
-            { tanggal: '2026-05-19', jenis: 'Pengeluaran', keterangan: 'Gaji Karyawan', jumlah: 2000000 },
-            { tanggal: '2026-05-18', jenis: 'Pemasukan', keterangan: 'Repair', jumlah: 400000 },
-            { tanggal: '2026-05-18', jenis: 'Pengeluaran', keterangan: 'Beli Tools', jumlah: 500000 }
+            { tanggal: '2026-05-20', jenis: 'Pemasukan', keterangan: 'Service Motor', jumlah: 500 },
+            { tanggal: '2026-05-20', jenis: 'Pengeluaran', keterangan: 'Beli Sparepart', jumlah: 150 },
+            { tanggal: '2026-05-19', jenis: 'Pemasukan', keterangan: 'Modifikasi', jumlah: 800 },
+            { tanggal: '2026-05-19', jenis: 'Pengeluaran', keterangan: 'Gaji Karyawan', jumlah: 2000 },
+            { tanggal: '2026-05-18', jenis: 'Pemasukan', keterangan: 'Repair', jumlah: 400 },
+            { tanggal: '2026-05-18', jenis: 'Pengeluaran', keterangan: 'Beli Tools', jumlah: 500 }
         ];
 
         let pemasukan = 0, pengeluaran = 0;
@@ -4336,14 +4611,14 @@ if (!$currentUserId || !$currentRole) {
                 <td>${k.tanggal}</td>
                 <td class="${k.jenis === 'Pemasukan' ? 'keu-income' : 'keu-expense'}">${k.jenis}</td>
                 <td>${k.keterangan}</td>
-                <td class="${k.jenis === 'Pemasukan' ? 'keu-income' : 'keu-expense'}">Rp ${k.jumlah.toLocaleString('id-ID')}</td>
+                <td class="${k.jenis === 'Pemasukan' ? 'keu-income' : 'keu-expense'}">$${k.jumlah.toLocaleString('id-ID')}</td>
             </tr>`;
         });
 
         tbody.innerHTML = html || '<tr><td colspan="4" style="text-align:center;color:#8b949e;">Tidak ada data keuangan</td></tr>';
-        document.getElementById('keu-pemasukan').textContent = 'Rp ' + pemasukan.toLocaleString('id-ID');
-        document.getElementById('keu-pengeluaran').textContent = 'Rp ' + pengeluaran.toLocaleString('id-ID');
-        document.getElementById('keu-sisa').textContent = 'Rp ' + (pemasukan - pengeluaran).toLocaleString('id-ID');
+        document.getElementById('keu-pemasukan').textContent = '$' + pemasukan.toLocaleString('id-ID');
+        document.getElementById('keu-pengeluaran').textContent = '$' + pengeluaran.toLocaleString('id-ID');
+        document.getElementById('keu-sisa').textContent = '$' + (pemasukan - pengeluaran).toLocaleString('id-ID');
     }
     </script>
 
@@ -6246,6 +6521,13 @@ if (!$currentUserId || !$currentRole) {
     function openWindow(type) {
         const win = document.getElementById(`win-${type}`);
         if (!win) return;
+
+        // ManagerApp & sub-windows are admin-only
+        const adminOnlyWindows = ['manager', 'mechanicmanager', 'farmermanager', 'cargomanager'];
+        if (adminOnlyWindows.includes(type) && currentUser.role !== 'admin') {
+            showToast('Akses Ditolak', 'Hanya admin yang bisa membuka ManagerApp');
+            return;
+        }
 
         win.style.display = 'block';
         bringToFront(`win-${type}`);

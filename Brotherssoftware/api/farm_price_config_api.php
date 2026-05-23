@@ -24,11 +24,24 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 switch ($action) {
 
-    // Ambil semua config
+    // Ambil semua config (flat list)
     case 'get_all':
         $stmt = $pdo->query("SELECT * FROM farm_price_config ORDER BY category, id");
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'data' => $data]);
+        break;
+
+    // Ambil semua config grouped by category (untuk hitung gaji)
+    case 'get_all_grouped':
+        $stmt = $pdo->query("SELECT * FROM farm_price_config ORDER BY category, id");
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $grouped = [];
+        foreach ($data as $row) {
+            $cat = $row['category'] ?: 'other';
+            if (!isset($grouped[$cat])) $grouped[$cat] = [];
+            $grouped[$cat][] = $row;
+        }
+        echo json_encode(['success' => true, 'data' => $grouped]);
         break;
 
     // Ambil config berdasarkan category
