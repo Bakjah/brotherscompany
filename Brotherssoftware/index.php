@@ -3981,8 +3981,8 @@ if (!$currentUserId || !$currentRole) {
                         <button onclick="loadLaporanKeuangan()" class="keu-btn keu-btn-secondary">🔄 Refresh</button>
                     </div>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Jenis</th><th>Nama</th><th>Jumlah</th><th>Total ($)</th></tr></thead>
-                        <tbody id="lap-table-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Jam</th><th>Jenis</th><th>Nama</th><th>Jumlah</th><th>Total ($)</th></tr></thead>
+                        <tbody id="lap-table-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                     </table>
                     <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
                         * (+)=Pendapatan, (-)=Pengeluaran | farmer_jual/comp/cargo=+ | farmer_beli/farmer=-
@@ -4060,7 +4060,7 @@ if (!$currentUserId || !$currentRole) {
                     // --- Load Accepted Laporan (Mechanic + Farmer) ---
                     let url = 'api/accepted_laporan_api.php?action=get_all';
                     if (bulan) url += '&bulan=' + bulan;
-                    if (filterDivisi) url += '&divisi=' + filterDivisi;
+                    if (filterDivisi && filterDivisi !== 'cargo driver') url += '&divisi=' + filterDivisi;
 
                     const res = await fetch(url);
                     const result = await res.json();
@@ -4071,6 +4071,7 @@ if (!$currentUserId || !$currentRole) {
                                 nama: item.nama_karyawan || '-',
                                 divisi: (item.divisi || '').toLowerCase(),
                                 jumlah: parseFloat(item.jumlah_used) || 0,
+                                harga_rate: parseFloat(item.harga_rate) || null,
                                 source: 'accepted'
                             });
                         });
@@ -4091,6 +4092,7 @@ if (!$currentUserId || !$currentRole) {
                                     nama: item.driver_nama || item.nama_penerima || '-',
                                     divisi: 'cargo driver',
                                     jumlah: parseInt(item.jumlah_crate) || 0,
+                                    harga_rate: parseFloat(item.harga_snapshot) || null,
                                     source: 'cargo'
                                 });
                             });
@@ -4125,19 +4127,22 @@ if (!$currentUserId || !$currentRole) {
                         let totalGajiItem = '-';
 
                         if (div === 'mechanic') {
-                            const rate = gajiConfig.gaji_mekanik || 0;
+                            // Gunakan harga_rate dari database, fallback ke config
+                            const rate = item.harga_rate || gajiConfig.gaji_mekanik || 0;
                             rateGaji = '$' + formatDollar(rate) + '/comp';
                             const total = item.jumlah * rate;
                             totalGajiItem = '$' + formatDollar(total);
                             totalMekanik += total;
                         } else if (div === 'farmer') {
-                            const rate = gajiConfig.harga_bibit || 0;
+                            // Gunakan harga_rate dari database, fallback ke config
+                            const rate = item.harga_rate || gajiConfig.harga_bibit || 0;
                             rateGaji = '$' + formatDollar(rate) + '/bibit';
                             const total = item.jumlah * rate;
                             totalGajiItem = '$' + formatDollar(total);
                             totalFarmer += total;
                         } else if (div === 'cargo driver') {
-                            const rate = gajiConfig.gaji_cargo || 0;
+                            // Gunakan harga_rate dari database, fallback ke config
+                            const rate = item.harga_rate || gajiConfig.gaji_cargo || 0;
                             rateGaji = rate > 0 ? '$' + formatDollar(rate) + '/crate' : '-';
                             if (rate > 0) {
                                 const total = item.jumlah * rate;
@@ -4248,12 +4253,16 @@ if (!$currentUserId || !$currentRole) {
 
                     if (deliveryResult.success && deliveryResult.data.length) {
                         deliveryResult.data.forEach(item => {
-                            const tgl = item.tanggal_input || '';
+                            // Gunakan tanggal_selesai agar filter bulan konsisten dengan Tab Gaji
+                            const tgl = item.tanggal_selesai || item.tanggal_input || '';
                             if (bulan && !tgl.startsWith(bulan)) return;
                             if (jenis && item.jenis_delivery !== jenis) return;
                             const crate = parseInt(item.jumlah_crate) || 0;
                             // 1 crate = 20 buah (hanya untuk perhitungan harga farm)
                             const buah = crate * 20;
+
+                            // Ambil harga dari database (harga_snapshot), fallback ke config
+                            const storedHarga = parseFloat(item.harga_snapshot) || null;
 
                             // Tentukan (+) atau (-) berdasarkan jenis_delivery
                             // farmer_jual → (+) Penjualan Buah
@@ -4265,23 +4274,28 @@ if (!$currentUserId || !$currentRole) {
                             let total = 0;
                             let labelJenis = '';
                             if (item.jenis_delivery === 'farmer_jual') {
-                                // Farm: crate x 20 buah x harga per buah
-                                total = buah * hargaJualBuah;
+                                // Farm: crate x 20 buah x harga per buah (gunakan stored price atau config)
+                                const perBuah = storedHarga || hargaJualBuah;
+                                total = buah * perBuah;
                                 labelJenis = '🌱 Penjualan Buah';
                             } else if (item.jenis_delivery === 'compo') {
-                                // Mechanic: crate x $1000 (harga per crate)
-                                total = crate * hargaCompo;
+                                // Mechanic: crate x harga per crate (gunakan stored price atau config)
+                                const perCrate = storedHarga || hargaCompo;
+                                total = crate * perCrate;
                                 labelJenis = '🔧 Beli Component';
                             } else if (item.jenis_delivery === 'farmer') {
-                                // Farmer Delivery: crate x harga (sama seperti mechanic)
-                                total = crate * hargaBibit;
+                                // Farmer Delivery: crate x harga (gunakan stored price atau config)
+                                const perCrate = storedHarga || hargaBibit;
+                                total = crate * perCrate;
                                 labelJenis = '🌱 Farmer Delivery';
                             } else if (item.jenis_delivery === 'farmer_beli') {
-                                // Beli Bibit: crate x harga (sama seperti mechanic)
-                                total = crate * hargaBibit;
+                                // Beli Bibit: crate x harga (gunakan stored price atau config)
+                                const perCrate = storedHarga || hargaBibit;
+                                total = crate * perCrate;
                                 labelJenis = '🌱 Beli Bibit';
                             } else {
-                                total = crate * hargaBibit;
+                                const perCrate = storedHarga || hargaBibit;
+                                total = crate * perCrate;
                                 labelJenis = item.jenis_delivery;
                             }
 
@@ -4315,13 +4329,15 @@ if (!$currentUserId || !$currentRole) {
                     let no = 1;
                     allRows.forEach(item => {
                         const tglFormatted = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) : '-';
+                        // Extract time from datetime
+                        const jamFormatted = item.tanggal ? new Date(item.tanggal).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
                         const cellClass = item.isIncome ? 'keu-income' : 'keu-expense';
                         const sign = item.isIncome ? '+' : '-';
-                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td class="' + cellClass + '">' + item.jenis + '</td><td>' + item.nama + '</td><td style="text-align:center;">' + item.jumlah + '</td><td class="' + cellClass + '">' + sign + '$' + formatDollar(item.total) + '</td></tr>';
+                        html += '<tr><td style="text-align:center;">' + no + '</td><td>' + tglFormatted + '</td><td style="color:#8b949e;">' + jamFormatted + '</td><td class="' + cellClass + '">' + item.jenis + '</td><td>' + item.nama + '</td><td style="text-align:center;">' + item.jumlah + '</td><td class="' + cellClass + '">' + sign + '$' + formatDollar(item.total) + '</td></tr>';
                         no++;
                     });
 
-                    tbody.innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
+                    tbody.innerHTML = html || '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
 
                     // Update cards
                     document.getElementById('lap-total-pemasukan').textContent = '+ $' + formatDollar(totalPendapatan);
@@ -4330,7 +4346,7 @@ if (!$currentUserId || !$currentRole) {
                     document.getElementById('lap-total-pengeluaran').textContent = '- $' + formatDollar(totalPengeluaran);
 
                 } catch (e) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
+                    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
                 }
             }
 
@@ -4360,7 +4376,9 @@ if (!$currentUserId || !$currentRole) {
                     else if (currentKeuTab === 'laporan') loadLaporanKeuangan();
                 });
             }
-            loadGajiKeuangan();
+            // Load tab yang aktif saat ini
+            if (currentKeuTab === 'gaji') loadGajiKeuangan();
+            else if (currentKeuTab === 'laporan') loadLaporanKeuangan();
             </script>
         </div>
         <div class="window-statusbar"><span class="statusbar-section">Keuangan</span><span class="statusbar-section">Kelola keuangan company</span></div>
@@ -6256,6 +6274,19 @@ if (!$currentUserId || !$currentRole) {
                         </div>
                         <div id="psc-success" class="psc-success">✓ Konfigurasi berhasil disimpan!</div>
                     </div>
+
+                    <!-- Migrate Old Data -->
+                    <div style="margin-top:20px; padding:15px; background:#21262d; border-radius:8px; border:1px solid #30363d;">
+                        <div style="color:#8b949e; font-size:12px; margin-bottom:10px;">
+                            🔒 <strong>Fix Harga Historis</strong><br>
+                            Tombol ini akan mengisi harga pada data lama yang belum memiliki harga tersimpan.
+                            Data lama akan menggunakan harga dari config saat ini.
+                        </div>
+                        <button onclick="migrateOldPrices()" id="btn-migrate-prices" style="padding:10px 20px; background:#6f42c1; color:#fff; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">
+                            🔄 Migrate Data Lama
+                        </button>
+                        <div id="migrate-result" style="margin-top:10px; font-size:12px;"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -6364,6 +6395,34 @@ if (!$currentUserId || !$currentRole) {
                     }
                 } catch (e) {
                     alert('Gagal menyimpan konfigurasi!');
+                }
+            }
+
+            // Migrate old data prices
+            async function migrateOldPrices() {
+                const btn = document.getElementById('btn-migrate-prices');
+                const result = document.getElementById('migrate-result');
+                btn.disabled = true;
+                btn.textContent = '⏳ Migrating...';
+                result.innerHTML = '';
+
+                try {
+                    // Migrate accepted_laporan
+                    const acceptedRes = await fetch('api/accepted_laporan_api.php?action=migrate_prices');
+                    const acceptedJson = await acceptedRes.json();
+
+                    // Migrate delivery_order
+                    const deliveryRes = await fetch('api/delivery_order_api.php?action=migrate_prices');
+                    const deliveryJson = await deliveryRes.json();
+
+                    const total = (acceptedJson.updated || 0) + (deliveryJson.updated || 0);
+                    result.innerHTML = '<span style="color:#4db84d;">✓ Berhasil! ' + total + ' data lama telah diperbarui dengan harga saat ini.</span>';
+                    result.innerHTML += '<br><small style="color:#8b949e;">Catatan: Data yang sudah memiliki harga tidak akan diubah.</small>';
+
+                } catch (e) {
+                    result.innerHTML = '<span style="color:#f85149;">✗ Gagal: ' + e.message + '</span>';
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Migrate Data Lama';
                 }
             }
 

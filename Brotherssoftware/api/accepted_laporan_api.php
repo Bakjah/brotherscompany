@@ -38,8 +38,8 @@ switch ($action) {
         }
 
         if (!empty($divisi)) {
-            $sql .= " AND divisi = ?";
-            $params[] = $divisi;
+            $sql .= " AND LOWER(divisi) = ?";
+            $params[] = strtolower($divisi);
         }
 
         $sql .= " ORDER BY id DESC";
@@ -75,10 +75,30 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $pdo->prepare("INSERT INTO accepted_laporan (source_type, source_id, nama_karyawan, divisi, jumlah_used, jumlah_value, keterangan, tanggal_laporan, accepted_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$source_type, $source_id, $nama_karyawan, $divisi, $jumlah_used, $jumlah_value, $keterangan, $tanggal_laporan, $accepted_by]);
+        // Get harga_rate from farm_price_config based on divisi
+        $harga_rate = null;
+        $config_key = '';
+        if (strtolower($divisi) === 'mechanic') {
+            $config_key = 'mechanic_gaji_dasar';
+        } elseif (strtolower($divisi) === 'farmer') {
+            $config_key = 'farm_gaji_per_bibit';
+        } elseif (strtolower($divisi) === 'cargo driver') {
+            $config_key = 'cargo_gaji_per_crate';
+        }
 
-        echo json_encode(['success' => true, 'message' => 'Laporan berhasil di-accept!']);
+        if (!empty($config_key)) {
+            $stmt = $pdo->prepare("SELECT config_value FROM farm_price_config WHERE config_key = ?");
+            $stmt->execute([$config_key]);
+            $config = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($config) {
+                $harga_rate = floatval($config['config_value']);
+            }
+        }
+
+        $stmt = $pdo->prepare("INSERT INTO accepted_laporan (source_type, source_id, nama_karyawan, divisi, jumlah_used, jumlah_value, keterangan, tanggal_laporan, accepted_by, harga_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$source_type, $source_id, $nama_karyawan, $divisi, $jumlah_used, $jumlah_value, $keterangan, $tanggal_laporan, $accepted_by, $harga_rate]);
+
+        echo json_encode(['success' => true, 'message' => 'Laporan berhasil di-accept!', 'harga_rate' => $harga_rate]);
         break;
 
     // Get completed cargo deliveries for gaji calculation
@@ -129,6 +149,41 @@ switch ($action) {
                 'total_value' => (float)$total_value
             ]
         ]);
+        break;
+
+    // Migrate old data with current config prices
+    case 'migrate_prices':
+        $updated = 0;
+
+        // Get all config values
+        $stmt = $pdo->query("SELECT config_key, config_value FROM farm_price_config");
+        $configMap = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $configMap[$row['config_key']] = floatval($row['config_value']);
+        }
+
+        // Update accepted_laporan where harga_rate is NULL
+        $stmt = $pdo->query("SELECT id, divisi FROM accepted_laporan WHERE harga_rate IS NULL");
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $harga = null;
+            $divisi = strtolower($row['divisi']);
+
+            if ($divisi === 'mechanic') {
+                $harga = $configMap['mechanic_gaji_dasar'] ?? null;
+            } elseif ($divisi === 'farmer') {
+                $harga = $configMap['farm_gaji_per_bibit'] ?? null;
+            } elseif ($divisi === 'cargo driver') {
+                $harga = $configMap['cargo_gaji_per_crate'] ?? null;
+            }
+
+            if ($harga !== null) {
+                $update = $pdo->prepare("UPDATE accepted_laporan SET harga_rate = ? WHERE id = ?");
+                $update->execute([$harga, $row['id']]);
+                $updated++;
+            }
+        }
+
+        echo json_encode(['success' => true, 'message' => "Migrated $updated accepted_laporan records", 'updated' => $updated]);
         break;
 
     default:

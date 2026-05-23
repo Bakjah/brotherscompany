@@ -137,14 +137,42 @@ switch ($action) {
             exit;
         }
 
-        $stmt = $pdo->prepare("UPDATE delivery_order SET status = 'selesai', tanggal_selesai = NOW() WHERE id = ? AND status = 'diambil'");
+        // Get delivery info for price snapshot
+        $stmt = $pdo->prepare("SELECT jenis_delivery FROM delivery_order WHERE id = ? AND status = 'diambil'");
         $stmt->execute([$id]);
+        $delivery = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($stmt->rowCount() === 0) {
+        if (!$delivery) {
             echo json_encode(['success' => false, 'message' => 'Order tidak ditemukan atau belum diambil']);
-        } else {
-            echo json_encode(['success' => true, 'message' => 'Delivery berhasil diselesaikan']);
+            exit;
         }
+
+        // Get harga_snapshot from farm_price_config based on jenis_delivery
+        $harga_snapshot = null;
+        $config_key = '';
+        $jenis = $delivery['jenis_delivery'];
+
+        if ($jenis === 'farmer_jual') {
+            $config_key = 'farm_harga_jual_buah';
+        } elseif ($jenis === 'compo') {
+            $config_key = 'mechanic_harga_component';
+        } elseif ($jenis === 'farmer' || $jenis === 'farmer_beli') {
+            $config_key = 'farm_harga_bibit';
+        }
+
+        if (!empty($config_key)) {
+            $stmt = $pdo->prepare("SELECT config_value FROM farm_price_config WHERE config_key = ?");
+            $stmt->execute([$config_key]);
+            $config = $stmt->fetch(PDO::FETCH_ASSOC);
+            if ($config) {
+                $harga_snapshot = floatval($config['config_value']);
+            }
+        }
+
+        $stmt = $pdo->prepare("UPDATE delivery_order SET status = 'selesai', tanggal_selesai = NOW(), harga_snapshot = ? WHERE id = ? AND status = 'diambil'");
+        $stmt->execute([$harga_snapshot, $id]);
+
+        echo json_encode(['success' => true, 'message' => 'Delivery berhasil diselesaikan', 'harga_snapshot' => $harga_snapshot]);
         break;
 
     case 'batal':
@@ -177,6 +205,41 @@ switch ($action) {
         $stmt = $pdo->query("SELECT id, nama, telepon, divisi FROM employees WHERE divisi = 'Cargo Driver' ORDER BY nama");
         $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
         echo json_encode(['success' => true, 'data' => $data]);
+        break;
+
+    // Migrate old data with current config prices
+    case 'migrate_prices':
+        $updated = 0;
+
+        // Get all config values
+        $stmt = $pdo->query("SELECT config_key, config_value FROM farm_price_config");
+        $configMap = [];
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $configMap[$row['config_key']] = floatval($row['config_value']);
+        }
+
+        // Update delivery_order where harga_snapshot is NULL
+        $stmt = $pdo->query("SELECT id, jenis_delivery FROM delivery_order WHERE harga_snapshot IS NULL");
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $harga = null;
+            $jenis = $row['jenis_delivery'];
+
+            if ($jenis === 'farmer_jual') {
+                $harga = $configMap['farm_harga_jual_buah'] ?? null;
+            } elseif ($jenis === 'compo') {
+                $harga = $configMap['mechanic_harga_component'] ?? null;
+            } elseif ($jenis === 'farmer' || $jenis === 'farmer_beli') {
+                $harga = $configMap['farm_harga_bibit'] ?? null;
+            }
+
+            if ($harga !== null) {
+                $update = $pdo->prepare("UPDATE delivery_order SET harga_snapshot = ? WHERE id = ?");
+                $update->execute([$harga, $row['id']]);
+                $updated++;
+            }
+        }
+
+        echo json_encode(['success' => true, 'message' => "Migrated $updated delivery_order records", 'updated' => $updated]);
         break;
 
     default:
