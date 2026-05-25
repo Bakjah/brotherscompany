@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 25 Bulan Mei 2026 pada 19.17
+-- Waktu pembuatan: 25 Bulan Mei 2026 pada 21.11
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -37,20 +37,11 @@ CREATE TABLE `accepted_laporan` (
   `jumlah_value` decimal(15,2) NOT NULL DEFAULT 0.00 COMMENT 'Money stored ($) atau Panen hasil (kg)',
   `harga_rate` decimal(15,2) DEFAULT NULL,
   `keterangan` text DEFAULT NULL,
-  `tanggal_laporan` date NOT NULL COMMENT 'Tanggal laporan asli',
+  `tanggal_laporan` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Tanggal laporan asli',
   `tanggal_accept` datetime NOT NULL DEFAULT current_timestamp() COMMENT 'Tanggal accept',
   `accepted_by` varchar(100) DEFAULT NULL COMMENT 'Admin yang accept',
   `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `accepted_laporan`
---
-
-INSERT INTO `accepted_laporan` (`id`, `source_type`, `source_id`, `nama_karyawan`, `divisi`, `jumlah_used`, `jumlah_value`, `harga_rate`, `keterangan`, `tanggal_laporan`, `tanggal_accept`, `accepted_by`, `created_at`) VALUES
-(6, 'mechanic', 8, 'Joko Susanto', 'mechanic', 200, 400.00, 0.00, 'Repair', '2026-05-25', '2026-05-25 23:02:34', 'Admin', '2026-05-25 16:02:34'),
-(7, 'mechanic', 9, 'Joko Susanto', 'mechanic', 200, 400.00, 0.00, 'adfa', '2026-05-25', '2026-05-25 23:09:09', 'Admin', '2026-05-25 16:09:09'),
-(8, 'farmer', 5, 'Ahmad Rizki', 'farmer', 1000, 999.00, 22.00, 'tanam Kerot', '2026-05-25', '2026-05-26 00:05:22', 'Admin', '2026-05-25 17:05:22');
 
 -- --------------------------------------------------------
 
@@ -125,17 +116,6 @@ CREATE TABLE `delivery_order` (
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data untuk tabel `delivery_order`
---
-
-INSERT INTO `delivery_order` (`id`, `jenis_delivery`, `alamat_tujuan`, `nama_penerima`, `no_telepon`, `jumlah_crate`, `harga_snapshot`, `catatan`, `status`, `driver_id`, `driver_nama`, `tanggal_input`, `tanggal_ambil`, `tanggal_selesai`, `created_at`, `updated_at`) VALUES
-(1, 'compo', 'Jl. Merdeka No. 10, Bandung', 'Budi Santoso', '081234567890', 10, 1000.00, 'Komponen mesin produksi', 'pending', NULL, NULL, '2026-05-23 15:39:20', NULL, NULL, '2026-05-23 15:39:20', '2026-05-23 16:02:11'),
-(2, 'compo', 'Jl. Asia Afrika No. 25, Bandung', 'Dewi Lestari', '085678901234', 5, 1000.00, 'Suku cadang motor', 'selesai', 3, 'Dewi Lestari', '2026-05-23 15:39:20', '2026-05-25 23:35:33', '2026-05-25 23:35:35', '2026-05-23 15:39:20', '2026-05-25 16:35:35'),
-(3, 'farmer', 'Jl. Ganesha No. 5, Bandung', 'Ahmad Rizki', '087812345678', 20, 20.00, 'Bibit cabai organik', 'pending', NULL, NULL, '2026-05-23 15:39:20', NULL, NULL, '2026-05-23 15:39:20', '2026-05-23 16:02:11'),
-(11, 'compo', 'l babakan karet 02/02', 'Moch Bagja Fadillah', '085819994447', 50, 1000.00, '', 'selesai', 3, 'Dewi Lestari', '2026-05-25 23:16:32', '2026-05-25 23:16:41', '2026-05-25 23:16:44', '2026-05-25 16:16:32', '2026-05-25 16:16:44'),
-(12, 'farmer_jual', 'l babakan karet 02/02', 'Moch Bagja Fadillah', '085819994447', 50, 40.00, '', 'selesai', 3, 'Dewi Lestari', '2026-05-26 00:06:27', '2026-05-26 00:06:33', '2026-05-26 00:06:35', '2026-05-25 17:06:27', '2026-05-25 17:06:35');
 
 -- --------------------------------------------------------
 
@@ -557,7 +537,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT untuk tabel `accepted_laporan`
 --
 ALTER TABLE `accepted_laporan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT untuk tabel `announcements`
@@ -575,7 +555,7 @@ ALTER TABLE `compliment_rules`
 -- AUTO_INCREMENT untuk tabel `delivery_order`
 --
 ALTER TABLE `delivery_order`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT untuk tabel `employees`
@@ -593,13 +573,13 @@ ALTER TABLE `farm_price_config`
 -- AUTO_INCREMENT untuk tabel `laporan`
 --
 ALTER TABLE `laporan`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT untuk tabel `laporan_farmer`
 --
 ALTER TABLE `laporan_farmer`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT untuk tabel `marketplace_posts`
