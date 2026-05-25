@@ -4244,12 +4244,15 @@ if (!$currentUserId || !$currentRole) {
                             const jumlah = parseFloat(item.jumlah_used) || 0;
                             const storedRate = parseFloat(item.harga_rate) || null;
                             let gajinya = 0;
+                            let beliCompoForLaporan = 0;
 
                             if (divisi === 'mechanic') {
                                 const rate = storedRate || gajiMekanik;
                                 gajinya = jumlah * rate;
                                 // Value = keuntungan dari mechanic (jumlah_value dari accepted_laporan)
                                 const value = parseFloat(item.jumlah_value) || 0;
+                                // Beli Component = compo_used * harga_per_component (from mechanic_component_price)
+                                beliCompoForLaporan = jumlah * componentPrice;
                                 if (value > 0) {
                                     totalKeuntunganCompo += value;
                                 }
@@ -4258,16 +4261,18 @@ if (!$currentUserId || !$currentRole) {
                                 gajinya = jumlah * rate;
                             }
 
-                            if (gajinya > 0) {
-                                if (divisi === 'mechanic') {
-                                    if (!mechanicData[tgl]) mechanicData[tgl] = { compoUsed: 0, value: 0, beliCompo: 0, gaji: 0 };
-                                    mechanicData[tgl].compoUsed += jumlah;
-                                    mechanicData[tgl].value += parseFloat(item.jumlah_value) || 0;
-                                    mechanicData[tgl].gaji += gajinya;
-                                } else if (divisi === 'farmer') {
-                                    if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
-                                    farmData[tgl].gaji += gajinya;
-                                }
+                            // Untuk mechanic: jika ada compo_used (>0), tetap tambahkan data (untuk Beli Component)
+                            // Untuk farmer: tetap gunakan kondisi gajinya > 0
+                            if (divisi === 'mechanic' && jumlah > 0) {
+                                if (!mechanicData[tgl]) mechanicData[tgl] = { compoUsed: 0, value: 0, beliCompo: 0, gaji: 0 };
+                                mechanicData[tgl].compoUsed += jumlah;
+                                mechanicData[tgl].value += parseFloat(item.jumlah_value) || 0;
+                                mechanicData[tgl].gaji += gajinya;
+                                mechanicData[tgl].beliCompo += beliCompoForLaporan;
+                                totalBeliCompo += beliCompoForLaporan;
+                            } else if (divisi === 'farmer' && gajinya > 0) {
+                                if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
+                                farmData[tgl].gaji += gajinya;
                             }
                         });
                     }
