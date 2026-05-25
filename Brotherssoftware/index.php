@@ -3949,6 +3949,22 @@ if (!$currentUserId || !$currentRole) {
                         </div>
                     </div>
 
+                    <!-- Keuntungan Farm Cards -->
+                    <div class="keu-cards" style="grid-template-columns:repeat(3,1fr);margin-top:15px;">
+                        <div class="keu-card" style="background:#1a3a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Jual Bibit (+)</div>
+                            <div class="keu-card-value income" id="dash-jual-bibit" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Beli Bibit (-)</div>
+                            <div class="keu-card-value expense" id="dash-beli-bibit" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#1a2a3a;">
+                            <div style="font-size:12px;color:#8b949e;">Keuntungan Farm</div>
+                            <div class="keu-card-value balance" id="dash-keuntungan-farm" style="font-size:18px;">$0.00</div>
+                        </div>
+                    </div>
+
                     <!-- Filter -->
                     <div class="keu-filter" style="margin-top:20px;">
                         <select id="dash-filter-periode" onchange="loadDashboard()">
@@ -4088,7 +4104,7 @@ if (!$currentUserId || !$currentRole) {
                 if (!mechanicBody || !farmBody || !cargoBody || !summaryBody) return;
 
                 // Initialize all tables with loading
-                mechanicBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
+                mechanicBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
                 farmBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
                 cargoBody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
                 summaryBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr>';
@@ -4118,6 +4134,7 @@ if (!$currentUserId || !$currentRole) {
                 let beliCompo = 0;
                 let totalKeuntunganCompo = 0;
                 let totalPenjualanBuah = 0;
+                let totalJualBibit = 0;
                 let totalBeliCompo = 0;
                 let totalBeliBibit = 0;
 
@@ -4136,17 +4153,18 @@ if (!$currentUserId || !$currentRole) {
                     const configRes = await fetch('api/farm_price_config_api.php?action=get_all');
                     const configResult = await configRes.json();
                     let configMap = {};
-                    if (configResult.success) {
+                    if (configResult.success && configResult.data) {
                         configResult.data.forEach(item => {
-                            configMap[item.config_key] = parseFloat(item.value) || 0;
+                            configMap[item.config_key] = parseFloat(item.config_value) || 0;
                         });
                     }
-                    const hargaJualBuah = configMap['farm_harga_jual_buah'] || 0;
-                    const hargaBibit = configMap['farm_harga_bibit'] || 0;
-                    const hargaCompo = 0; // Will be loaded from mechanic_component_price table
+                    // Fallback values jika config tidak ada
+                    const hargaJualBuah = configMap['farm_harga_jual_buah'] || 40;
+                    const hargaBibit = configMap['farm_harga_bibit'] || 20;
+                    const hargaCompo = configMap['mechanic_harga_component'] || 1000;
                     const gajiMekanik = configMap['mechanic_gaji_dasar'] || 0;
-                    const gajiBibit = configMap['farm_gaji_per_bibit'] || 0;
-                    const gajiCargo = configMap['cargo_gaji_per_crate'] || 0;
+                    const gajiBibit = configMap['farm_gaji_per_bibit'] || 22;
+                    const gajiCargo = configMap['cargo_gaji_per_crate'] || 63;
 
                     // Load component price from mechanic_component_price table
                     let componentPrice = 1.0;
@@ -4169,63 +4187,71 @@ if (!$currentUserId || !$currentRole) {
                     const deliveryRes = await fetch('api/delivery_order_api.php?action=get_all&status=selesai');
                     const deliveryResult = await deliveryRes.json();
 
+                    // Langsung hitung total penjualan buah dan beli bibit dari delivery orders
+                    // Tanpa filter tanggal untuk dapetin SEMUA data
+                    let debugTotalJualBuah = 0;
+                    let debugTotalBeliBibit = 0;
+                    let debugTotalBeliCompo = 0;
+
                     if (deliveryResult.success && deliveryResult.data.length) {
                         deliveryResult.data.forEach(item => {
-                            const tgl = (item.tanggal_selesai || item.tanggal_input || '').split(' ')[0];
-                            if (!isInRange(tgl)) return;
-
                             const crate = parseInt(item.jumlah_crate) || 0;
-                            const storedHarga = parseFloat(item.harga_snapshot) || null;
+                            const storedHarga = parseFloat(item.harga_snapshot) || 0;
+                            const tgl = (item.tanggal_selesai || item.tanggal_input || '').split(' ')[0];
 
-                            let penjual = 0;
-                            let pengeluara = 0;
-
+                            // Hitung langsung tanpa filter tanggal
                             if (item.jenis_delivery === 'farmer_jual') {
-                                const perBuah = storedHarga || hargaJualBuah;
-                                const buahTotal = crate * 20;
-                                const penjual = buahTotal * perBuah;
-                                totalPenjualanBuah += penjual;
+                                const perBuah = storedHarga > 0 ? storedHarga : (hargaJualBuah > 0 ? hargaJualBuah : 40);
+                                debugTotalJualBuah += crate * 20 * perBuah;
+                                // Tambah ke farmData juga
                                 if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
                                 farmData[tgl].crates += crate;
-                                farmData[tgl].penjualan += penjual;
+                                farmData[tgl].penjualan += crate * 20 * perBuah;
                             } else if (item.jenis_delivery === 'compo') {
-                                // Component price from mechanic_component_price table
-                                // Kerugian dari beli component (hanya untuk keu-card, TIDAK untuk Value tabel)
-                                const compoCount = parseInt(item.jumlah_crate) || 0;
-                                const perCompo = storedHarga || componentPrice;
-                                const pengeluara = compoCount * perCompo;
-                                totalBeliCompo += pengeluara;
+                                const perCompo = storedHarga > 0 ? storedHarga : (componentPrice > 0 ? componentPrice : 1000);
+                                debugTotalBeliCompo += crate * perCompo;
                             } else if (item.jenis_delivery === 'farmer' || item.jenis_delivery === 'farmer_beli') {
-                                const perCrate = storedHarga || hargaBibit;
-                                const pengeluara = crate * perCrate;
-                                totalBeliBibit += pengeluara;
+                                const perBibit = storedHarga > 0 ? storedHarga : (hargaBibit > 0 ? hargaBibit : 20);
+                                debugTotalBeliBibit += crate * perBibit;
                                 if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
                                 farmData[tgl].crates += crate;
-                                farmData[tgl].beliBibit += pengeluara;
+                                farmData[tgl].beliBibit += crate * perBibit;
                             }
 
-                            // Cargo dari semua delivery (kecuali farmer_jual)
+                            // Cargo
                             if (item.jenis_delivery !== 'farmer_jual') {
-                                const gajinya = crate * gajiCargo;
                                 if (!cargoData[tgl]) cargoData[tgl] = { crates: 0, gaji: 0 };
                                 cargoData[tgl].crates += crate;
-                                cargoData[tgl].gaji += gajinya;
+                                cargoData[tgl].gaji += crate * gajiCargo;
                             }
                         });
                     }
+
+                    // Pakai hasil kalkulasi langsung
+                    totalPenjualanBuah = debugTotalJualBuah;
+                    totalBeliBibit = debugTotalBeliBibit;
+                    totalBeliCompo = debugTotalBeliCompo;
 
                     // --- Load Accepted Laporan (Gaji) ---
                     const acceptedRes = await fetch('api/accepted_laporan_api.php?action=get_all');
                     const acceptedResult = await acceptedRes.json();
 
                     if (acceptedResult.success && acceptedResult.data.length) {
-                        acceptedResult.data.forEach(item => {
-                            const tgl = (item.tanggal_laporan || '').split(' ')[0];
-                            if (!isInRange(tgl)) return;
+                        // Debug: log semua tanggal_laporan
+                        console.log('Accepted Laporan dates:', acceptedResult.data.map(i => ({ tanggal_laporan: i.tanggal_laporan, divisi: i.divisi, jumlah: i.jumlah_used })));
 
-                            const divisi = (item.divisi || '').toLowerCase();
+                        acceptedResult.data.forEach(item => {
+                            // AMAN: tanggal_laporan adalah string date 'YYYY-MM-DD'
+                            const tgl = item.tanggal_laporan ? String(item.tanggal_laporan).split(' ')[0] : '';
+
+                            if (!tgl || tgl === 'null' || tgl === 'undefined') {
+                                console.log('Skipped - no valid date:', item);
+                                return;
+                            }
+
+                            const divisi = String(item.divisi || '').toLowerCase();
                             const jumlah = parseFloat(item.jumlah_used) || 0;
-                            const storedRate = parseFloat(item.harga_rate) || null;
+                            const storedRate = parseFloat(item.harga_rate) || 0;
                             let gajinya = 0;
 
                             if (divisi === 'mechanic') {
@@ -4347,6 +4373,11 @@ if (!$currentUserId || !$currentRole) {
                     document.getElementById('dash-profit').textContent = '$' + formatDollar(finalProfit);
                     document.getElementById('dash-profit').className = 'keu-card-value ' + (finalProfit >= 0 ? 'balance' : 'expense');
 
+                    // Keuntungan Farm = Jual Bibit - Beli Bibit
+                    document.getElementById('dash-jual-bibit').textContent = '$' + formatDollar(totalPenjualanBuah);
+                    document.getElementById('dash-beli-bibit').textContent = '$' + formatDollar(totalBeliBibit);
+                    document.getElementById('dash-keuntungan-farm').textContent = '$' + formatDollar(totalPenjualanBuah - totalBeliBibit);
+
                 } catch (e) {
                     mechanicBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
                     farmBody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
@@ -4419,8 +4450,22 @@ if (!$currentUserId || !$currentRole) {
                     const result = await res.json();
                     if (result.success && result.data.length) {
                         result.data.forEach(item => {
+                            // Fix: Gunakan tanggal_laporan, fallback ke tanggal_accept jika kosong/invalid
+                            let tanggalFix = item.tanggal_laporan || '';
+                            // Jika tanggal_laporan kosong atau 0000-00-00, gunakan tanggal_accept
+                            if (!tanggalFix || tanggalFix === '0000-00-00' || tanggalFix === 'null') {
+                                // Ambil tanggal dari tanggal_accept (format: 'YYYY-MM-DD HH:MM:SS')
+                                const acceptDate = item.tanggal_accept || '';
+                                tanggalFix = acceptDate.split(' ')[0]; // Ambil bagian date saja
+                            }
+                            // Jika masih kosong, gunakan created_at
+                            if (!tanggalFix || tanggalFix === '0000-00-00') {
+                                const createdDate = item.created_at || '';
+                                tanggalFix = createdDate.split(' ')[0];
+                            }
+
                             allRows.push({
-                                tanggal: item.tanggal_laporan || '',
+                                tanggal: tanggalFix,
                                 nama: item.nama_karyawan || '-',
                                 divisi: (item.divisi || '').toLowerCase(),
                                 jumlah: parseFloat(item.jumlah_used) || 0,

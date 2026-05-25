@@ -59,7 +59,9 @@ switch ($action) {
         $jumlah_used = $_POST['jumlah_used'] ?? 0;
         $jumlah_value = $_POST['jumlah_value'] ?? 0;
         $keterangan = $_POST['keterangan'] ?? '';
-        $tanggal_laporan = $_POST['tanggal_laporan'] ?? date('Y-m-d');
+        // Handle empty string - use current date
+        $tanggal_laporan_input = $_POST['tanggal_laporan'] ?? '';
+        $tanggal_laporan = (!empty($tanggal_laporan_input) && $tanggal_laporan_input !== 'null') ? $tanggal_laporan_input : date('Y-m-d');
         $accepted_by = $_POST['accepted_by'] ?? 'Admin';
 
         if (empty($source_type) || empty($source_id)) {
@@ -95,10 +97,11 @@ switch ($action) {
             }
         }
 
-        $stmt = $pdo->prepare("INSERT INTO accepted_laporan (source_type, source_id, nama_karyawan, divisi, jumlah_used, jumlah_value, keterangan, tanggal_laporan, accepted_by, harga_rate) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        // Insert with tanggal_laporan
+        $stmt = $pdo->prepare("INSERT INTO accepted_laporan (source_type, source_id, nama_karyawan, divisi, jumlah_used, jumlah_value, keterangan, tanggal_laporan, accepted_by, harga_rate, tanggal_accept) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())");
         $stmt->execute([$source_type, $source_id, $nama_karyawan, $divisi, $jumlah_used, $jumlah_value, $keterangan, $tanggal_laporan, $accepted_by, $harga_rate]);
 
-        echo json_encode(['success' => true, 'message' => 'Laporan berhasil di-accept!', 'harga_rate' => $harga_rate]);
+        echo json_encode(['success' => true, 'message' => 'Laporan berhasil di-accept!', 'harga_rate' => $harga_rate, 'tanggal_laporan' => $tanggal_laporan]);
         break;
 
     // Get completed cargo deliveries for gaji calculation
@@ -185,6 +188,21 @@ switch ($action) {
         }
 
         echo json_encode(['success' => true, 'message' => "Migrated $updated accepted_laporan records", 'updated' => $updated]);
+        break;
+
+    // Fix incorrect dates (0000-00-00 or null)
+    case 'fix_dates':
+        $updated = 0;
+        try {
+            // Update records where tanggal_laporan is invalid
+            $stmt = $pdo->prepare("UPDATE accepted_laporan SET tanggal_laporan = DATE(tanggal_accept) WHERE tanggal_laporan IS NULL OR tanggal_laporan = '0000-00-00' OR tanggal_laporan = ''");
+            $stmt->execute();
+            $updated = $stmt->rowCount();
+        } catch (PDOException $e) {
+            echo json_encode(['success' => false, 'message' => 'Failed to fix dates: ' . $e->getMessage()]);
+            exit;
+        }
+        echo json_encode(['success' => true, 'message' => "Fixed $updated records with invalid dates", 'updated' => $updated]);
         break;
 
     default:
