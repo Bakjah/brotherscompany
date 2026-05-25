@@ -59,7 +59,9 @@ switch ($action) {
         $compo_used = intval($_POST['compo_used'] ?? 0);
         $money_stored = floatval($_POST['money_stored'] ?? 0);
         $keterangan = $_POST['keterangan'] ?? '';
-        $tanggal = $_POST['tanggal'] ?? date('Y-m-d');
+        $tanggal_input = $_POST['tanggal'] ?? '';
+        // Use provided tanggal, or fallback to current date
+        $tanggal = (!empty($tanggal_input)) ? $tanggal_input : date('Y-m-d');
 
         if (empty($nama_karyawan)) {
             echo json_encode(['success' => false, 'message' => 'Nama harus diisi']);

@@ -59,9 +59,13 @@ switch ($action) {
         $jumlah_used = $_POST['jumlah_used'] ?? 0;
         $jumlah_value = $_POST['jumlah_value'] ?? 0;
         $keterangan = $_POST['keterangan'] ?? '';
-        // Handle empty string - use current date
+        // Handle tanggal_laporan - if empty, null, or 'null' string, use current date
         $tanggal_laporan_input = $_POST['tanggal_laporan'] ?? '';
-        $tanggal_laporan = (!empty($tanggal_laporan_input) && $tanggal_laporan_input !== 'null') ? $tanggal_laporan_input : date('Y-m-d');
+        if (empty($tanggal_laporan_input) || $tanggal_laporan_input === 'null' || $tanggal_laporan_input === 'undefined') {
+            $tanggal_laporan = date('Y-m-d'); // Default to current date
+        } else {
+            $tanggal_laporan = $tanggal_laporan_input;
+        }
         $accepted_by = $_POST['accepted_by'] ?? 'Admin';
 
         if (empty($source_type) || empty($source_id)) {

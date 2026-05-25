@@ -1881,7 +1881,13 @@ if (!$currentUserId || !$currentRole) {
                         fd.append('compo_used', compo);
                         fd.append('money_stored', money);
                         fd.append('keterangan', keterangan);
-                        fd.append('tanggal', new Date().toISOString().split('T')[0]);
+                        // Get current date in YYYY-MM-DD format (local timezone)
+                        function getToday() {
+                            const d = new Date();
+                            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                        }
+                        const today = getToday();
+                        fd.append('tanggal', today); // YYYY-MM-DD format - real time date
 
                         const res = await fetch('api/laporan_api.php', { method: 'POST', body: fd });
                         const result = await res.json();
@@ -4176,6 +4182,15 @@ if (!$currentUserId || !$currentRole) {
                         }
                     } catch (e) { /* use default 1.0 */ }
 
+                    // Helper function untuk get tanggal sekarang (local timezone)
+                    function getLocalDate() {
+                        const now = new Date();
+                        const year = now.getFullYear();
+                        const month = String(now.getMonth() + 1).padStart(2, '0');
+                        const day = String(now.getDate()).padStart(2, '0');
+                        return year + '-' + month + '-' + day;
+                    }
+
                     // Helper function to check date range
                     function isInRange(tgl) {
                         if (!tgl) return false;
@@ -5532,7 +5547,13 @@ if (!$currentUserId || !$currentRole) {
                         fd.append('bibit_used', bibit);
                         fd.append('panen_hasil', panen);
                         fd.append('keterangan', keterangan);
-                        fd.append('tanggal', new Date().toISOString().split('T')[0]);
+                        // Get current date in YYYY-MM-DD format (local timezone)
+                        function getToday() {
+                            const d = new Date();
+                            return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                        }
+                        const today = getToday();
+                        fd.append('tanggal', today); // YYYY-MM-DD format - real time date
 
                         const res = await fetch('api/laporan_farmer_api.php', { method: 'POST', body: fd });
                         const result = await res.json();
