@@ -54,16 +54,28 @@ $featured_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as tot
       <div class="card" style="text-align: center;">
         <h4>👥 Users</h4>
         <p style="font-size: 2rem; color: #1e40af; font-weight: bold;">
-          <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users")); ?>
+          <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users WHERE username NOT LIKE 'deleted_%'")); ?>
         </p>
         <a href="users.php" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Manage</a>
+      </div>
+      <div class="card" style="text-align: center;">
+        <h4>🗂️ File Uploads</h4>
+        <p style="font-size: 2rem; color: #1e40af; font-weight: bold;">
+          <?php
+          $uploads_dir = '../assets/uploads';
+          $file_count = is_dir($uploads_dir) ? count(array_filter(scandir($uploads_dir), fn($f) => $f !== '.' && $f !== '..' && is_file($uploads_dir . '/' . $f))) : 0;
+          echo $file_count;
+          ?>
+        </p>
+        <a href="uploads.php" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Manage</a>
       </div>
     </div>
 
     <div class="card" style="margin-top: 2rem;">
       <h3>📋 Admin Functions</h3>
       <ul style="margin: 1rem 0; padding-left: 2rem;">
-        <li><a href="users.php">👥 Manage Users (Roles & Status)</a></li>
+        <li><a href="users.php">👥 Manage Users (Roles & Delete)</a></li>
+        <li><a href="uploads.php">🗂️ Manage File Uploads (Delete Images)</a></li>
         <li><a href="featured-marketplace.php">⭐ Manage Featured Marketplace (VIP)</a></li>
         <li><a href="announcements.php">📢 Manage Announcements (Create/Delete)</a></li>
         <li><a href="marketplace.php">🛒 Delete Marketplace Posts</a></li>
