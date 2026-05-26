@@ -1,13 +1,17 @@
 <?php
+// Auto-detect: localhost = root, hosting = brothers_company
+$is_localhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', '::1']) ||
+                strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false;
+
 $db_host = 'localhost';
-$db_user = 'root';
-$db_pass = '';
-$db_name = 'brothers_company_db';
+$db_user = $is_localhost ? 'root' : 'brothers_company';
+$db_pass = $is_localhost ? '' : '#?12jj16op';
+$db_name = 'brothers_company';
 
 $conn = mysqli_connect($db_host, $db_user, $db_pass, $db_name);
 
 if (!$conn) {
-    die("Database not found. Create database 'brothers_company_db' first!");
+    die("Database not found. Buat database 'brothers_company' dulu di hosting!");
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

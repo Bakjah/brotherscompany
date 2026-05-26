@@ -56,12 +56,14 @@ $featured_count = mysqli_fetch_assoc(mysqli_query($conn, "SELECT COUNT(*) as tot
         <p style="font-size: 2rem; color: #1e40af; font-weight: bold;">
           <?php echo mysqli_num_rows(mysqli_query($conn, "SELECT * FROM users")); ?>
         </p>
+        <a href="users.php" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Manage</a>
       </div>
     </div>
 
     <div class="card" style="margin-top: 2rem;">
       <h3>📋 Admin Functions</h3>
       <ul style="margin: 1rem 0; padding-left: 2rem;">
+        <li><a href="users.php">👥 Manage Users (Roles & Status)</a></li>
         <li><a href="featured-marketplace.php">⭐ Manage Featured Marketplace (VIP)</a></li>
         <li><a href="announcements.php">📢 Manage Announcements (Create/Delete)</a></li>
         <li><a href="marketplace.php">🛒 Delete Marketplace Posts</a></li>

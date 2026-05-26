@@ -6241,13 +6241,14 @@ if (!$currentUserId || !$currentRole) {
                 <div class="fm-section" id="fm-tugas">
                     <div class="fm-form">
                         <div style="font-size:11px;color:#8b949e;margin-bottom:10px;">📝 Tambah Tugas Baru - <span id="fm-tanggal-label" style="color:#4db84d;font-weight:bold;"></span></div>
+                        <div id="fm-tugas-success" style="display:none;background:#238636;color:#fff;padding:8px 12px;border-radius:6px;margin-bottom:10px;font-size:12px;">✅ Tugas berhasil ditambahkan!</div>
                         <div class="fm-form-row">
                             <input type="date" id="fm-tugas-tanggal" style="flex:1;">
                             <input type="time" id="fm-tugas-mulai" value="08:00" placeholder="Jam mulai" style="flex:1;">
                             <span style="color:#8b949e;padding:0 5px;">-</span>
                             <input type="time" id="fm-tugas-selesai" value="09:00" placeholder="Jam selesai" style="flex:1;">
-                            <input type="text" id="fm-tugas-nama" placeholder="Nama tugas..." style="flex:2;">
-                            <button onclick="addFmTugas()">➕</button>
+                            <input type="text" id="fm-tugas-nama" placeholder="Nama tugas..." style="flex:2;" onkeydown="if(event.key==='Enter'){event.preventDefault();addFmTugas();}">
+                            <button type="button" onclick="addFmTugas()">➕</button>
                         </div>
                         <div style="margin-bottom:10px;display:flex;gap:10px;align-items:center;">
                             <span style="font-size:12px;color:#8b949e;">📅 Filter:</span>
@@ -6316,11 +6317,17 @@ if (!$currentUserId || !$currentRole) {
             }
 
             async function addFmTugas() {
+                const btn = event.target;
+                if (btn.disabled) return;
+                btn.disabled = true;
+                setTimeout(() => btn.disabled = false, 1500);
+
                 const tanggal = document.getElementById('fm-tugas-tanggal').value;
                 const jamMulai = document.getElementById('fm-tugas-mulai').value;
                 const jamSelesai = document.getElementById('fm-tugas-selesai').value;
                 const tugas = document.getElementById('fm-tugas-nama').value;
 
+                if (!tanggal) { alert('Tanggal harus diisi!'); return; }
                 if (!tugas) { alert('Nama tugas harus diisi!'); return; }
                 if (!jamMulai || !jamSelesai) { alert('Jam mulai dan selesai harus diisi!'); return; }
 

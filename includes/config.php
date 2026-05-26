@@ -1,7 +1,11 @@
 <?php
+// Auto-detect: localhost = root, hosting = brothers_company
+$is_localhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', '::1']) ||
+                strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false;
+
 define('DB_HOST', 'localhost');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_USER', $is_localhost ? 'root' : 'brothers_company');
+define('DB_PASS', $is_localhost ? '' : '#?12jj16op');
 define('DB_NAME', 'brothers_company');
 
 ini_set('display_errors', 1);

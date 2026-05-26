@@ -7,10 +7,14 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
+// Auto-detect: localhost = root, hosting = brothers_company
+$is_localhost = in_array($_SERVER['HTTP_HOST'] ?? '', ['localhost', '127.0.0.1', '::1']) ||
+                strpos($_SERVER['HTTP_HOST'] ?? '', 'localhost') !== false;
+
 $host = 'localhost';
 $dbname = 'brothers_company';
-$username = 'root';
-$password = '';
+$username = $is_localhost ? 'root' : 'brothers_company';
+$password = $is_localhost ? '' : '#?12jj16op';
 
 try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
