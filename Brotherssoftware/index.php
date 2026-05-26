@@ -3940,7 +3940,7 @@ if (!$currentUserId || !$currentRole) {
                     </div>
 
                     <!-- Summary Cards -->
-                    <div class="keu-cards" style="grid-template-columns:repeat(3,1fr);">
+                    <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);">
                         <div class="keu-card" style="background:#1a3a1a;">
                             <div style="font-size:12px;color:#8b949e;">Keuntungan Compo (+)</div>
                             <div class="keu-card-value income" id="dash-keuntungan-compo" style="font-size:18px;">$0.00</div>
@@ -3949,6 +3949,10 @@ if (!$currentUserId || !$currentRole) {
                             <div style="font-size:12px;color:#8b949e;">Beli Component (-)</div>
                             <div class="keu-card-value expense" id="dash-beli-compo" style="font-size:18px;">$0.00</div>
                         </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Gaji Mechanic (-)</div>
+                            <div class="keu-card-value expense" id="dash-gaji-mekanik" style="font-size:18px;">$0.00</div>
+                        </div>
                         <div class="keu-card" style="background:#1a2a3a;">
                             <div style="font-size:12px;color:#8b949e;">Keuntungan Workshop</div>
                             <div class="keu-card-value balance" id="dash-profit" style="font-size:18px;">$0.00</div>
@@ -3956,7 +3960,7 @@ if (!$currentUserId || !$currentRole) {
                     </div>
 
                     <!-- Keuntungan Farm Cards -->
-                    <div class="keu-cards" style="grid-template-columns:repeat(3,1fr);margin-top:15px;">
+                    <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);margin-top:15px;">
                         <div class="keu-card" style="background:#1a3a1a;">
                             <div style="font-size:12px;color:#8b949e;">Jual Bibit (+)</div>
                             <div class="keu-card-value income" id="dash-jual-bibit" style="font-size:18px;">$0.00</div>
@@ -3964,6 +3968,10 @@ if (!$currentUserId || !$currentRole) {
                         <div class="keu-card" style="background:#2a1a1a;">
                             <div style="font-size:12px;color:#8b949e;">Beli Bibit (-)</div>
                             <div class="keu-card-value expense" id="dash-beli-bibit" style="font-size:18px;">$0.00</div>
+                        </div>
+                        <div class="keu-card" style="background:#2a1a1a;">
+                            <div style="font-size:12px;color:#8b949e;">Gaji Farmer (-)</div>
+                            <div class="keu-card-value expense" id="dash-gaji-farmer" style="font-size:18px;">$0.00</div>
                         </div>
                         <div class="keu-card" style="background:#1a2a3a;">
                             <div style="font-size:12px;color:#8b949e;">Keuntungan Farm</div>
@@ -3988,7 +3996,7 @@ if (!$currentUserId || !$currentRole) {
                     <!-- Profit Table - Mechanic -->
                     <h3 style="color:#e3b341;margin:20px 0 10px 0;">🔧 Rincian Mechanic per Tanggal</h3>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Compo Used</th><th>Value / Keuntungan</th><th>Gaji Mechanic (-)</th><th>Profit</th></tr></thead>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Compo Used</th><th>Value / Keuntungan</th><th>Beli Component (-)</th><th>Gaji Mechanic (-)</th></tr></thead>
                         <tbody id="dash-mechanic-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                         <tfoot id="dash-mechanic-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
                     </table>
@@ -3996,23 +4004,23 @@ if (!$currentUserId || !$currentRole) {
                     <!-- Profit Table - Farm -->
                     <h3 style="color:#3fb950;margin:20px 0 10px 0;">🌱 Rincian Farm per Tanggal</h3>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Penjualan Buah (+)</th><th>Beli Bibit (-)</th><th>Gaji Farmer (-)</th><th>Profit</th></tr></thead>
-                        <tbody id="dash-farm-body"><tr><td colspan="7" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Penjualan Buah (+)</th><th>Beli Bibit (-)</th><th>Gaji Farmer (-)</th></tr></thead>
+                        <tbody id="dash-farm-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                         <tfoot id="dash-farm-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
                     </table>
 
                     <!-- Profit Table - Cargo -->
                     <h3 style="color:#58a6ff;margin:20px 0 10px 0;">🚚 Rincian Cargo per Tanggal</h3>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Gaji Cargo (-)</th><th>Profit</th></tr></thead>
-                        <tbody id="dash-cargo-body"><tr><td colspan="5" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Crates</th><th>Gaji Cargo (-)</th></tr></thead>
+                        <tbody id="dash-cargo-body"><tr><td colspan="4" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                         <tfoot id="dash-cargo-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
                     </table>
 
                     <!-- Profit Table - Summary All -->
                     <h3 style="color:#f778ba;margin:20px 0 10px 0;">💰 Summary All per Tanggal</h3>
                     <table class="keu-table">
-                        <thead><tr><th>No</th><th>Tanggal</th><th>Mechanic Profit</th><th>Farm Profit</th><th>Cargo Profit</th><th>Total Profit</th></tr></thead>
+                        <thead><tr><th>No</th><th>Tanggal</th><th>Workshop Profit</th><th>Farm Profit</th><th>Cargo Profit</th><th>Total Profit</th></tr></thead>
                         <tbody id="dash-summary-body"><tr><td colspan="6" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
                         <tfoot id="dash-summary-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
                     </table>
@@ -4022,12 +4030,6 @@ if (!$currentUserId || !$currentRole) {
                 <div class="keu-tab-content" id="content-gaji">
                     <div class="keu-header">
                         <h2 class="keu-title">💰 Daftar Gaji - Accepted & Cargo Selesai</h2>
-                    </div>
-                    <div class="keu-cards">
-                        <div class="keu-card"><div class="keu-card-value balance" id="keu-total-gaji">$0.00</div><div class="keu-card-label">Total Gaji</div></div>
-                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-mekanik">$0.00</div><div class="keu-card-label">Gaji Mechanic</div></div>
-                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-farmer">$0.00</div><div class="keu-card-label">Gaji Farmer</div></div>
-                        <div class="keu-card"><div class="keu-card-value income" id="keu-total-cargo">$0.00</div><div class="keu-card-label">Gaji Cargo</div></div>
                     </div>
                     <div class="keu-filter">
                         <select id="keu-filter-bulan" onchange="loadGajiKeuangan()">
@@ -4047,6 +4049,7 @@ if (!$currentUserId || !$currentRole) {
                     <table class="keu-table">
                         <thead><tr><th>No</th><th>Tanggal</th><th>Nama Karyawan</th><th>Divisi</th><th>Jumlah Used</th><th>Rate Gaji</th><th>Total Gaji</th><th>Aksi</th></tr></thead>
                         <tbody id="gaji-table-body"><tr><td colspan="8" style="text-align:center;color:#8b949e;">Memuat...</td></tr></tbody>
+                        <tfoot id="gaji-table-foot" style="font-weight:bold;color:#c9d1d9;"></tfoot>
                     </table>
                     <div style="margin-top:10px;text-align:right;font-size:12px;color:#8b949e;">
                         * Mechanic = Comp Used x Gaji/Comp | Farmer = Bibit Used x Gaji/Bibit | Cargo = Crate Selesai x Gaji/Crate
@@ -4057,12 +4060,6 @@ if (!$currentUserId || !$currentRole) {
                 <div class="keu-tab-content" id="content-laporan">
                     <div class="keu-header">
                         <h2 class="keu-title">📊 Laporan Keuangan Brothers Company</h2>
-                    </div>
-                    <div class="keu-cards" style="grid-template-columns:repeat(4,1fr);">
-                        <div class="keu-card"><div class="keu-card-value income" id="lap-total-pemasukan">$0.00</div><div class="keu-card-label">Total Pendapatan (+)</div></div>
-                        <div class="keu-card"><div class="keu-card-value income" id="lap-penjualan-buah">$0.00</div><div class="keu-card-label">Penjualan Buah (+)</div></div>
-                        <div class="keu-card"><div class="keu-card-value expense" id="lap-penjualan-compo">$0.00</div><div class="keu-card-label">Beli Component (-)</div></div>
-                        <div class="keu-card"><div class="keu-card-value expense" id="lap-total-pengeluaran">$0.00</div><div class="keu-card-label">Total Pengeluaran (-)</div></div>
                     </div>
                     <div class="keu-filter">
                         <select id="lap-filter-bulan" onchange="loadLaporanKeuangan()">
@@ -4145,7 +4142,7 @@ if (!$currentUserId || !$currentRole) {
                 let totalBeliBibit = 0;
 
                 // Data per divisi
-                const mechanicData = {}; // { tanggal: { compoUsed, value, gaji } }
+                const mechanicData = {}; // { tanggal: { compoUsed, value, beliCompo, gaji } }
                 const farmData = {};     // { tanggal: { crates, penjualan, beliBibit, gaji } }
                 const cargoData = {};    // { tanggal: { crates, gaji } }
 
@@ -4214,17 +4211,18 @@ if (!$currentUserId || !$currentRole) {
                             const storedHarga = parseFloat(item.harga_snapshot) || 0;
                             const tgl = (item.tanggal_selesai || item.tanggal_input || '').split(' ')[0];
 
-                            // Hitung langsung tanpa filter tanggal
                             if (item.jenis_delivery === 'farmer_jual') {
                                 const perBuah = storedHarga > 0 ? storedHarga : (hargaJualBuah > 0 ? hargaJualBuah : 40);
                                 debugTotalJualBuah += crate * 20 * perBuah;
-                                // Tambah ke farmData juga
                                 if (!farmData[tgl]) farmData[tgl] = { crates: 0, penjualan: 0, beliBibit: 0, gaji: 0 };
                                 farmData[tgl].crates += crate;
                                 farmData[tgl].penjualan += crate * 20 * perBuah;
                             } else if (item.jenis_delivery === 'compo') {
                                 const perCompo = storedHarga > 0 ? storedHarga : (componentPrice > 0 ? componentPrice : 1000);
                                 debugTotalBeliCompo += crate * perCompo;
+                                // Tambah ke mechanicData untuk tabel Beli Component
+                                if (!mechanicData[tgl]) mechanicData[tgl] = { compoUsed: 0, value: 0, beliCompo: 0, gaji: 0 };
+                                mechanicData[tgl].beliCompo += crate * perCompo;
                             } else if (item.jenis_delivery === 'farmer' || item.jenis_delivery === 'farmer_beli') {
                                 const perBibit = storedHarga > 0 ? storedHarga : (hargaBibit > 0 ? hargaBibit : 20);
                                 debugTotalBeliBibit += crate * perBibit;
@@ -4233,12 +4231,10 @@ if (!$currentUserId || !$currentRole) {
                                 farmData[tgl].beliBibit += crate * perBibit;
                             }
 
-                            // Cargo
-                            if (item.jenis_delivery !== 'farmer_jual') {
-                                if (!cargoData[tgl]) cargoData[tgl] = { crates: 0, gaji: 0 };
-                                cargoData[tgl].crates += crate;
-                                cargoData[tgl].gaji += crate * gajiCargo;
-                            }
+                            // SEMUA delivery masuk cargo (termasuk farmer_jual)
+                            if (!cargoData[tgl]) cargoData[tgl] = { crates: 0, gaji: 0 };
+                            cargoData[tgl].crates += crate;
+                            cargoData[tgl].gaji += crate * gajiCargo;
                         });
                     }
 
@@ -4246,6 +4242,11 @@ if (!$currentUserId || !$currentRole) {
                     totalPenjualanBuah = debugTotalJualBuah;
                     totalBeliBibit = debugTotalBeliBibit;
                     totalBeliCompo = debugTotalBeliCompo;
+
+                    console.log('=== DEBUG CARGO ===');
+                    console.log('Delivery count:', deliveryResult.data.length);
+                    console.log('cargoData after delivery:', JSON.stringify(cargoData));
+                    console.log('gajiCargo:', gajiCargo);
 
                     // --- Load Accepted Laporan (Gaji) ---
                     const acceptedRes = await fetch('api/accepted_laporan_api.php?action=get_all');
@@ -4303,22 +4304,21 @@ if (!$currentUserId || !$currentRole) {
                     // Render Mechanic Table
                     let mHtml = '';
                     let mNo = 1;
-                    let mTotalComp = 0, mTotalValue = 0, mTotalGaji = 0;
+                    let mTotalComp = 0, mTotalValue = 0, mTotalBeliCompo = 0, mTotalGaji = 0;
                     sortedDates.forEach(tgl => {
                         const d = mechanicData[tgl];
                         if (!d) return;
-                        const profit = d.value - d.gaji;
                         mTotalComp += d.compoUsed;
                         mTotalValue += d.value;
+                        mTotalBeliCompo += d.beliCompo || 0;
                         mTotalGaji += d.gaji;
-                        totalMechanicProfit += profit;
                         const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        mHtml += '<tr><td style="text-align:center;">' + mNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.compoUsed + '</td><td style="color:#4db84d;">$' + formatDollar(d.value) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:' + (profit >= 0 ? '#4db84d' : '#f85149') + ';">' + (profit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        mHtml += '<tr><td style="text-align:center;">' + mNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.compoUsed + '</td><td style="color:#4db84d;">$' + formatDollar(d.value) + '</td><td style="color:#f85149;">-$' + formatDollar(d.beliCompo || 0) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td></tr>';
                         mNo++;
                     });
                     if (!mHtml) mHtml = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Belum ada data Mechanic</td></tr>';
                     mechanicBody.innerHTML = mHtml;
-                    document.getElementById('dash-mechanic-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + mTotalComp + '</td><td style="color:#4db84d;">$' + formatDollar(mTotalValue) + '</td><td style="color:#f85149;">-$' + formatDollar(mTotalGaji) + '</td><td style="color:' + (totalMechanicProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalMechanicProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalMechanicProfit)) + '</td></tr>';
+                    document.getElementById('dash-mechanic-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + mTotalComp + '</td><td style="color:#4db84d;">$' + formatDollar(mTotalValue) + '</td><td style="color:#f85149;">-$' + formatDollar(mTotalBeliCompo) + '</td><td style="color:#f85149;">-$' + formatDollar(mTotalGaji) + '</td></tr>';
 
                     // Render Farm Table
                     let fHtml = '';
@@ -4327,48 +4327,47 @@ if (!$currentUserId || !$currentRole) {
                     sortedDates.forEach(tgl => {
                         const d = farmData[tgl];
                         if (!d) return;
-                        const profit = d.penjualan - d.beliBibit - d.gaji;
                         fTotalCrate += d.crates;
                         fTotalJual += d.penjualan;
                         fTotalBibit += d.beliBibit;
                         fTotalGaji += d.gaji;
-                        totalFarmProfit += profit;
                         const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        fHtml += '<tr><td style="text-align:center;">' + fNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.crates + '</td><td style="color:#4db84d;">$' + formatDollar(d.penjualan) + '</td><td style="color:#f85149;">-$' + formatDollar(d.beliBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:' + (profit >= 0 ? '#4db84d' : '#f85149') + ';">' + (profit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        fHtml += '<tr><td style="text-align:center;">' + fNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.crates + '</td><td style="color:#4db84d;">$' + formatDollar(d.penjualan) + '</td><td style="color:#f85149;">-$' + formatDollar(d.beliBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td></tr>';
                         fNo++;
                     });
-                    if (!fHtml) fHtml = '<tr><td colspan="7" style="text-align:center;color:#8b949e;">Belum ada data Farm</td></tr>';
+                    if (!fHtml) fHtml = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">Belum ada data Farm</td></tr>';
                     farmBody.innerHTML = fHtml;
-                    document.getElementById('dash-farm-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + fTotalCrate + '</td><td style="color:#4db84d;">$' + formatDollar(fTotalJual) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalGaji) + '</td><td style="color:' + (totalFarmProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalFarmProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalFarmProfit)) + '</td></tr>';
+                    document.getElementById('dash-farm-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + fTotalCrate + '</td><td style="color:#4db84d;">$' + formatDollar(fTotalJual) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalBibit) + '</td><td style="color:#f85149;">-$' + formatDollar(fTotalGaji) + '</td></tr>';
 
                     // Render Cargo Table
                     let cHtml = '';
                     let cNo = 1;
                     let cTotalCrate = 0, cTotalGaji = 0;
-                    sortedDates.forEach(tgl => {
+                    console.log('Cargo data:', cargoData);
+                    Object.keys(cargoData).sort().reverse().forEach(tgl => {
                         const d = cargoData[tgl];
                         if (!d) return;
-                        const profit = -d.gaji;
-                        cTotalCrate += d.crates;
-                        cTotalGaji += d.gaji;
-                        totalCargoProfit += profit;
+                        cTotalCrate += d.crates || 0;
+                        cTotalGaji += d.gaji || 0;
                         const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
-                        cHtml += '<tr><td style="text-align:center;">' + cNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + d.crates + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji) + '</td><td style="color:#f85149;">-$' + formatDollar(Math.abs(profit)) + '</td></tr>';
+                        cHtml += '<tr><td style="text-align:center;">' + cNo + '</td><td>' + tglFormatted + '</td><td style="text-align:center;">' + (d.crates || 0) + '</td><td style="color:#f85149;">-$' + formatDollar(d.gaji || 0) + '</td></tr>';
                         cNo++;
                     });
-                    if (!cHtml) cHtml = '<tr><td colspan="5" style="text-align:center;color:#8b949e;">Belum ada data Cargo</td></tr>';
+                    console.log('Cargo HTML generated:', cNo - 1, 'rows');
+                    if (!cHtml) cHtml = '<tr><td colspan="4" style="text-align:center;color:#8b949e;">Belum ada data Cargo</td></tr>';
                     cargoBody.innerHTML = cHtml;
-                    document.getElementById('dash-cargo-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + cTotalCrate + '</td><td style="color:#f85149;">-$' + formatDollar(cTotalGaji) + '</td><td style="color:#f85149;">-$' + formatDollar(Math.abs(totalCargoProfit)) + '</td></tr>';
+                    document.getElementById('dash-cargo-foot').innerHTML = '<tr><td colspan="2">TOTAL</td><td style="text-align:center;">' + cTotalCrate + '</td><td style="color:#f85149;">-$' + formatDollar(cTotalGaji) + '</td></tr>';
 
                     // Render Summary Table
                     let sHtml = '';
                     let sNo = 1;
                     sortedDates.forEach(tgl => {
-                        const m = mechanicData[tgl] || { value: 0, gaji: 0 };
+                        const m = mechanicData[tgl] || { value: 0, beliCompo: 0, gaji: 0 };
                         const f = farmData[tgl] || { penjualan: 0, beliBibit: 0, gaji: 0 };
                         const c = cargoData[tgl] || { gaji: 0 };
-                        const mProfit = m.value - m.gaji;
-                        const fProfit = f.penjualan - f.beliBibit - f.gaji;
+                        // Workshop Profit = Keuntungan compo - Beli Component - Gaji Mechanic
+                        const mProfit = (m.value || 0) - (m.beliCompo || 0) - (m.gaji || 0);
+                        const fProfit = (f.penjualan || 0) - (f.beliBibit || 0) - (f.gaji || 0);
                         const cProfit = -(c.gaji || 0);
                         const totalProfit = mProfit + fProfit + cProfit;
                         const tglFormatted = new Date(tgl).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
@@ -4381,17 +4380,27 @@ if (!$currentUserId || !$currentRole) {
                     document.getElementById('dash-summary-foot').innerHTML = '<tr><td colspan="2" style="text-align:right;">GRAND TOTAL</td><td style="color:' + (totalMechanicProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalMechanicProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalMechanicProfit)) + '</td><td style="color:' + (totalFarmProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalFarmProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalFarmProfit)) + '</td><td style="color:' + (totalCargoProfit >= 0 ? '#4db84d' : '#f85149') + ';">' + (totalCargoProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(totalCargoProfit)) + '</td><td style="color:' + (grandTotalProfit >= 0 ? '#4db84d' : '#f85149') + ';font-weight:bold;font-size:14px;">' + (grandTotalProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(grandTotalProfit)) + '</td></tr>';
 
                     // Update summary cards
-                    // Keuntungan Workshop = Keuntungan Compo (+) - Beli Component (-)
-                    const finalProfit = totalKeuntunganCompo - totalBeliCompo;
+                    // Hitung Gaji dulu
+                    let totalGajiMekanik = 0;
+                    let totalGajiFarmer = 0;
+                    Object.values(mechanicData).forEach(d => { totalGajiMekanik += (d.gaji || 0); });
+                    Object.values(farmData).forEach(d => { totalGajiFarmer += (d.gaji || 0); });
+
+                    // Keuntungan Workshop = Keuntungan Compo - Beli Component - Gaji Mechanic
+                    const finalProfit = totalKeuntunganCompo - totalBeliCompo - totalGajiMekanik;
                     document.getElementById('dash-keuntungan-compo').textContent = '$' + formatDollar(totalKeuntunganCompo);
                     document.getElementById('dash-beli-compo').textContent = '$' + formatDollar(totalBeliCompo);
-                    document.getElementById('dash-profit').textContent = '$' + formatDollar(finalProfit);
-                    document.getElementById('dash-profit').className = 'keu-card-value ' + (finalProfit >= 0 ? 'balance' : 'expense');
+                    document.getElementById('dash-gaji-mekanik').textContent = '-$' + formatDollar(totalGajiMekanik);
+                    document.getElementById('dash-profit').textContent = (finalProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(finalProfit));
+                    document.getElementById('dash-profit').className = 'keu-card-value ' + (finalProfit >= 0 ? 'income' : 'expense');
 
-                    // Keuntungan Farm = Jual Bibit - Beli Bibit
+                    // Keuntungan Farm = Jual Bibit - Beli Bibit - Gaji Farmer
+                    const farmProfit = totalPenjualanBuah - totalBeliBibit - totalGajiFarmer;
                     document.getElementById('dash-jual-bibit').textContent = '$' + formatDollar(totalPenjualanBuah);
                     document.getElementById('dash-beli-bibit').textContent = '$' + formatDollar(totalBeliBibit);
-                    document.getElementById('dash-keuntungan-farm').textContent = '$' + formatDollar(totalPenjualanBuah - totalBeliBibit);
+                    document.getElementById('dash-gaji-farmer').textContent = '-$' + formatDollar(totalGajiFarmer);
+                    document.getElementById('dash-keuntungan-farm').textContent = (farmProfit >= 0 ? '+$' : '-$') + formatDollar(Math.abs(farmProfit));
+                    document.getElementById('dash-keuntungan-farm').className = 'keu-card-value ' + (farmProfit >= 0 ? 'income' : 'expense');
 
                 } catch (e) {
                     mechanicBody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#f85149;">Error: ' + e.message + '</td></tr>';
@@ -4516,10 +4525,6 @@ if (!$currentUserId || !$currentRole) {
 
                     if (!allRows.length) {
                         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
-                        document.getElementById('keu-total-gaji').textContent = '$0.00';
-                        document.getElementById('keu-total-mekanik').textContent = '$0.00';
-                        document.getElementById('keu-total-farmer').textContent = '$0.00';
-                        document.getElementById('keu-total-cargo').textContent = '$0.00';
                         return;
                     }
 
@@ -4533,10 +4538,6 @@ if (!$currentUserId || !$currentRole) {
 
                     if (!filteredRows.length) {
                         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Tidak ada data dengan nama: "' + filterNama + '"</td></tr>';
-                        document.getElementById('keu-total-gaji').textContent = '$0.00';
-                        document.getElementById('keu-total-mekanik').textContent = '$0.00';
-                        document.getElementById('keu-total-farmer').textContent = '$0.00';
-                        document.getElementById('keu-total-cargo').textContent = '$0.00';
                         return;
                     }
 
@@ -4549,6 +4550,9 @@ if (!$currentUserId || !$currentRole) {
                     let totalMekanik = 0;
                     let totalFarmer = 0;
                     let totalCargo = 0;
+                    let totalMekanikUsed = 0;
+                    let totalFarmerUsed = 0;
+                    let totalCargoUsed = 0;
 
                     filteredRows.forEach(item => {
                         const div = item.divisi;
@@ -4562,6 +4566,7 @@ if (!$currentUserId || !$currentRole) {
                             const total = item.jumlah * rate;
                             totalGajiItem = '$' + formatDollar(total);
                             totalMekanik += total;
+                            totalMekanikUsed += item.jumlah || 0;
                         } else if (div === 'farmer') {
                             // Gunakan harga_rate dari database, fallback ke config
                             const rate = item.harga_rate || gajiConfig.harga_bibit || 0;
@@ -4569,6 +4574,7 @@ if (!$currentUserId || !$currentRole) {
                             const total = item.jumlah * rate;
                             totalGajiItem = '$' + formatDollar(total);
                             totalFarmer += total;
+                            totalFarmerUsed += item.jumlah || 0;
                         } else if (div === 'cargo driver') {
                             // Gunakan harga_rate dari database, fallback ke config
                             const rate = item.harga_rate || gajiConfig.gaji_cargo || 0;
@@ -4577,6 +4583,7 @@ if (!$currentUserId || !$currentRole) {
                                 const total = item.jumlah * rate;
                                 totalGajiItem = '$' + formatDollar(total);
                                 totalCargo += total;
+                                totalCargoUsed += item.jumlah || 0;
                             }
                         }
 
@@ -4594,10 +4601,7 @@ if (!$currentUserId || !$currentRole) {
                     totalGaji = totalMekanik + totalFarmer + totalCargo;
 
                     tbody.innerHTML = html;
-                    document.getElementById('keu-total-gaji').textContent = '$' + formatDollar(totalGaji);
-                    document.getElementById('keu-total-mekanik').textContent = '$' + formatDollar(totalMekanik);
-                    document.getElementById('keu-total-farmer').textContent = '$' + formatDollar(totalFarmer);
-                    document.getElementById('keu-total-cargo').textContent = '$' + formatDollar(totalCargo);
+                    document.getElementById('gaji-table-foot').innerHTML = '<tr><td colspan="4">TOTAL</td><td style="text-align:center;">' + (totalMekanikUsed + totalFarmerUsed + totalCargoUsed) + '</td><td></td><td style="color:#4db84d;">$ ' + formatDollar(totalGaji) + '</td><td></td></tr>';
 
                 } catch (e) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
@@ -4777,12 +4781,6 @@ if (!$currentUserId || !$currentRole) {
                     });
 
                     tbody.innerHTML = html || '<tr><td colspan="8" style="text-align:center;color:#8b949e;">Belum ada data</td></tr>';
-
-                    // Update cards
-                    document.getElementById('lap-total-pemasukan').textContent = '+ $' + formatDollar(totalPendapatan);
-                    document.getElementById('lap-penjualan-buah').textContent = '+ $' + formatDollar(totalBuah);
-                    document.getElementById('lap-penjualan-compo').textContent = '- $' + formatDollar(totalCompo);
-                    document.getElementById('lap-total-pengeluaran').textContent = '- $' + formatDollar(totalPengeluaran);
 
                 } catch (e) {
                     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#f85149;">Koneksi gagal: ' + e.message + '</td></tr>';
